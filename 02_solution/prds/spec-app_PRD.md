@@ -1,11 +1,13 @@
 # Spec-Driven Development Workbench — PRD
 
-**Version:** 0.2 — Decisions incorporated  
+**Version:** 0.3 — Findings incorporated  
 **Date:** 2026-06-06  
 **Author:** Jeroen Remans  
-**Status:** Ready for epics
+**Status:** Updated — F8 Glossary added; discovery artifacts created
 
 **Key decisions (2026-06-06):** One project at a time · Flask backend · Vite + vanilla JS (no framework) · macOS + Windows/WSL · Bundle deps offline · Tags auto-cleared on save · Port 3301 fixed
+
+**v0.3 changes:** Added F8 (Glossary); noted findings re: large MD files, empty discovery folder, commands review question
 
 ---
 
@@ -167,6 +169,13 @@ A working prototype already exists (PIM Dashboard docs app) but is tightly coupl
 - F7.2: Each phase links to example artifacts
 - F7.3: Guide references the available Claude Code slash commands
 
+### F8 — Glossary
+- F8.1: A glossary page is accessible from the nav, listing all abbreviations and domain terms used across the spec pipeline
+- F8.2: Glossary entries include: term, definition, and optionally a link to the relevant artifact or folder
+- F8.3: Glossary is a markdown file (`04_governance/glossary.md`) editable via the standard in-app editor
+- F8.4: Abbreviations covered at minimum: PRD, AC, NFR, ADR, BA, PM, INVEST, WSJF, RICE, VTT, MCP, EP (epic), S (story), we+
+- F8.5: Non-analysts can reach the glossary via a visible link in the workflow guide and the nav
+
 ---
 
 ## 7. Data Requirements
@@ -219,7 +228,21 @@ _(High-level; full detail in `/nfr-pack` output)_
 
 ---
 
-## 11. Decisions Log
+## 11. Findings Log (v0.3)
+
+_From `00_intake/brain-storm/findings.md` — 2026-06-06_
+
+| Finding | Action taken |
+|---------|-------------|
+| MD spec files zijn groot — eerder opsplitsen | Aanbeveling: per epic/story aparte bestanden in v1.1; niet geblokkeerd voor v1 |
+| Personas map was leeg ondanks personas in PRD | Persona bestanden aangemaakt in `01_discovery/personas/` |
+| Discovery map bijna volledig leeg | Problem statement + personas aangemaakt; journey maps en research notes volgen in discovery sprint |
+| Commands herwerken? | Open vraag — zie "Questions for Stakeholders" hieronder |
+| Glossary ontbreekt voor niet-analisten | F8 toegevoegd aan functional requirements |
+
+---
+
+## 12. Decisions Log
 
 _All questions resolved 2026-06-06. See `00_intake/meeting-minutes/stakeholder-qa_01.md` for full Q&A._
 
