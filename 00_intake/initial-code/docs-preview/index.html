@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>PIM Dashboard — Docs</title>
+<script src="https://cdn.jsdelivr.net/npm/marked@9/marked.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.css">
+<script src="https://cdn.jsdelivr.net/npm/easymde@2.18.0/dist/easymde.min.js"></script>
+<style>
+:root{
+  --ac:#054e5a;--ac-d:#04424d;--ac-a:#e1b77e;
+  --sidebar-bg:#f4f5f7;--sidebar-w:260px;
+  --content-bg:#fff;--border:#dfe1e6;
+  --txt:#172b4d;--txt2:#42526e;--muted:#6b778c;
+  --link:#0052cc;--link-h:#0065ff;
+  --good:#006644;--warn:#974f0c;
+  --edit-bg:#e6fcff;
+  --font:"Segoe UI","Helvetica Neue",Helvetica,Arial,sans-serif;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden}
+body{font-family:var(--font);background:var(--content-bg);color:var(--txt);font-size:14px;display:flex;flex-direction:column}
+
+/* ── Top nav ── */
+.topnav{height:56px;background:var(--ac);display:flex;align-items:center;padding:0 20px;gap:16px;flex-shrink:0;border-bottom:1px solid rgba(255,255,255,.1)}
+.nav-logo{display:flex;align-items:center;gap:10px;text-decoration:none}
+.nav-logo-mark{width:28px;height:28px;background:#fff;border-radius:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.nav-logo-mark svg{width:18px;height:18px}
+.nav-product{font-size:15px;font-weight:700;color:#fff;letter-spacing:-.01em}
+.nav-space{font-size:12px;color:rgba(255,255,255,.5);margin-left:2px}
+.nav-sep{height:20px;width:1px;background:rgba(255,255,255,.2)}
+.nav-search{flex:1;max-width:380px;position:relative}
+.nav-search input{width:100%;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.2);color:#fff;padding:7px 12px 7px 32px;border-radius:5px;font-size:13px;font-family:var(--font);outline:none}
+.nav-search input::placeholder{color:rgba(255,255,255,.5)}
+.nav-search input:focus{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.4)}
+.nav-search-icon{position:absolute;left:9px;top:50%;transform:translateY(-50%);color:rgba(255,255,255,.5);pointer-events:none}
+.nav-right{margin-left:auto;display:flex;align-items:center;gap:8px}
+.nav-avatar{width:30px;height:30px;background:var(--ac-a);border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--ac)}
+
+/* ── Layout ── */
+.layout{display:flex;flex:1;overflow:hidden}
+
+/* ── Sidebar ── */
+.sidebar{width:var(--sidebar-w);background:var(--sidebar-bg);border-right:1px solid var(--border);display:flex;flex-direction:column;flex-shrink:0;overflow:hidden}
+.sidebar-header{padding:14px 16px 10px;flex-shrink:0;border-bottom:1px solid var(--border)}
+.sidebar-space-name{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted);margin-bottom:4px}
+.sidebar-title{font-size:14px;font-weight:700;color:var(--txt)}
+.tree{flex:1;overflow-y:auto;padding:8px 0}
+
+/* Tree nodes */
+.t-dir>summary{display:flex;align-items:center;gap:5px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--muted);cursor:pointer;letter-spacing:.05em;text-transform:uppercase;list-style:none;user-select:none}
+.t-dir>summary::-webkit-details-marker{display:none}
+.t-dir>summary::before{content:'▶';font-size:8px;transition:transform .15s;flex-shrink:0;color:var(--muted)}
+.t-dir[open]>summary::before{transform:rotate(90deg)}
+.t-dir>summary:hover{color:var(--txt)}
+.t-children{padding-left:10px}
+
+.t-file{display:flex;align-items:center;gap:7px;padding:5px 12px;font-size:13px;cursor:pointer;color:var(--txt2);border-left:3px solid transparent;transition:all .1s;border-radius:0 3px 3px 0}
+.t-file:hover{background:#ebecf0;color:var(--txt)}
+.t-file.active{background:#deebff;color:var(--link);border-left-color:var(--link);font-weight:600}
+.t-file .ico{font-size:12px;flex-shrink:0;opacity:.7}
+.t-file .fname{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.t-file .git-dot{width:7px;height:7px;border-radius:50%;background:#f5a623;flex-shrink:0;display:none;margin-left:3px;title:'Not committed'}
+.t-dir.has-changes>summary::after{content:'';display:inline-block;width:6px;height:6px;border-radius:50%;background:#f5a623;margin-left:5px;vertical-align:middle;flex-shrink:0}
+.t-file.git-modified .git-dot{display:inline-block}
+.t-file.git-modified .fname{color:var(--warn)}
+
+/* ── Content area ── */
+.content-wrap{flex:1;display:flex;flex-direction:column;overflow:hidden;position:relative}
+
+/* Breadcrumb */
+.breadcrumb{padding:10px 40px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:6px;flex-shrink:0;background:var(--content-bg)}
+.bc-item{font-size:12px;color:var(--muted)}
+.bc-item.link{color:var(--link);cursor:pointer}
+.bc-item.link:hover{text-decoration:underline}
+.bc-sep{font-size:11px;color:var(--border)}
+
+/* Page header */
+.page-header{padding:24px 40px 0;flex-shrink:0;background:var(--content-bg)}
+.page-meta{display:flex;align-items:center;gap:8px;margin-bottom:10px}
+.page-tag{background:#e3fcef;color:#006644;font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px;letter-spacing:.04em;text-transform:uppercase}
+.page-tag.draft{background:#fff0b3;color:#974f0c}
+.page-path{font-size:11px;color:var(--muted);font-family:monospace}
+.page-title-row{display:flex;align-items:flex-start;justify-content:space-between;gap:16px}
+.page-title{font-size:26px;font-weight:700;color:var(--txt);line-height:1.2;letter-spacing:-.02em;margin-bottom:4px}
+.page-byline{font-size:12px;color:var(--muted);margin-bottom:0}
+.page-actions{display:flex;gap:8px;flex-shrink:0;margin-top:4px}
+.btn-edit{display:inline-flex;align-items:center;gap:5px;padding:6px 14px;background:var(--ac);color:#fff;font-size:12px;font-weight:600;border:none;border-radius:4px;cursor:pointer;font-family:var(--font);transition:background .1s}
+.btn-edit:hover{background:var(--ac-d)}
+.btn-edit svg{width:13px;height:13px;flex-shrink:0}
+.page-divider{height:1px;background:var(--border);margin:16px 0 0}
+
+/* Scrollable content */
+.content-scroll{flex:1;overflow-y:auto;padding:24px 40px 48px}
+
+/* Markdown body */
+.md-body{max-width:800px;line-height:1.7;color:var(--txt)}
+.md-body h1{font-size:22px;font-weight:700;margin:28px 0 10px;color:var(--txt);padding-bottom:8px;border-bottom:1px solid var(--border)}
+.md-body h1:first-child{margin-top:0}
+.md-body h2{font-size:17px;font-weight:700;margin:24px 0 8px;color:var(--txt)}
+.md-body h3{font-size:14px;font-weight:700;margin:18px 0 6px;color:var(--txt)}
+.md-body h4{font-size:13px;font-weight:700;margin:14px 0 4px;color:var(--txt2)}
+.md-body p{margin:0 0 12px}
+.md-body ul,.md-body ol{margin:0 0 12px;padding-left:22px}
+.md-body li{margin-bottom:4px}
+.md-body table{width:100%;border-collapse:collapse;margin:12px 0;font-size:13px;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+.md-body th{background:#f4f5f7;padding:8px 12px;text-align:left;font-weight:700;border:1px solid var(--border);font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--muted)}
+.md-body td{padding:8px 12px;border:1px solid var(--border);vertical-align:top}
+.md-body tr:nth-child(even) td{background:#fafbfc}
+.md-body code{background:#f4f5f7;padding:2px 5px;border-radius:3px;font-size:12px;font-family:"SFMono-Regular",Consolas,monospace;color:#e01e5a}
+.md-body pre{background:#1d2125;padding:14px 18px;border-radius:5px;overflow-x:auto;margin:12px 0;border-left:3px solid var(--ac-a)}
+.md-body pre code{background:none;padding:0;font-size:12px;color:#cdd5df}
+.md-body blockquote{border-left:4px solid var(--ac-a);padding:8px 16px;margin:12px 0;background:#fffbf5;color:var(--txt2);border-radius:0 4px 4px 0}
+.md-body a{color:var(--link)}.md-body a:hover{color:var(--link-h)}
+.md-body hr{border:none;border-top:1px solid var(--border);margin:20px 0}
+.md-body strong{font-weight:700;color:var(--txt)}
+.md-body del{color:var(--muted)}
+.md-body img{max-width:100%;border-radius:4px}
+
+/* ── Edit mode ── */
+.edit-bar{display:none;align-items:center;gap:10px;padding:10px 40px;background:#e6fcff;border-bottom:1px solid #b3f5ff;flex-shrink:0}
+.edit-bar.active{display:flex}
+.edit-bar-label{font-size:12px;font-weight:600;color:var(--ac);flex:1}
+.btn-save{padding:6px 16px;background:var(--ac);color:#fff;font-size:12px;font-weight:700;border:none;border-radius:4px;cursor:pointer;font-family:var(--font)}
+.btn-save:hover{background:var(--ac-d)}
+.btn-save.saving{opacity:.6;cursor:wait}
+.btn-cancel{padding:6px 14px;background:transparent;border:1px solid var(--border);color:var(--txt2);font-size:12px;font-weight:600;border-radius:4px;cursor:pointer;font-family:var(--font)}
+.btn-cancel:hover{background:#ebecf0}
+.save-status{font-size:11px;color:var(--good);font-weight:600;display:none}
+.save-status.err{color:var(--warn)}
+
+/* Editor container */
+.wysiwyg-wrap{display:none;flex:1;flex-direction:column;overflow:hidden}
+.wysiwyg-wrap.active{display:flex}
+#wysiwyg-editor{flex:1;display:flex;flex-direction:column;overflow:hidden}
+/* EasyMDE overrides */
+#wysiwyg-editor .EasyMDEContainer{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#wysiwyg-editor .CodeMirror{flex:1;font-family:"SFMono-Regular",Consolas,monospace;font-size:13px;line-height:1.7;border:none;height:auto;padding:16px 40px;color:var(--txt)}
+#wysiwyg-editor .editor-toolbar{background:#f4f5f7;border-color:var(--border);border-top:none;flex-shrink:0;padding:4px 8px;opacity:1}
+#wysiwyg-editor .editor-toolbar button{color:var(--txt2)!important;border:none}
+#wysiwyg-editor .editor-toolbar button:hover,#wysiwyg-editor .editor-toolbar button.active{background:var(--border)!important;border-color:transparent!important}
+#wysiwyg-editor .editor-toolbar i.separator{border-color:var(--border)!important}
+#wysiwyg-editor .editor-preview,#wysiwyg-editor .editor-preview-side{background:#fff;padding:24px 40px;font-family:var(--font);font-size:14px;line-height:1.7;border-color:var(--border)}
+#wysiwyg-editor .editor-preview table,#wysiwyg-editor .editor-preview-side table{border-collapse:collapse;width:100%;margin:12px 0}
+#wysiwyg-editor .editor-preview td,#wysiwyg-editor .editor-preview th,#wysiwyg-editor .editor-preview-side td,#wysiwyg-editor .editor-preview-side th{border:1px solid var(--border);padding:8px 12px}
+#wysiwyg-editor .editor-preview th,#wysiwyg-editor .editor-preview-side th{background:#f4f5f7;font-weight:700}
+
+/* ── Tag highlights ── */
+.tag-inline{display:inline-flex;align-items:center;gap:4px;padding:2px 9px;border-radius:3px;font-size:11px;font-weight:700;letter-spacing:.03em;vertical-align:middle;margin:0 2px}
+.tag-todo   {background:#fff3e0;color:#e65100;border:1px solid #ffcc80}
+.tag-review {background:#fffde7;color:#f57f17;border:1px solid #fff176}
+.tag-rework {background:#fce4ec;color:#c62828;border:1px solid #ef9a9a}
+.tag-clarify{background:#e3f2fd;color:#1565c0;border:1px solid #90caf9}
+.tag-comment{background:#f3e5f5;color:#6a1b9a;border:1px solid #ce93d8}
+.tag-inline b{font-size:10px;letter-spacing:.06em;text-transform:uppercase}
+
+/* ── Color swatches ── */
+.file-ref:hover{opacity:.75}
+.color-swatch{display:inline-block;width:11px;height:11px;border-radius:2px;border:1px solid rgba(0,0,0,.15);vertical-align:middle;margin:0 3px 1px 2px;flex-shrink:0}
+code .color-swatch{width:9px;height:9px}
+
+/* ── Sidebar filter bar ── */
+.filter-bar{display:flex;gap:4px;padding:8px 10px;border-bottom:1px solid var(--border);flex-wrap:wrap;flex-shrink:0}
+.filter-chip{padding:3px 10px;border-radius:12px;font-size:11px;font-weight:600;border:1px solid var(--border);background:var(--content-bg);color:var(--muted);cursor:pointer;font-family:var(--font);transition:all .1s;white-space:nowrap}
+.filter-chip:hover{background:#ebecf0;color:var(--txt)}
+.filter-chip.active{background:var(--ac);color:#fff;border-color:var(--ac)}
+.filter-chip .chip-count{font-size:9px;opacity:.75;margin-left:3px}
+
+/* ── Sidebar review + changes sections ── */
+.sb-section{border-bottom:1px solid var(--border);flex-shrink:0}
+.sb-section-hdr{display:flex;align-items:center;gap:6px;padding:8px 14px;cursor:pointer;font-size:11px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;user-select:none}
+.sb-section-hdr:hover{background:#ebecf0}
+.sb-section-hdr .sb-count{background:#f5a623;color:#fff;border-radius:10px;padding:1px 6px;font-size:10px;font-weight:700;min-width:18px;text-align:center}
+.sb-section-hdr .sb-count.empty{background:var(--border);color:var(--muted)}
+.sb-section-hdr .sb-arrow{margin-left:auto;font-size:10px;transition:transform .15s;color:var(--muted)}
+.sb-section-hdr.open .sb-arrow{transform:rotate(180deg)}
+.sb-section-body{display:none;padding:0 0 6px}
+.sb-section-body.open{display:block}
+.sb-file-row{display:flex;align-items:center;gap:7px;padding:5px 14px 5px 20px;font-size:12px;cursor:pointer;color:var(--txt2);border-left:3px solid transparent}
+.sb-file-row:hover{background:#ebecf0;color:var(--txt)}
+.sb-file-row .sb-fname{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:12px}
+.sb-file-row .sb-badge{font-size:10px;font-weight:700;padding:1px 5px;border-radius:3px;flex-shrink:0}
+.sb-file-row .sb-stat{font-size:10px;color:var(--muted);flex-shrink:0}
+.sb-tag-chips{display:flex;flex-wrap:wrap;gap:3px;padding:0 14px 6px 20px}
+.sb-tag-chip{font-size:9px;font-weight:700;padding:1px 5px;border-radius:2px;letter-spacing:.04em;text-transform:uppercase}
+
+/* ── Tag toolbar (editor) ── */
+.tag-toolbar{display:none;align-items:center;gap:4px;padding:6px 40px;background:#f8f9fa;border-bottom:1px solid var(--border);flex-shrink:0;flex-wrap:wrap}
+.tag-toolbar.active{display:flex}
+.tag-toolbar-label{font-size:10px;font-weight:700;color:var(--muted);letter-spacing:.05em;text-transform:uppercase;margin-right:4px}
+.tag-btn{padding:3px 10px;border-radius:3px;font-size:11px;font-weight:700;cursor:pointer;border:1px solid;font-family:var(--font);letter-spacing:.03em;transition:opacity .1s}
+.tag-btn:hover{opacity:.8}
+.tag-btn-todo   {background:#fff3e0;color:#e65100;border-color:#ffcc80}
+.tag-btn-review {background:#fffde7;color:#f57f17;border-color:#fff176}
+.tag-btn-rework {background:#fce4ec;color:#c62828;border-color:#ef9a9a}
+.tag-btn-clarify{background:#e3f2fd;color:#1565c0;border-color:#90caf9}
+.tag-btn-comment{background:#f3e5f5;color:#6a1b9a;border-color:#ce93d8}
+
+/* ── Floating tag bar ── */
+.float-tag-bar{position:fixed;display:none;gap:3px;background:#fff;border:1px solid var(--border);border-radius:5px;padding:4px 6px;box-shadow:0 4px 12px rgba(0,0,0,.15);z-index:9999;align-items:center}
+.float-tag-bar.visible{display:flex}
+.float-tag-bar .fbar-label{font-size:9px;color:var(--muted);font-weight:700;text-transform:uppercase;margin-right:4px;letter-spacing:.05em}
+
+/* Empty state */
+.empty-state{display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;gap:14px;color:var(--muted)}
+.empty-state svg{opacity:.25;width:64px;height:64px}
+.empty-state p{font-size:13px}
+
+/* ── Diff panel ── */
+.diff-panel{display:none;border-top:1px solid var(--border);flex-shrink:0;max-height:320px;overflow-y:auto;background:#1d2125}
+.diff-panel.open{display:block}
+.diff-header{display:flex;align-items:center;gap:10px;padding:8px 16px;background:#282c30;border-bottom:1px solid rgba(255,255,255,.08);font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:rgba(255,255,255,.5);position:sticky;top:0;z-index:1}
+.diff-header .diff-badge{background:rgba(245,166,35,.15);color:#f5a623;padding:2px 8px;border-radius:3px;font-size:10px}
+.diff-close{margin-left:auto;cursor:pointer;color:rgba(255,255,255,.4);background:none;border:none;font-size:16px;line-height:1;padding:0 4px}
+.diff-close:hover{color:#fff}
+.diff-body{font-family:"SFMono-Regular",Consolas,monospace;font-size:12px;line-height:1.5}
+.diff-line{display:flex;padding:1px 0}
+.diff-line-no{width:36px;flex-shrink:0;text-align:right;padding:0 8px;color:rgba(255,255,255,.2);user-select:none;font-size:11px}
+.diff-line-content{flex:1;padding:0 12px;white-space:pre;overflow-x:auto}
+.diff-add{background:rgba(63,185,80,.12)}.diff-add .diff-line-content{color:#3fb950}
+.diff-del{background:rgba(248,81,73,.12)}.diff-del .diff-line-content{color:#f85149}
+.diff-hunk{background:rgba(88,166,255,.08)}.diff-hunk .diff-line-content{color:#79c0ff;font-style:italic}
+.diff-ctx .diff-line-content{color:rgba(255,255,255,.5)}
+.diff-no-changes{padding:16px 20px;color:rgba(255,255,255,.4);font-size:13px;font-style:italic}
+/* Diff toggle button */
+.btn-diff{display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:transparent;border:1px solid #f5a623;color:#f5a623;font-size:11px;font-weight:600;border-radius:4px;cursor:pointer;font-family:var(--font);transition:all .1s}
+.btn-diff:hover{background:rgba(245,166,35,.1)}
+.btn-diff.hidden{display:none}
+/* Non-MD file */
+.file-info{border:1px solid var(--border);border-radius:6px;padding:20px 24px;background:#f4f5f7;max-width:480px}
+.file-info h2{font-size:15px;font-weight:700;margin-bottom:6px}
+.file-info p{font-size:12px;color:var(--muted);margin-bottom:14px}
+.file-info a{display:inline-block;padding:7px 16px;background:var(--ac);color:#fff;font-size:11px;font-weight:700;text-decoration:none;border-radius:4px}
+/* ── Inline diff ── */
+.diff-add-block{background:#e6ffed;border-left:3px solid #2ea44f;padding-left:10px;border-radius:0 4px 4px 0;margin:2px 0}
+.diff-del-block{background:#ffeef0;border-left:3px solid #e74c3c;padding-left:10px;border-radius:0 4px 4px 0;margin:2px 0}
+.diff-line-raw{font-family:"SFMono-Regular",Consolas,monospace;font-size:12px;line-height:1.6;white-space:pre-wrap;word-break:break-all;margin:0;padding:4px 0;color:inherit}
+.diff-line-raw.add{color:#1a7f37}
+.diff-line-raw.del{color:#b91c1c;text-decoration:line-through}
+.diff-block{margin:4px 0}
+.btn-diff.diff-on{background:rgba(46,164,79,.1);border-color:#2ea44f;color:#2ea44f}
+</style>
+</head>
+<body>
+
+<!-- Top nav -->
+<nav class="topnav">
+  <a class="nav-logo" href="#" onclick="openFile('REQUIREMENTS.md');return false">
+    <div class="nav-logo-mark">
+      <svg viewBox="0 0 18 18" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect width="18" height="18" rx="2" fill="#054e5a"/>
+        <rect x="3" y="4" width="8" height="1.5" rx=".75" fill="#fff"/>
+        <rect x="3" y="7" width="12" height="1.5" rx=".75" fill="#fff"/>
+        <rect x="3" y="10" width="10" height="1.5" rx=".75" fill="#fff"/>
+        <rect x="3" y="13" width="6" height="1.5" rx=".75" fill="#fff"/>
+      </svg>
+    </div>
+    <div>
+      <div class="nav-product">PIM Dashboard</div>
+      <div class="nav-space">Project Docs</div>
+    </div>
+  </a>
+  <div class="nav-sep"></div>
+  <div class="nav-search">
+    <svg class="nav-search-icon" width="14" height="14" viewBox="0 0 14 14" fill="none"><circle cx="6" cy="6" r="4" stroke="currentColor" stroke-width="1.5"/><line x1="9.5" y1="9.5" x2="12.5" y2="12.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <input type="text" placeholder="Search docs..." oninput="filterTree(this.value)" id="search">
+  </div>
+  <div class="nav-right">
+    <div class="nav-avatar">JR</div>
+  </div>
+</nav>
+
+<!-- Floating tag bar (shown on text selection in editor) -->
+<div class="float-tag-bar" id="float-tag-bar">
+  <span class="fbar-label">Tag</span>
+  <button class="tag-btn tag-btn-todo"    onclick="insertTagAroundSelection('TODO')"   >TODO</button>
+  <button class="tag-btn tag-btn-review"  onclick="insertTagAroundSelection('REVIEW')" >REVIEW</button>
+  <button class="tag-btn tag-btn-rework"  onclick="insertTagAroundSelection('REWORK')" >REWORK</button>
+  <button class="tag-btn tag-btn-clarify" onclick="insertTagAroundSelection('CLARIFY')">CLARIFY</button>
+  <button class="tag-btn tag-btn-comment" onclick="insertTagAroundSelection('COMMENT')">COMMENT</button>
+</div>
+
+<div class="layout">
+  <!-- Sidebar -->
+  <div class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-space-name">Atlas Copco · APE</div>
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div class="sidebar-title">PIM Technical Data Dashboard</div>
+        <button onclick="refreshTree()" title="Refresh file tree" style="background:none;border:none;cursor:pointer;color:var(--muted);font-size:14px;padding:2px 4px;line-height:1" id="refresh-btn">↻</button>
+      </div>
+    </div>
+    <div class="filter-bar">
+      <button class="filter-chip active" data-filter="all"      onclick="setFilter('all')">All</button>
+      <button class="filter-chip"        data-filter="modified" onclick="setFilter('modified')">Modified<span class="chip-count" id="fc-modified"></span></button>
+      <button class="filter-chip"        data-filter="tags"     onclick="setFilter('tags')">Has Tags<span class="chip-count" id="fc-tags"></span></button>
+      <button class="filter-chip"        data-filter="recent"   onclick="setFilter('recent')">Recent<span class="chip-count" id="fc-recent"></span></button>
+    </div>
+    <!-- To Review section -->
+    <div class="sb-section" id="sb-review" style="display:none">
+      <div class="sb-section-hdr" id="sb-review-hdr" onclick="toggleSbSection('review')">
+        <span>To Review</span>
+        <span class="sb-count empty" id="sb-review-count">0</span>
+        <span class="sb-arrow">▾</span>
+      </div>
+      <div class="sb-section-body" id="sb-review-body"></div>
+    </div>
+    <!-- Changes section -->
+    <div class="sb-section" id="sb-changes" style="display:none">
+      <div class="sb-section-hdr" id="sb-changes-hdr" onclick="toggleSbSection('changes')">
+        <span>Changes</span>
+        <span class="sb-count empty" id="sb-changes-count">0</span>
+        <span class="sb-arrow">▾</span>
+      </div>
+      <div class="sb-section-body" id="sb-changes-body"></div>
+    </div>
+    <div class="tree" id="tree">Loading...</div>
+  </div>
+
+  <!-- Content -->
+  <div class="content-wrap">
+    <!-- Edit toolbar (shown in edit mode) -->
+    <div class="edit-bar" id="edit-bar">
+      <span class="edit-bar-label">Editing <span id="edit-bar-path"></span></span>
+      <span class="save-status" id="save-status"></span>
+      <button class="btn-cancel" onclick="cancelEdit()">Cancel</button>
+      <button class="btn-save" id="btn-save" onclick="saveEdit()">Save</button>
+    </div>
+
+    <!-- Breadcrumb -->
+    <div class="breadcrumb" id="breadcrumb" style="display:none">
+      <span class="bc-item link" onclick="openFile('REQUIREMENTS.md')">PIM Dashboard</span>
+      <span class="bc-sep">›</span>
+      <span class="bc-item" id="bc-section"></span>
+      <span class="bc-sep" id="bc-sep2">›</span>
+      <span class="bc-item" id="bc-file"></span>
+    </div>
+
+    <!-- Page view -->
+    <div id="page-view" style="display:flex;flex-direction:column;flex:1;overflow:hidden">
+      <div class="page-header" id="page-header" style="display:none">
+        <div class="page-meta">
+          <span class="page-tag" id="page-tag">Doc</span>
+          <span class="page-path" id="page-path"></span>
+        </div>
+        <div class="page-title-row">
+          <div>
+            <div class="page-title" id="page-title"></div>
+            <div class="page-byline" id="page-byline"></div>
+          </div>
+          <div class="page-actions" id="page-actions" style="display:none">
+            <button class="btn-diff hidden" id="btn-diff" onclick="toggleDiff()">
+              <svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 4h11M1 9h11M4 1v11M9 1v11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+              Changes
+            </button>
+            <button class="btn-edit" onclick="startEdit()">
+              <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M9.5 1.5l3 3L4 13H1v-3L9.5 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round" fill="none"/></svg>
+              Edit
+            </button>
+          </div>
+        </div>
+        <div class="page-divider"></div>
+      </div>
+      <!-- Diff panel — shown below content when file has uncommitted changes -->
+      <div class="diff-panel" id="diff-panel">
+        <div class="diff-header">
+          <span>Uncommitted changes</span>
+          <span class="diff-badge" id="diff-stats"></span>
+          <button class="diff-close" onclick="toggleDiff()" title="Close">×</button>
+        </div>
+        <div class="diff-body" id="diff-body"></div>
+      </div>
+      <div class="content-scroll" id="content-scroll">
+        <div class="empty-state">
+          <svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="12" y="8" width="40" height="48" rx="4" stroke="currentColor" stroke-width="2"/><line x1="20" y1="20" x2="44" y2="20" stroke="currentColor" stroke-width="2"/><line x1="20" y1="28" x2="44" y2="28" stroke="currentColor" stroke-width="2"/><line x1="20" y1="36" x2="36" y2="36" stroke="currentColor" stroke-width="2"/></svg>
+          <p>Select a file from the sidebar to view it.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- WYSIWYG editor -->
+    <div class="wysiwyg-wrap" id="wysiwyg-wrap">
+      <div class="tag-toolbar" id="tag-toolbar">
+        <span class="tag-toolbar-label">Insert tag</span>
+        <button class="tag-btn tag-btn-todo"    onclick="insertTag('TODO')"   title="/todo">TODO</button>
+        <button class="tag-btn tag-btn-review"  onclick="insertTag('REVIEW')" title="/review">REVIEW</button>
+        <button class="tag-btn tag-btn-rework"  onclick="insertTag('REWORK')" title="/rework">REWORK</button>
+        <button class="tag-btn tag-btn-clarify" onclick="insertTag('CLARIFY')" title="/clarify">CLARIFY</button>
+        <button class="tag-btn tag-btn-comment" onclick="insertTag('COMMENT')" title="/comment">COMMENT</button>
+      </div>
+      <div id="wysiwyg-editor"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+let allNodes=[], currentFile=null, originalContent='', _currentMdContent='', _inlineDiffActive=false;
+let _activeFilter='all', _modifiedFiles=new Set(), _tagFiles=new Set(), _recentFiles=[];
+
+const TYPE_LABELS={html:'HTML file',xlsx:'Excel file',pptx:'PowerPoint',png:'Image',jpg:'Image',vtt:'Meeting transcript',json:'JSON config'};
+const ICONS={md:'📄',html:'🌐',xlsx:'📊',pptx:'📑',png:'🖼',jpg:'🖼',vtt:'🎤',json:'⚙',dir:'📁'};
+
+// ── Tree ──────────────────────────────────────────────────────────────────
+async function init(){
+  // Must be served via HTTP, not opened as file://
+  if(location.protocol==='file:'){
+    document.getElementById('tree').innerHTML=`<div style="padding:14px;font-size:12px;line-height:1.6">
+      <b style="color:#de350b">Start the server first.</b><br>
+      In terminal, run:<br>
+      <code style="background:#f4f5f7;padding:2px 6px;border-radius:3px">bash scripts/serve-docs.sh</code><br>
+      Then open <code style="background:#f4f5f7;padding:2px 6px;border-radius:3px">http://localhost:3001/docs-preview/</code>
+    </div>`;
+    return;
+  }
+  try{
+    const r=await fetch('files.json');
+    if(!r.ok)throw new Error('Run ./scripts/serve-docs.sh first');
+    const {tree}=await r.json();
+    renderTree(tree,document.getElementById('tree'));
+    loadGitStatus();
+    loadTagSummary();
+    loadChangeSummary();
+    if(location.hash)openFile(decodeURIComponent(location.hash.slice(1)));
+  }catch(e){
+    document.getElementById('tree').innerHTML=`<div style="padding:14px;color:#de350b;font-size:12px">${e.message}</div>`;
+  }
+}
+
+function renderTree(nodes,container,depth=0){
+  container.innerHTML='';
+  for(const node of nodes){
+    if(node.type==='dir'){
+      const d=document.createElement('details');
+      d.open=false; // all collapsed by default; expandToFile() opens active path
+      d.className='t-dir';
+      d.dataset.path=node.path;
+      const s=document.createElement('summary');
+      s.textContent=node.name;
+      d.appendChild(s);
+      const ch=document.createElement('div');
+      ch.className='t-children';
+      renderTree(node.children||[],ch,depth+1);
+      d.appendChild(ch);
+      container.appendChild(d);
+    }else{
+      const f=document.createElement('div');
+      f.className='t-file';
+      f.dataset.path=node.path;
+      f.dataset.type=node.type;
+      f.dataset.name=node.name.toLowerCase();
+      f.innerHTML=`<span class="ico">${ICONS[node.type]||'📄'}</span><span class="fname" title="${node.path}">${node.name}</span><span class="git-dot" title="Not committed"></span>`;
+      f.onclick=()=>openFile(node.path);
+      container.appendChild(f);
+      allNodes.push(f);
+    }
+  }
+}
+
+// ── Open file ─────────────────────────────────────────────────────────────
+async function openFile(path){
+  if(isEditing()&&!confirm('Discard unsaved changes?'))return;
+  cancelEdit();
+  currentFile=path;
+  location.hash=encodeURIComponent(path);
+  document.querySelectorAll('.t-file.active').forEach(e=>e.classList.remove('active'));
+  // Track recents (max 10, most recent first)
+  _recentFiles=_recentFiles.filter(p=>p!==path);
+  _recentFiles.unshift(path);
+  if(_recentFiles.length>10)_recentFiles.length=10;
+  document.querySelectorAll('.filter-chip[data-filter="recent"] .chip-count').forEach(el=>el.textContent=_recentFiles.length||'');
+  // Expand parent dirs
+  expandToFile(path);
+  const node=document.querySelector(`.t-file[data-path="${CSS.escape(path)}"]`);
+  if(node){node.classList.add('active');node.scrollIntoView({block:'nearest'});}
+
+  updateBreadcrumb(path);
+  const ext=path.split('.').pop().toLowerCase();
+
+  _diffLoaded=false;
+  document.getElementById('diff-panel').classList.remove('open');
+  if(ext==='md'){
+    try{
+      const r=await fetch('/'+path);
+      if(!r.ok)throw new Error(r.status);
+      const md=await r.text();
+      renderMdPage(path,md);
+      setTimeout(()=>{updateDiffButton();setupViewerTagBar();},100);
+    }catch(e){
+      showContent(`<div style="padding:20px;max-width:480px">
+        <b style="color:#de350b">Could not load: ${path}</b><br><br>
+        <span style="font-size:12px;color:#42526e">${e instanceof TypeError?'Network error — server not reachable. Run <code>bash scripts/serve-docs.sh</code> and open <code>http://localhost:3001/docs-preview/</code>':e.message}</span>
+      </div>`);
+    }
+  }else if(ext==='json'){
+    try{
+      const r=await fetch('/'+path);
+      if(!r.ok)throw new Error(r.status);
+      const json=await r.json();
+      renderJsonPage(path,json);
+    }catch(e){
+      showContent(`<div style="padding:20px;color:var(--bad)">Could not load: ${path}<br><small>${e.message}</small></div>`);
+    }
+  }else if(ext==='vtt'){
+    try{
+      const r=await fetch('/'+path);
+      if(!r.ok)throw new Error(r.status);
+      const vtt=await r.text();
+      renderVttPage(path,vtt);
+    }catch(e){
+      showContent(`<div style="padding:20px;max-width:480px">
+        <b style="color:#de350b">Could not load: ${path}</b><br><br>
+        <span style="font-size:12px;color:#42526e">${e instanceof TypeError?'Network error — server not reachable. Run <code>bash scripts/serve-docs.sh</code> and open <code>http://localhost:3001/docs-preview/</code>':e.message}</span>
+      </div>`);
+    }
+  }else{
+    renderFilePage(path,ext);
+  }
+}
+
+function renderMdPage(path,md){
+  const fname=path.split('/').pop();
+  const title=md.match(/^#\s+(.+)/m)?.[1]?.trim()||fname.replace('.md','');
+  const parts=path.split('/');
+  const section=parts.length>1?parts[parts.length-2]:'';
+
+  document.getElementById('page-header').style.display='block';
+  document.getElementById('page-title').textContent=title;
+  document.getElementById('page-path').textContent=path;
+  document.getElementById('page-actions').style.display='flex';
+  document.getElementById('page-byline').textContent=section?`${section} · ${fname}`:'';
+
+  // Tag by folder
+  const tag=document.getElementById('page-tag');
+  if(path.includes('02_solution/prds'))       {tag.textContent='PRD';tag.className='page-tag';}
+  else if(path.includes('01_discovery'))      {tag.textContent='Discovery';tag.className='page-tag draft';}
+  else if(path.includes('04_governance'))     {tag.textContent='Governance';tag.className='page-tag';}
+  else if(path.includes('design'))            {tag.textContent='Design';tag.className='page-tag draft';}
+  else if(path.includes('architecture'))      {tag.textContent='Architecture';tag.className='page-tag';}
+  else                                        {tag.textContent='Doc';tag.className='page-tag';}
+
+  _currentMdContent=md;
+  _inlineDiffActive=false;
+  const btn=document.getElementById('btn-diff');
+  if(btn){btn.classList.remove('diff-on');btn.innerHTML='<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 4h11M1 9h11M4 1v11M9 1v11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> Changes';}
+  const rendered = marked.parse(md).replace(/^<h1[^>]*>[\s\S]*?<\/h1>\s*/i, '');
+  showContent(`<div class="md-body">${applyTagHighlights(rendered)}</div>`);
+}
+
+function renderFilePage(path,ext){
+  document.getElementById('page-header').style.display='none';
+  const label=TYPE_LABELS[ext]||'File';
+  const canOpen=['html'].includes(ext);
+  showContent(`<div class="file-info">
+    <h2>${ICONS[ext]||'📄'} ${path.split('/').pop()}</h2>
+    <p>${label} — cannot be rendered inline.</p>
+    ${canOpen?`<a href="/${path}" target="_blank">Open in new tab →</a>`:`<a href="/${path}" download>Download →</a>`}
+  </div>`);
+}
+
+function renderJsonPage(path,json){
+  const fname=path.split('/').pop();
+  document.getElementById('page-header').style.display='block';
+  document.getElementById('page-title').textContent=fname;
+  document.getElementById('page-path').textContent=path;
+  document.getElementById('page-actions').style.display='none';
+  document.getElementById('page-byline').textContent='JSON configuration file';
+  const tag=document.getElementById('page-tag');
+  tag.textContent='Config';tag.className='page-tag';
+  // Syntax-highlighted JSON
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+  const highlight=raw=>esc(JSON.stringify(raw,null,2))
+    .replace(/"([^"]+)":/g,'<span style="color:#0747a6">"$1"</span>:')
+    .replace(/: "([^"]*)"/g,': <span style="color:#006644">"$1"</span>')
+    .replace(/: (true|false)/g,': <span style="color:#974f0c">$1</span>')
+    .replace(/: (\d+\.?\d*)/g,': <span style="color:#5243aa">$1</span>');
+  showContent(`<pre style="background:#f4f5f7;padding:20px 24px;border-radius:6px;border-left:4px solid var(--ac-primary);overflow-x:auto;font-family:'SFMono-Regular',Consolas,monospace;font-size:12px;line-height:1.6;max-width:900px">${highlight(json)}</pre>`);
+}
+
+function renderVttPage(path,vttText){
+  const fname=path.split('/').pop().replace('.vtt','');
+  document.getElementById('page-header').style.display='block';
+  document.getElementById('page-title').textContent=fname.replace(/_/g,' ');
+  document.getElementById('page-path').textContent=path;
+  document.getElementById('page-actions').style.display='none';
+  document.getElementById('page-byline').textContent='Meeting transcript';
+  const tag=document.getElementById('page-tag');
+  tag.textContent='Transcript';tag.className='page-tag draft';
+
+  // Normalize line endings
+  const text=vttText.replace(/\r\n/g,'\n').replace(/\r/g,'\n');
+
+  // Parse WebVTT cues
+  const cues=[];
+  const blocks=text.split(/\n{2,}/);
+  for(const block of blocks){
+    const lines=block.trim().split('\n');
+    if(!lines.length)continue;
+    // Find timestamp line (contains -->)
+    const tsIdx=lines.findIndex(l=>/\d+:\d+.*-->/.test(l));
+    if(tsIdx<0)continue;
+    const tsLine=lines[tsIdx];
+    const startRaw=tsLine.split('-->')[0].trim();
+    // Format mm:ss
+    const fmtTs=t=>{
+      const p=t.split(':');
+      const s=Math.floor(parseFloat(p[p.length-1]));
+      const m=parseInt(p.length>=2?p[p.length-2]:0);
+      const h=parseInt(p.length>=3?p[p.length-3]:0);
+      return h>0?`${h}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`:`${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+    };
+    const ts=fmtTs(startRaw);
+    // Content = all lines after timestamp, joined
+    const rawContent=lines.slice(tsIdx+1).join(' ').trim();
+    if(!rawContent)continue;
+
+    // Extract speaker from <v SpeakerName>content</v>
+    let speaker='',content=rawContent;
+    const vMatch=rawContent.match(/^<v ([^>]+)>([\s\S]*)/);
+    if(vMatch){
+      speaker=vMatch[1].trim();
+      content=vMatch[2].replace(/<\/v>/g,'').replace(/<[^>]+>/g,'').trim();
+    } else {
+      // Fallback: "Speaker: content"
+      const colonMatch=rawContent.match(/^([^:<]{2,40}):\s+(.*)/);
+      if(colonMatch){speaker=colonMatch[1].trim();content=colonMatch[2].trim();}
+      else content=rawContent.replace(/<[^>]+>/g,'').trim();
+    }
+    if(content)cues.push({ts,speaker,content});
+  }
+
+  // Group consecutive same-speaker cues
+  const rows=[];
+  for(const cue of cues){
+    const last=rows[rows.length-1];
+    if(last&&last.speaker===cue.speaker){
+      last.lines.push(cue.content);
+    }else{
+      rows.push({ts:cue.ts,speaker:cue.speaker,lines:[cue.content]});
+    }
+  }
+
+  // Assign alternating bg per speaker (not per message — consistent per person)
+  const speakerBgs={};
+  const BG_POOL=['#f4f5f7','#ffffff'];
+  let bgIdx=0;
+  const getBg=s=>{if(!(s in speakerBgs))speakerBgs[s]=BG_POOL[bgIdx++%2];return speakerBgs[s];};
+
+  const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+
+  const speakers=Object.keys(Object.fromEntries(rows.map(r=>[r.speaker,1])));
+  const html=`<div style="max-width:720px">
+    <div style="margin-bottom:16px;padding:10px 14px;background:#f4f5f7;border-radius:6px;border-left:3px solid var(--ac);font-size:12px;color:var(--txt2)">
+      ${rows.length} segments · ${speakers.length} speaker${speakers.length!==1?'s':''}: ${speakers.map(s=>`<b>${esc(s)}</b>`).join(', ')}
+    </div>
+    ${rows.map(r=>{
+      const bg=getBg(r.speaker);
+      const border=bg==="#ffffff"?'1px solid var(--border)':'none';
+      return`<div style="margin-bottom:2px;padding:8px 14px;background:${bg};border-radius:4px;border:${border}">
+        <div style="display:flex;align-items:baseline;gap:10px;margin-bottom:3px">
+          ${r.speaker?`<span style="font-size:12px;font-weight:700;color:var(--txt)">${esc(r.speaker)}</span>`:''}
+          <span style="font-size:10px;color:var(--muted)">${r.ts}</span>
+        </div>
+        <div style="font-size:13px;line-height:1.6;color:var(--txt2)">${r.lines.map(l=>`<p style="margin:0 0 2px">${esc(l)}</p>`).join('')}</div>
+      </div>`;
+    }).join('')}
+  </div>`;
+
+  showContent(html);
+}
+
+function showContent(html){
+  const scroll=document.getElementById('content-scroll');
+  scroll.innerHTML=html;
+  scroll.scrollTop=0;
+  document.getElementById('page-view').style.display='flex';
+  document.getElementById('wysiwyg-wrap').classList.remove('active');
+}
+
+// ── Breadcrumb ────────────────────────────────────────────────────────────
+function updateBreadcrumb(path){
+  const bc=document.getElementById('breadcrumb');
+  const parts=path.split('/');
+  bc.style.display='flex';
+  if(parts.length>1){
+    document.getElementById('bc-section').textContent=parts.slice(0,-1).join(' › ');
+    document.getElementById('bc-sep2').style.display='';
+    document.getElementById('bc-file').textContent=parts[parts.length-1];
+  }else{
+    document.getElementById('bc-section').textContent=parts[0];
+    document.getElementById('bc-sep2').style.display='none';
+    document.getElementById('bc-file').textContent='';
+  }
+}
+
+// ── Table helpers ─────────────────────────────────────────────────────────
+const tbtn=(color='')=>`padding:3px 9px;border:1px solid ${color==='red'?'#ffbdad':color==='blue'?'#b3d8f0':'#c1c7d0'};background:${color==='red'?'#fff4f2':color==='blue'?'#e8f4fd':'#fff'};color:${color==='red'?'#bf2600':color==='blue'?'#0747a6':'#344563'};border-radius:3px;cursor:pointer;font-size:11px;font-weight:600;font-family:inherit`;
+
+function getEditorTable(){
+  if(!_editor)return null;
+  const sel=_editor.getSelection();
+  if(!sel)return null;
+  const [leaf]=_editor.getLeaf(sel.index);
+  if(!leaf||!leaf.domNode)return null;
+  return leaf.domNode.closest('table');
+}
+
+function tableAction(action){
+  const table=getEditorTable();
+  if(!table)return;
+  const sel=_editor.getSelection();
+  const [leaf]=_editor.getLeaf(sel.index);
+  const td=leaf.domNode.closest('td')||leaf.domNode.closest('th');
+  if(!td&&action!=='deleteTable')return;
+
+  const tr=td?td.parentElement:null;
+  const tbody=table.querySelector('tbody')||table;
+  const rows=Array.from(tbody.querySelectorAll('tr'));
+  const cols=tr?Array.from(tr.querySelectorAll('td,th')):[];
+  const colIdx=td?cols.indexOf(td):0;
+  const rowIdx=tr?rows.indexOf(tr):0;
+
+  if(action==='insertRowAbove'||action==='insertRowBelow'){
+    const newTr=document.createElement('tr');
+    const colCount=rows[0]?rows[0].querySelectorAll('td,th').length:1;
+    for(let i=0;i<colCount;i++){const c=document.createElement('td');c.innerHTML='&nbsp;';newTr.appendChild(c);}
+    if(action==='insertRowAbove')tbody.insertBefore(newTr,tr);
+    else tr.insertAdjacentElement('afterend',newTr);
+  }else if(action==='insertColLeft'||action==='insertColRight'){
+    rows.forEach((row,ri)=>{
+      const cells=Array.from(row.querySelectorAll('td,th'));
+      const ref=cells[colIdx];
+      const newCell=document.createElement(ri===0&&table.querySelector('th')?'th':'td');
+      newCell.innerHTML='&nbsp;';
+      if(action==='insertColLeft')row.insertBefore(newCell,ref);
+      else if(ref)ref.insertAdjacentElement('afterend',newCell);
+      else row.appendChild(newCell);
+    });
+  }else if(action==='deleteRow'){
+    if(rows.length>1)tr.remove();
+  }else if(action==='deleteCol'){
+    if(cols.length>1)rows.forEach((row)=>{const c=row.querySelectorAll('td,th')[colIdx];if(c)c.remove();});
+  }else if(action==='deleteTable'){
+    table.remove();
+  }
+  _editor.update();
+}
+
+function insertNewTable(){
+  if(!_editor)return;
+  const sel=_editor.getSelection(true);
+  const rows=3,cols=3;
+  let html='<table><thead><tr>'+Array(cols).fill('<th>&nbsp;</th>').join('')+'</tr></thead><tbody>';
+  for(let r=0;r<rows-1;r++)html+='<tr>'+Array(cols).fill('<td>&nbsp;</td>').join('')+'</tr>';
+  html+='</tbody></table><p><br></p>';
+  _editor.clipboard.dangerouslyPasteHTML(sel.index,html);
+}
+
+// ── Editor mode (EasyMDE — markdown source, tables/code preserved perfectly) ──
+let _editor=null;
+
+function isEditing(){return document.getElementById('wysiwyg-wrap').classList.contains('active');}
+
+async function startEdit(){
+  if(!currentFile||!currentFile.endsWith('.md'))return;
+  try{const r=await fetch('/'+currentFile);originalContent=await r.text();}
+  catch(e){alert('Could not load file for editing.');return;}
+
+  document.getElementById('edit-bar-path').textContent=currentFile;
+  document.getElementById('edit-bar').classList.add('active');
+  document.getElementById('wysiwyg-wrap').classList.add('active');
+  document.getElementById('tag-toolbar').classList.add('active');
+  document.getElementById('page-view').style.display='none';
+
+  const el=document.getElementById('wysiwyg-editor');
+  el.innerHTML='';
+  if(_editor){try{_editor.toTextArea();_editor=null;}catch(e){}}
+
+  // Create textarea for EasyMDE
+  const ta=document.createElement('textarea');
+  ta.id='easymde-ta';
+  el.appendChild(ta);
+
+  _editor=new EasyMDE({
+    element:ta,
+    initialValue:originalContent,
+    spellChecker:false,
+    autosave:{enabled:false},
+    status:false,
+    toolbar:[
+      'bold','italic','heading','|',
+      'quote','code','table','|',
+      'unordered-list','ordered-list','|',
+      'link','|',
+      'preview','side-by-side','|',
+      'undo','redo'
+    ],
+    previewRender:md=>marked.parse(md),
+    renderingConfig:{singleLineBreaks:false},
+  });
+  _editor.codemirror.focus();
+  setupTagFeatures();
+}
+
+async function saveEdit(){
+  if(!_editor)return;
+  const content=_editor.value();
+  const btn=document.getElementById('btn-save');
+  const status=document.getElementById('save-status');
+  btn.classList.add('saving');btn.disabled=true;
+  status.style.display='inline';status.className='save-status';status.textContent='Saving…';
+  try{
+    const r=await fetch('/'+currentFile,{method:'PUT',headers:{'Content-Type':'text/markdown'},body:content});
+    const data=await r.json();
+    if(!data.ok)throw new Error(data.error||'Save failed');
+    originalContent=content;
+    status.textContent='Saved ✓';
+    setTimeout(()=>{status.style.display='none';},2500);
+    renderMdPage(currentFile,content);
+    loadGitStatus();
+  }catch(e){
+    status.className='save-status err';status.textContent='Save failed: '+e.message;
+  }finally{btn.classList.remove('saving');btn.disabled=false;}
+}
+
+function cancelEdit(){
+  document.getElementById('edit-bar').classList.remove('active');
+  document.getElementById('wysiwyg-wrap').classList.remove('active');
+  document.getElementById('tag-toolbar').classList.remove('active');
+  document.getElementById('float-tag-bar').classList.remove('visible');
+  document.getElementById('save-status').style.display='none';
+  if(_editor){try{_editor.toTextArea();_editor=null;}catch(e){}}
+  document.getElementById('wysiwyg-editor').innerHTML='';
+  if(currentFile)document.getElementById('page-view').style.display='flex';
+}
+
+window.addEventListener('beforeunload',e=>{
+  if(isEditing()&&_editor&&_editor.value()!==originalContent){
+    e.preventDefault();e.returnValue='';
+  }
+});
+
+// ── Git diff ─────────────────────────────────────────────────────────────
+let _diffLoaded=false;
+
+async function toggleDiff(){
+  const btn=document.getElementById('btn-diff');
+  _inlineDiffActive=!_inlineDiffActive;
+  if(!_inlineDiffActive){
+    // Restore normal view
+    const rendered=marked.parse(_currentMdContent).replace(/^<h1[^>]*>[\s\S]*?<\/h1>\s*/i,'');
+    showContent(`<div class="md-body">${applyTagHighlights(rendered)}</div>`);
+    setupViewerTagBar();
+    if(btn){btn.classList.remove('diff-on');btn.innerHTML='<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 4h11M1 9h11M4 1v11M9 1v11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> Changes';}
+    return;
+  }
+  if(btn)btn.textContent='Loading…';
+  try{
+    const r=await fetch(`/_git/head-content?file=${encodeURIComponent(currentFile)}`);
+    const {content:oldMd,error}=await r.json();
+    if(error||!oldMd){_inlineDiffActive=false;if(btn)btn.textContent='Changes';return;}
+    const diff=paragraphDiff(oldMd,_currentMdContent);
+    const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    const html=diff.map(({op,val})=>{
+      if(op==='equal'){
+        const h=marked.parse(val).replace(/^<h1[^>]*>[\s\S]*?<\/h1>\s*/i,'');
+        return`<div class="diff-block">${applyTagHighlights(h)}</div>`;
+      }
+      // Show changed lines as raw text with +/- prefix
+      const lines=val.split('\n');
+      const linesHtml=lines.map(l=>`<div class="diff-line-raw ${op==='add'?'add':'del'}">${op==='add'?'+ ':'- '}${esc(l)}</div>`).join('');
+      return`<div class="diff-block ${op==='add'?'diff-add-block':'diff-del-block'}">${linesHtml}</div>`;
+    }).join('');
+    showContent(`<div class="md-body">${html}</div>`);
+    setupViewerTagBar();
+    if(btn){btn.classList.add('diff-on');btn.innerHTML='<svg width="13" height="13" viewBox="0 0 13 13" fill="none"><path d="M1 4h11M1 9h11M4 1v11M9 1v11" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg> Changes <small style="font-size:10px">ON</small>';}
+  }catch(e){_inlineDiffActive=false;if(btn)btn.textContent='Changes';}
+}
+
+async function loadDiff(){
+  if(!currentFile)return;
+  document.getElementById('diff-body').innerHTML='<div class="diff-no-changes">Loading diff…</div>';
+  try{
+    const r=await fetch(`/_git/diff?file=${encodeURIComponent(currentFile)}`);
+    const {diff}=await r.json();
+    _diffLoaded=true;
+    renderDiff(diff);
+  }catch(e){
+    document.getElementById('diff-body').innerHTML=`<div class="diff-no-changes">Could not load diff: ${e.message}</div>`;
+  }
+}
+
+function renderDiff(diff){
+  const body=document.getElementById('diff-body');
+  const stats=document.getElementById('diff-stats');
+  if(!diff||!diff.trim()){
+    body.innerHTML='<div class="diff-no-changes">No uncommitted changes.</div>';
+    stats.textContent='';
+    return;
+  }
+  const lines=diff.split('\n');
+  let addCount=0,delCount=0,lineNoOld=0,lineNoNew=0;
+  const html=lines.map(line=>{
+    let cls='diff-ctx',noOld='',noNew='';
+    if(line.startsWith('@@')){
+      cls='diff-hunk';
+      const m=line.match(/@@ -(\d+).*\+(\d+)/);
+      if(m){lineNoOld=parseInt(m[1])-1;lineNoNew=parseInt(m[2])-1;}
+    }else if(line.startsWith('+')){
+      cls='diff-add';addCount++;lineNoNew++;noNew=lineNoNew;
+    }else if(line.startsWith('-')){
+      cls='diff-del';delCount++;lineNoOld++;noOld=lineNoOld;
+    }else if(line.startsWith('\\')||line.startsWith('diff ')||line.startsWith('index ')||line.startsWith('---')||line.startsWith('+++')){
+      return''; // skip metadata lines
+    }else{
+      lineNoOld++;lineNoNew++;noOld=lineNoOld;noNew=lineNoNew;
+    }
+    const esc=s=>s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    return`<div class="diff-line ${cls}">
+      <span class="diff-line-no">${noOld||''}</span>
+      <span class="diff-line-no">${noNew||''}</span>
+      <span class="diff-line-content">${esc(line)}</span>
+    </div>`;
+  }).join('');
+  body.innerHTML=html||'<div class="diff-no-changes">No changes.</div>';
+  stats.textContent=`+${addCount} −${delCount}`;
+}
+
+function updateDiffButton(){
+  const btn=document.getElementById('btn-diff');
+  if(!btn||!currentFile)return;
+  const node=document.querySelector(`.t-file[data-path="${CSS.escape(currentFile)}"]`);
+  const isModified=node&&node.classList.contains('git-modified');
+  btn.classList.toggle('hidden',!isModified);
+}
+
+// ── Git status indicators ─────────────────────────────────────────────────
+async function loadGitStatus(){
+  try{
+    const r=await fetch('/_git/status');
+    if(!r.ok)return;
+    const {modified}=await r.json();
+    // Reset all
+    document.querySelectorAll('.t-file.git-modified').forEach(e=>e.classList.remove('git-modified'));
+    // Mark modified files
+    _modifiedFiles=new Set(modified);
+    const mdModified=modified.filter(p=>p.endsWith('.md'));
+    document.getElementById('fc-modified').textContent=mdModified.length||'';
+    // Reset all dir change markers
+    document.querySelectorAll('.t-dir.has-changes').forEach(d=>d.classList.remove('has-changes'));
+    modified.forEach(path=>{
+      const node=document.querySelector(`.t-file[data-path="${CSS.escape(path)}"]`);
+      if(node)node.classList.add('git-modified');
+      // Mark all parent dirs
+      const parts=path.split('/');
+      let cur='';
+      for(let i=0;i<parts.length-1;i++){
+        cur=cur?`${cur}/${parts[i]}`:parts[i];
+        const dir=document.querySelector(`#tree .t-dir[data-path="${CSS.escape(cur)}"]`);
+        if(dir)dir.classList.add('has-changes');
+      }
+    });
+    updateDiffButton();
+    if(_activeFilter==='modified')applyTreeFilter();
+  }catch(e){/* git not available */}
+}
+
+// ── Filter ────────────────────────────────────────────────────────────────
+function filterTree(q){
+  q=q.toLowerCase().trim();
+  allNodes.forEach(n=>{
+    const match=!q||n.dataset.name.includes(q)||n.dataset.path.toLowerCase().includes(q);
+    n.style.display=match?'':'none';
+    if(match){
+      let p=n.parentElement;
+      while(p&&p.id!=='tree'){if(p.tagName==='DETAILS')p.open=true;p=p.parentElement;}
+    }
+  });
+}
+
+function setFilter(filter){
+  _activeFilter=filter;
+  document.querySelectorAll('.filter-chip').forEach(c=>{
+    c.classList.toggle('active',c.dataset.filter===filter);
+  });
+  applyTreeFilter();
+}
+
+function applyTreeFilter(){
+  let visiblePaths;
+  if(_activeFilter==='modified') visiblePaths=_modifiedFiles;
+  else if(_activeFilter==='tags') visiblePaths=_tagFiles;
+  else if(_activeFilter==='recent') visiblePaths=new Set(_recentFiles);
+  else visiblePaths=null; // all
+
+  allNodes.forEach(n=>{
+    if(!visiblePaths){n.style.display='';return;}
+    n.style.display=visiblePaths.has(n.dataset.path)?'':'none';
+  });
+
+  // Show/hide dirs based on visible children; open dirs with matches
+  const dirs=[...document.querySelectorAll('#tree .t-dir')].reverse();
+  dirs.forEach(dir=>{
+    const hasVisible=[...dir.querySelectorAll('.t-file')].some(f=>f.style.display!=='none');
+    dir.style.display=hasVisible?'':'none';
+    if(hasVisible&&visiblePaths)dir.open=true;
+  });
+}
+
+function expandToFile(path){
+  const parts=path.split('/');
+  let cur='';
+  for(let i=0;i<parts.length-1;i++){
+    cur=cur?`${cur}/${parts[i]}`:parts[i];
+    const dir=document.querySelector(`#tree .t-dir[data-path="${CSS.escape(cur)}"]`);
+    if(dir)dir.open=true;
+  }
+}
+
+window.addEventListener('hashchange',()=>{
+  if(location.hash)openFile(decodeURIComponent(location.hash.slice(1)));
+});
+
+async function refreshTree(){
+  const btn=document.getElementById('refresh-btn');
+  if(btn)btn.style.opacity='.4';
+  allNodes=[];
+  try{
+    const r=await fetch('files.json?t='+Date.now());
+    const {tree}=await r.json();
+    renderTree(tree,document.getElementById('tree'));
+    await loadGitStatus();
+    if(currentFile)updateDiffButton();
+  }catch(e){}
+  if(btn){btn.style.opacity='1';}
+}
+
+// ── Paragraph diff (LCS) ─────────────────────────────────────────────────
+function paragraphDiff(oldText,newText){
+  // Line-level LCS diff
+  const norm=t=>t.trimEnd();
+  const oldL=oldText.split('\n').map(norm);
+  const newL=newText.split('\n').map(norm);
+  const m=oldL.length, n=newL.length;
+  // Fallback for very large files
+  if(m>2000||n>2000)return [{op:'equal',val:newText}];
+  const dp=Array.from({length:m+1},()=>new Uint16Array(n+1));
+  for(let i=1;i<=m;i++)for(let j=1;j<=n;j++)
+    dp[i][j]=oldL[i-1]===newL[j-1]?dp[i-1][j-1]+1:Math.max(dp[i-1][j],dp[i][j-1]);
+  const ops=[];
+  let i=m,j=n;
+  while(i>0||j>0){
+    if(i>0&&j>0&&oldL[i-1]===newL[j-1]){ops.unshift({op:'equal',val:oldL[i-1]});i--;j--;}
+    else if(j>0&&(i===0||dp[i][j-1]>=dp[i-1][j])){ops.unshift({op:'add',val:newL[j-1]});j--;}
+    else{ops.unshift({op:'remove',val:oldL[i-1]});i--;}
+  }
+  // Group consecutive same-op ops
+  const grouped=[];
+  for(const op of ops){
+    const last=grouped[grouped.length-1];
+    if(last&&last.op===op.op)last.val+='\n'+op.val;
+    else grouped.push({op:op.op,val:op.val});
+  }
+  return grouped;
+}
+
+// ── Tag highlights ─────────────────────────────────────────────────────────
+function applyTagHighlights(html){
+  const MAP={TODO:'tag-todo',REVIEW:'tag-review',REWORK:'tag-rework',CLARIFY:'tag-clarify',COMMENT:'tag-comment'};
+  // Tag highlights
+  let out = html.replace(/\[(TODO|REVIEW|REWORK|CLARIFY|COMMENT)\]([^<\n]*)/g,(m,tag,text)=>{
+    const cls=MAP[tag];
+    const t=text.trim();
+    return `<span class="tag-inline ${cls}"><b>${tag}</b>${t?': '+t:''}</span>`;
+  });
+  // Color swatches — inject a colored dot before hex/rgb color codes inside <code> and plain text
+  // Match hex colors: #rgb, #rrggbb, #rrggbbaa
+  out = out.replace(/(#[0-9a-fA-F]{3,8})(?=[^0-9a-fA-F]|$)/g,(match,hex)=>{
+    // Only inject if it looks like a real color (3, 4, 6, or 8 hex chars)
+    const l=hex.length-1;
+    if(l!==3&&l!==4&&l!==6&&l!==8)return match;
+    return `<span class="color-swatch" style="background:${hex}" title="${hex}"></span>${match}`;
+  });
+  // Match rgb/rgba/hsl/hsla colors
+  out = out.replace(/((?:rgba?|hsla?)\([^)]{4,60}\))/g,(match,color)=>{
+    return `<span class="color-swatch" style="background:${color}" title="${color}"></span>${match}`;
+  });
+  // File path references — make clickable (code spans first, then plain text)
+  const FILE_EXTS='md|html|json|xlsx|ts|js|scss|sh|py|txt';
+  // 1. <code>path/to/file.ext</code> — convert to clickable code span
+  out = out.replace(new RegExp(`<code>([^<\\s]*\\.(?:${FILE_EXTS}))<\\/code>`,'g'),(match,path)=>{
+    const safe=path.replace(/'/g,"\\'");
+    return`<code class="file-ref" onclick="openFile('${safe}')" title="Open ${path}" style="cursor:pointer;color:var(--link);text-decoration:underline dotted">${path}</code>`;
+  });
+  // 2. Plain text paths not inside tags — only match paths with at least one slash
+  out = out.replace(new RegExp(`(?<!["\`=/>])([a-zA-Z0-9_][a-zA-Z0-9_.\\-/]+\\.(?:${FILE_EXTS}))(?![^<]*>)(?!<\\/code>)(?=[\\s,;:.)<"\\n]|$)`,'g'),(match,path)=>{
+    if(path.startsWith('http')||path.includes('node_modules'))return match;
+    const safe=path.replace(/'/g,"\\'");
+    return`<span class="file-ref" onclick="openFile('${safe}')" title="Open ${path}" style="cursor:pointer;color:var(--link);text-decoration:underline dotted;font-family:monospace;font-size:12px">${path}</span>`;
+  });
+  return out;
+}
+
+// ── To Review sidebar ─────────────────────────────────────────────────────
+const TAG_COLORS={TODO:'#e65100',REVIEW:'#f57f17',REWORK:'#c62828',CLARIFY:'#1565c0',COMMENT:'#6a1b9a'};
+const TAG_BG={TODO:'#fff3e0',REVIEW:'#fffde7',REWORK:'#fce4ec',CLARIFY:'#e3f2fd',COMMENT:'#f3e5f5'};
+
+async function loadTagSummary(){
+  try{
+    const r=await fetch('/_tags');
+    if(!r.ok)return;
+    const {files,total}=await r.json();
+    const sec=document.getElementById('sb-review');
+    const cnt=document.getElementById('sb-review-count');
+    const body=document.getElementById('sb-review-body');
+    _tagFiles=new Set(files.map(f=>f.path));
+    document.getElementById('fc-tags').textContent=files.length||'';
+    if(!total){sec.style.display='none';if(_activeFilter==='tags')applyTreeFilter();return;}
+    sec.style.display='block';
+    cnt.textContent=total;
+    cnt.className='sb-count';
+    body.innerHTML=files.map(f=>{
+      const fname=f.path.split('/').pop();
+      const types=[...new Set(f.tags.map(t=>t.type))];
+      return`<div class="sb-file-row" onclick="openFile('${f.path}')">
+        <span class="ico">📄</span>
+        <span class="sb-fname" title="${f.path}">${fname}</span>
+        <span class="sb-badge" style="background:${TAG_BG[f.tags[0].type]||'#eee'};color:${TAG_COLORS[f.tags[0].type]||'#333'}">${f.tags.length}</span>
+      </div>
+      <div class="sb-tag-chips">
+        ${types.map(t=>`<span class="sb-tag-chip" style="background:${TAG_BG[t]};color:${TAG_COLORS[t]}">${t}</span>`).join('')}
+      </div>`;
+    }).join('');
+  }catch(e){/* no tags endpoint */}
+}
+
+// ── Changes sidebar ───────────────────────────────────────────────────────
+async function loadChangeSummary(){
+  try{
+    const [statusR,statR]=await Promise.all([fetch('/_git/status'),fetch('/_git/diff-stat')]);
+    if(!statusR.ok)return;
+    const {modified}=await statusR.json();
+    const diffStat=statR.ok?(await statR.json()).files:{};
+    const sec=document.getElementById('sb-changes');
+    const cnt=document.getElementById('sb-changes-count');
+    const body=document.getElementById('sb-changes-body');
+    // Only show .md files
+    const mdFiles=modified.filter(p=>p.endsWith('.md'));
+    if(!mdFiles.length){sec.style.display='none';return;}
+    sec.style.display='block';
+    cnt.textContent=mdFiles.length;
+    cnt.className='sb-count';
+    body.innerHTML=mdFiles.map(p=>{
+      const fname=p.split('/').pop();
+      const stat=diffStat[p];
+      const statStr=stat?`+${stat.added||0} −${stat.deleted||0}`:(stat&&stat.new?'new':'');
+      return`<div class="sb-file-row" onclick="openFile('${p}');setTimeout(toggleDiff,200)">
+        <span class="ico">📝</span>
+        <span class="sb-fname" title="${p}">${fname}</span>
+        <span class="sb-stat">${statStr}</span>
+      </div>`;
+    }).join('');
+  }catch(e){}
+}
+
+function toggleSbSection(id){
+  const hdr=document.getElementById(`sb-${id}-hdr`);
+  const body=document.getElementById(`sb-${id}-body`);
+  hdr.classList.toggle('open');
+  body.classList.toggle('open');
+}
+
+// ── Tag insertion ─────────────────────────────────────────────────────────
+function insertTag(tagName){
+  if(!_editor)return;
+  const cm=_editor.codemirror;
+  const cursor=cm.getCursor();
+  const lineContent=cm.getLine(cursor.line)||'';
+  const prefix=lineContent.length>0?'\n':'';
+  cm.replaceRange(`${prefix}[${tagName}] `,{line:cursor.line,ch:lineContent.length});
+  cm.focus();
+}
+
+function insertTagAroundSelection(tagName){
+  const bar=document.getElementById('float-tag-bar');
+  // Viewer mode — insert into raw markdown + auto-save
+  if(bar.dataset.viewerMode==='1'){
+    bar.classList.remove('visible');
+    bar.dataset.viewerMode='';
+    insertTagInViewer(tagName);
+    return;
+  }
+  // Editor mode
+  if(!_editor)return;
+  const cm=_editor.codemirror;
+  const sel=cm.getSelection();
+  if(sel){cm.replaceSelection(`[${tagName}] ${sel}`);}
+  else{const cursor=cm.getCursor();cm.replaceRange(`[${tagName}] `,cursor);}
+  bar.classList.remove('visible');
+  cm.focus();
+}
+
+async function insertTagInViewer(tagName){
+  if(!currentFile)return;
+  const winSel=window.getSelection();
+  const selectedText=winSel?winSel.toString().trim():'';
+  try{
+    const r=await fetch('/'+currentFile);
+    if(!r.ok)return;
+    const md=await r.text();
+    let newMd;
+    if(selectedText){
+      // Find the line containing the selected text, prepend tag to that line
+      const idx=md.indexOf(selectedText);
+      if(idx>=0){
+        const lineStart=md.lastIndexOf('\n',idx)+1;
+        // Avoid double-tagging
+        const lineContent=md.slice(lineStart,idx+selectedText.length+20);
+        if(/^\[(TODO|REVIEW|REWORK|CLARIFY|COMMENT)\]/.test(lineContent)){
+          newMd=md; // already tagged
+        }else{
+          newMd=md.slice(0,lineStart)+`[${tagName}] `+md.slice(lineStart);
+        }
+      }else{
+        // Fallback: append as new paragraph at end
+        newMd=md.trimEnd()+`\n\n[${tagName}] ${selectedText}\n`;
+      }
+    }else{
+      return; // no selection
+    }
+    // Save
+    const saveR=await fetch('/'+currentFile,{method:'PUT',headers:{'Content-Type':'text/markdown'},body:newMd});
+    const data=await saveR.json();
+    if(data.ok){
+      // Re-render in place
+      const rendered=marked.parse(newMd).replace(/^<h1[^>]*>[\s\S]*?<\/h1>\s*/i,'');
+      showContent(`<div class="md-body">${applyTagHighlights(rendered)}</div>`);
+      setupViewerTagBar(); // reattach listener
+      loadGitStatus();
+      loadTagSummary();
+      loadChangeSummary();
+    }
+  }catch(e){console.error('insertTagInViewer',e);}
+}
+
+// ── Tag features setup (slash commands + floating bar) ────────────────────
+const SLASH_CMDS={'/todo':'TODO','/review':'REVIEW','/rework':'REWORK','/clarify':'CLARIFY','/comment':'COMMENT'};
+
+function setupTagFeatures(){
+  if(!_editor)return;
+  const cm=_editor.codemirror;
+
+  // Slash commands
+  cm.on('change',(instance,change)=>{
+    if(change.text.length===1&&(change.text[0]===' '||change.text[0]==='')){
+      const cursor=instance.getCursor();
+      const line=instance.getLine(cursor.line);
+      const before=line.substring(0,cursor.ch);
+      for(const [slash,tag] of Object.entries(SLASH_CMDS)){
+        if(before.endsWith(slash+' ')||before===slash){
+          const start=cursor.ch-(slash.length+(before.endsWith(slash+' ')?1:0));
+          instance.replaceRange(`[${tag}] `,{line:cursor.line,ch:start},{line:cursor.line,ch:cursor.ch});
+          break;
+        }
+      }
+    }
+  });
+
+  // Floating tag bar on selection
+  cm.on('cursorActivity',()=>{
+    const sel=cm.getSelection();
+    const bar=document.getElementById('float-tag-bar');
+    if(sel&&sel.length>1){
+      const coords=cm.cursorCoords(false,'window');
+      bar.style.left=(coords.left-20)+'px';
+      bar.style.top=(coords.top-44)+'px';
+      bar.classList.add('visible');
+    }else{
+      bar.classList.remove('visible');
+    }
+  });
+}
+
+function setupViewerTagBar(){
+  const scroll=document.getElementById('content-scroll');
+  // Remove old listener by cloning the node
+  const newScroll=scroll.cloneNode(true);
+  scroll.parentNode.replaceChild(newScroll,scroll);
+  // Re-add click handlers for file rows (they were cloned without handlers)
+  // Content was already set via innerHTML so onclick attrs are preserved
+  newScroll.addEventListener('mouseup',()=>{
+    const sel=window.getSelection();
+    const bar=document.getElementById('float-tag-bar');
+    if(!sel||sel.isCollapsed||!sel.toString().trim()){
+      bar.classList.remove('visible');
+      bar.dataset.viewerMode='';
+      return;
+    }
+    // Only trigger inside .md-body
+    const range=sel.getRangeAt(0);
+    const mdBody=newScroll.querySelector('.md-body');
+    if(!mdBody||!mdBody.contains(range.commonAncestorContainer)){
+      bar.classList.remove('visible');
+      return;
+    }
+    const rect=range.getBoundingClientRect();
+    bar.style.left=Math.max(4,(rect.left+rect.width/2-110))+'px';
+    bar.style.top=(rect.top-46)+'px';
+    bar.classList.add('visible');
+    bar.dataset.viewerMode='1';
+  });
+}
+
+init();
+</script>
+</body>
+</html>

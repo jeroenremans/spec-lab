@@ -1,0 +1,553 @@
+{
+  "tree": [
+    {
+      "name": "00_intake",
+      "path": "00_intake",
+      "type": "dir",
+      "children": [
+        {
+          "name": "brain-storm",
+          "path": "00_intake/brain-storm",
+          "type": "dir",
+          "children": [
+            {
+              "name": "brainstorm_2025_06_02.md",
+              "path": "00_intake/brain-storm/brainstorm_2025_06_02.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "meeting-notes",
+          "path": "00_intake/meeting-notes",
+          "type": "dir",
+          "children": [
+            {
+              "name": "new_requirements",
+              "path": "00_intake/meeting-notes/new_requirements",
+              "type": "dir",
+              "children": [
+                {
+                  "name": "current_prompt.md",
+                  "path": "00_intake/meeting-notes/new_requirements/current_prompt.md",
+                  "type": "md"
+                },
+                {
+                  "name": "img.png",
+                  "path": "00_intake/meeting-notes/new_requirements/img.png",
+                  "type": "png"
+                },
+                {
+                  "name": "img_1.png",
+                  "path": "00_intake/meeting-notes/new_requirements/img_1.png",
+                  "type": "png"
+                },
+                {
+                  "name": "img_2.png",
+                  "path": "00_intake/meeting-notes/new_requirements/img_2.png",
+                  "type": "png"
+                },
+                {
+                  "name": "img_3.png",
+                  "path": "00_intake/meeting-notes/new_requirements/img_3.png",
+                  "type": "png"
+                }
+              ]
+            },
+            {
+              "name": "Call_with_Jeroen_De_la_Ruelle.vtt",
+              "path": "00_intake/meeting-notes/Call_with_Jeroen_De_la_Ruelle.vtt",
+              "type": "vtt"
+            }
+          ]
+        },
+        {
+          "name": "raw-requirements",
+          "path": "00_intake/raw-requirements",
+          "type": "dir",
+          "children": [
+            {
+              "name": "20241021-Atlas Copco Brand Review-Project presentation.pptx",
+              "path": "00_intake/raw-requirements/20241021-Atlas Copco Brand Review-Project presentation.pptx",
+              "type": "pptx"
+            },
+            {
+              "name": "PIM_TechData_Status.xlsx",
+              "path": "00_intake/raw-requirements/PIM_TechData_Status.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard (1).xlsx",
+              "path": "00_intake/raw-requirements/Technical Data Dashboard (1).xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "~$Technical Data Dashboard (1).xlsx",
+              "path": "00_intake/raw-requirements/~$Technical Data Dashboard (1).xlsx",
+              "type": "xlsx"
+            }
+          ]
+        },
+        {
+          "name": "test-data",
+          "path": "00_intake/test-data",
+          "type": "dir",
+          "children": [
+            {
+              "name": "Technical Data Dashboard - 01-01-26.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-01-26.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-02-26.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-02-26.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-03-26.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-03-26.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-04-26.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-04-26.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-05-25.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-05-25.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-05-26.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-05-26.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-06-25.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-06-25.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-07-25.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-07-25.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-08-25.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-08-25.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-09-25.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-09-25.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-10-25.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-10-25.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-11-25.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-11-25.xlsx",
+              "type": "xlsx"
+            },
+            {
+              "name": "Technical Data Dashboard - 01-12-25.xlsx",
+              "path": "00_intake/test-data/Technical Data Dashboard - 01-12-25.xlsx",
+              "type": "xlsx"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "01_discovery",
+      "path": "01_discovery",
+      "type": "dir",
+      "children": [
+        {
+          "name": "journey-maps",
+          "path": "01_discovery/journey-maps",
+          "type": "dir",
+          "children": [
+            {
+              "name": "business-user-journey.md",
+              "path": "01_discovery/journey-maps/business-user-journey.md",
+              "type": "md"
+            },
+            {
+              "name": "data-steward-journey.md",
+              "path": "01_discovery/journey-maps/data-steward-journey.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "personas",
+          "path": "01_discovery/personas",
+          "type": "dir",
+          "children": [
+            {
+              "name": "business-user.md",
+              "path": "01_discovery/personas/business-user.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "problem-statements",
+          "path": "01_discovery/problem-statements",
+          "type": "dir",
+          "children": [
+            {
+              "name": "dashboard-problem-statement.md",
+              "path": "01_discovery/problem-statements/dashboard-problem-statement.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "research-notes",
+          "path": "01_discovery/research-notes",
+          "type": "dir",
+          "children": [
+            {
+              "name": "asis-excel-analysis.md",
+              "path": "01_discovery/research-notes/asis-excel-analysis.md",
+              "type": "md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "02_solution",
+      "path": "02_solution",
+      "type": "dir",
+      "children": [
+        {
+          "name": "acceptance-criteria",
+          "path": "02_solution/acceptance-criteria",
+          "type": "dir",
+          "children": [
+            {
+              "name": "dashboard-ac.md",
+              "path": "02_solution/acceptance-criteria/dashboard-ac.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "architecture",
+          "path": "02_solution/architecture",
+          "type": "dir",
+          "children": [
+            {
+              "name": "angular-architecture.md",
+              "path": "02_solution/architecture/angular-architecture.md",
+              "type": "md"
+            },
+            {
+              "name": "data-models.md",
+              "path": "02_solution/architecture/data-models.md",
+              "type": "md"
+            },
+            {
+              "name": "eta-calculation-spec.md",
+              "path": "02_solution/architecture/eta-calculation-spec.md",
+              "type": "md"
+            },
+            {
+              "name": "input-format-config.md",
+              "path": "02_solution/architecture/input-format-config.md",
+              "type": "md"
+            },
+            {
+              "name": "missing-data-analysis-spec.md",
+              "path": "02_solution/architecture/missing-data-analysis-spec.md",
+              "type": "md"
+            },
+            {
+              "name": "presenter-mode-spec.md",
+              "path": "02_solution/architecture/presenter-mode-spec.md",
+              "type": "md"
+            },
+            {
+              "name": "reusability-spec.md",
+              "path": "02_solution/architecture/reusability-spec.md",
+              "type": "md"
+            },
+            {
+              "name": "typescript-models.md",
+              "path": "02_solution/architecture/typescript-models.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "design",
+          "path": "02_solution/design",
+          "type": "dir",
+          "children": [
+            {
+              "name": "chosen-designs.md",
+              "path": "02_solution/design/chosen-designs.md",
+              "type": "md"
+            },
+            {
+              "name": "factory-tile-wireframe.md",
+              "path": "02_solution/design/factory-tile-wireframe.md",
+              "type": "md"
+            },
+            {
+              "name": "presenter-variants-v2.html",
+              "path": "02_solution/design/presenter-variants-v2.html",
+              "type": "html"
+            },
+            {
+              "name": "presenter-variants-v3.html",
+              "path": "02_solution/design/presenter-variants-v3.html",
+              "type": "html"
+            },
+            {
+              "name": "presenter-variants.html",
+              "path": "02_solution/design/presenter-variants.html",
+              "type": "html"
+            },
+            {
+              "name": "style-variants-v2.html",
+              "path": "02_solution/design/style-variants-v2.html",
+              "type": "html"
+            },
+            {
+              "name": "style-variants.html",
+              "path": "02_solution/design/style-variants.html",
+              "type": "html"
+            },
+            {
+              "name": "upload-variants-2.html",
+              "path": "02_solution/design/upload-variants-2.html",
+              "type": "html"
+            },
+            {
+              "name": "upload-variants.html",
+              "path": "02_solution/design/upload-variants.html",
+              "type": "html"
+            }
+          ]
+        },
+        {
+          "name": "nfrs",
+          "path": "02_solution/nfrs",
+          "type": "dir",
+          "children": [
+            {
+              "name": "dashboard-nfrs.md",
+              "path": "02_solution/nfrs/dashboard-nfrs.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "prds",
+          "path": "02_solution/prds",
+          "type": "dir",
+          "children": [
+            {
+              "name": "dashboard-prd.md",
+              "path": "02_solution/prds/dashboard-prd.md",
+              "type": "md"
+            },
+            {
+              "name": "styling-requirements.md",
+              "path": "02_solution/prds/styling-requirements.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "user-stories",
+          "path": "02_solution/user-stories",
+          "type": "dir",
+          "children": [
+            {
+              "name": "dashboard-user-stories.md",
+              "path": "02_solution/user-stories/dashboard-user-stories.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "wireframes",
+          "path": "02_solution/wireframes",
+          "type": "dir",
+          "children": [
+            {
+              "name": "dashboard-wireframe.md",
+              "path": "02_solution/wireframes/dashboard-wireframe.md",
+              "type": "md"
+            },
+            {
+              "name": "factory-tile-sparkline-spec.md",
+              "path": "02_solution/wireframes/factory-tile-sparkline-spec.md",
+              "type": "md"
+            },
+            {
+              "name": "factory-tile-wireframe.md",
+              "path": "02_solution/wireframes/factory-tile-wireframe.md",
+              "type": "md"
+            },
+            {
+              "name": "presenter-wireframe.md",
+              "path": "02_solution/wireframes/presenter-wireframe.md",
+              "type": "md"
+            },
+            {
+              "name": "subrange-tile-wireframe.md",
+              "path": "02_solution/wireframes/subrange-tile-wireframe.md",
+              "type": "md"
+            },
+            {
+              "name": "upload-screen-wireframe.md",
+              "path": "02_solution/wireframes/upload-screen-wireframe.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "draft-requirements.md",
+          "path": "02_solution/draft-requirements.md",
+          "type": "md"
+        },
+        {
+          "name": "validation-report.md",
+          "path": "02_solution/validation-report.md",
+          "type": "md"
+        }
+      ]
+    },
+    {
+      "name": "03_delivery",
+      "path": "03_delivery",
+      "type": "dir",
+      "children": [
+        {
+          "name": "cutover",
+          "path": "03_delivery/cutover",
+          "type": "dir",
+          "children": [
+            {
+              "name": "deploy-checklist.md",
+              "path": "03_delivery/cutover/deploy-checklist.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "release-notes",
+          "path": "03_delivery/release-notes",
+          "type": "dir",
+          "children": [
+            {
+              "name": "v0.2-release-notes.md",
+              "path": "03_delivery/release-notes/v0.2-release-notes.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "support-readiness",
+          "path": "03_delivery/support-readiness",
+          "type": "dir",
+          "children": [
+            {
+              "name": "user-guide.md",
+              "path": "03_delivery/support-readiness/user-guide.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "dashboard.html",
+          "path": "03_delivery/dashboard.html",
+          "type": "html"
+        }
+      ]
+    },
+    {
+      "name": "04_governance",
+      "path": "04_governance",
+      "type": "dir",
+      "children": [
+        {
+          "name": "assumptions",
+          "path": "04_governance/assumptions",
+          "type": "dir",
+          "children": [
+            {
+              "name": "dashboard-assumptions.md",
+              "path": "04_governance/assumptions/dashboard-assumptions.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "decision-records",
+          "path": "04_governance/decision-records",
+          "type": "dir",
+          "children": [
+            {
+              "name": "DR-001-single-html-file.md",
+              "path": "04_governance/decision-records/DR-001-single-html-file.md",
+              "type": "md"
+            },
+            {
+              "name": "DR-002-column-by-name-parsing.md",
+              "path": "04_governance/decision-records/DR-002-column-by-name-parsing.md",
+              "type": "md"
+            },
+            {
+              "name": "DR-003-missing-data-as-completeness.md",
+              "path": "04_governance/decision-records/DR-003-missing-data-as-completeness.md",
+              "type": "md"
+            }
+          ]
+        },
+        {
+          "name": "risk-log",
+          "path": "04_governance/risk-log",
+          "type": "dir",
+          "children": [
+            {
+              "name": "dashboard-risks.md",
+              "path": "04_governance/risk-log/dashboard-risks.md",
+              "type": "md"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "name": "DESIGN.md",
+      "path": "DESIGN.md",
+      "type": "md"
+    },
+    {
+      "name": "PLAN.md",
+      "path": "PLAN.md",
+      "type": "md"
+    },
+    {
+      "name": "REQUIREMENTS.md",
+      "path": "REQUIREMENTS.md",
+      "type": "md"
+    },
+    {
+      "name": "TASKS.md",
+      "path": "TASKS.md",
+      "type": "md"
+    }
+  ]
+}
