@@ -1,4 +1,5 @@
 - md files zijn vaak vrij groot, split ze sneller op.
 - Personas map is leeg maar zijn wel personas, waarom? Moet de structuur ergens verduidelijkt worden?
 - de discovery map is eigenlijk zo goed als helemaal leeg
-- 
+- moeten de commands herwerkt worden?
+- Ik mis een overzicht van de afkortingen, voor niet analyts is het soms moeilijk om te volgen wat wat is, zeker als er veel afkortingen zijn. Misschien een glossary ofzo?
