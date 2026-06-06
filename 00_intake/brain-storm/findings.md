@@ -1,0 +1,4 @@
+- md files zijn vaak vrij groot, split ze sneller op.
+- Personas map is leeg maar zijn wel personas, waarom? Moet de structuur ergens verduidelijkt worden?
+- de discovery map is eigenlijk zo goed als helemaal leeg
+- 
