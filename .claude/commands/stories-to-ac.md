@@ -10,21 +10,22 @@ Pre-flight check:
 - Strip [TAG|AI] tags silently from output.
 
 Task:
-1. Generate acceptance criteria for each story — one AC file per story
-2. Mirror the story file structure exactly:
-   02_solution/acceptance-criteria/<feature>/story-<NNN>-ac.md
-   or with subdirs: 02_solution/acceptance-criteria/<feature>/EP1/story-001-ac.md
-3. Use Given / When / Then for each criterion
-4. Include per story:
+1. Generate acceptance criteria — one AC file per epic
+2. File naming convention (include epic slug):
+   02_solution/acceptance-criteria/<feature>_<EP-ID>_<epic-slug>_ac.md
+   Example: spec-app_EP1_foundation-local-server_ac.md
+3. Mirror the epic grouping from story files exactly
+4. Use Given / When / Then for each criterion
+5. Include per story:
    - Negative cases
    - Boundary conditions
    - Role-based behavior
    - Data state variations
-5. Generate summary index:
-   02_solution/acceptance-criteria/<feature>/ac-index.md
-   Columns: Story ID | Story Title | AC Count | File
+6. Generate summary index:
+   02_solution/acceptance-criteria/<feature>_ac-index.md
+   Columns: Epic | Title | AC Count | File
 
 Rules:
 - No shallow happy-path-only criteria
-- One AC file per story — mirror the story structure exactly
+- One AC file per epic — include epic title slug in filename
 - Output is clean markdown — no tags in generated files
