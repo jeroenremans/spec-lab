@@ -31,3 +31,8 @@
 
 ## Success for this persona
 "I opened the risk log before the sprint planning meeting and could instantly see the top 3 risks with mitigations — no hunting through emails."
+
+## Theme preference (theme-switcher context)
+- Preferred themes: Bold Agency (client demos, screen shares), Teal Corporate (daily reviews)
+- Needs to switch themes quickly before a screen share — speed of switch matters
+- Discoverable switcher in topnav is critical (will not dig through settings)

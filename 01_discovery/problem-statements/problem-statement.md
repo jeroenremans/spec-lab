@@ -38,3 +38,15 @@ The result: specs are fragile. Quality depends on who wrote them and what they r
 Claude Code already provides the pipeline: `/intake-to-prd` → `/prd-to-epics` → `/epics-to-stories` → `/stories-to-ac`. What is missing is a **shared workspace** — a local app where the artifacts produced by these commands can be viewed, reviewed, tagged, and tracked by the whole team (BA, PM, Dev) without needing to open a terminal or know markdown.
 
 The spec workbench makes the Claude Code pipeline visible and collaborative.
+
+---
+
+## Problem Statement addendum — Theme Switcher (2026-06-07)
+
+**Specific problem:** The Spec Workbench has a single fixed visual theme. Team members who work long sessions suffer eye fatigue. PMs cannot switch to a client-presentable look for screen shares. Developers who work exclusively in dark-mode environments find the light default jarring.
+
+**Who is affected:** All three personas — BA (comfort for long sessions), PM (presentability for demos), Dev (dark mode alignment).
+
+**What is NOT being solved:** Custom theme creation, per-document themes, font size personalisation.
+
+**The opportunity:** The app's CSS custom-property architecture already supports theming. Adding a switcher requires CSS theme blocks + a minimal control — no backend changes, no data migration, no architectural risk.

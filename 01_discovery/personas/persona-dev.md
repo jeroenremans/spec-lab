@@ -31,3 +31,8 @@
 
 ## Success for this persona
 "Before starting the sprint, I checked the diff view on the PRD and saw exactly what had changed since the last review — no need to ask the BA."
+
+## Theme preference (theme-switcher context)
+- Preferred theme: Midnight — aligns with VS Code / terminal dark mode environment
+- Already uses dark mode everywhere; a light default is jarring
+- Will set once on first use and never touch it again

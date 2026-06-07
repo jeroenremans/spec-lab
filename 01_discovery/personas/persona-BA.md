@@ -32,3 +32,8 @@
 
 ## Success for this persona
 "I ran `/intake-to-prd` this morning and had a PRD v1 ready for the PM by lunch — with all assumptions explicitly labelled."
+
+## Theme preference (theme-switcher context)
+- Preferred themes: Warm Paper (solo deep work), Teal Corporate (team reviews)
+- Sets preference once per device; persistence is critical
+- Extended sessions (4–6h/day) make readability and low eye-strain the top priority
