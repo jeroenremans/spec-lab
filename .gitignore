@@ -4,3 +4,4 @@ app/projects.json
 __pycache__/
 *.pyc
 .DS_Store
+frontend/package-lock.json
