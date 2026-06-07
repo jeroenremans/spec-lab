@@ -8,17 +8,17 @@ Pre-flight check:
 
 Task:
 1. Generate NFR checklist aligned to the feature — ONE FILE PER CATEGORY
-2. Output structure:
-   02_solution/nfrs/<feature>_nfr-performance.md
-   02_solution/nfrs/<feature>_nfr-security.md
-   02_solution/nfrs/<feature>_nfr-privacy.md
-   02_solution/nfrs/<feature>_nfr-reliability.md
-   02_solution/nfrs/<feature>_nfr-observability.md
-   02_solution/nfrs/<feature>_nfr-accessibility.md
-   02_solution/nfrs/<feature>_nfr-compliance.md
-   02_solution/nfrs/<feature>_nfr-unknowns.md   (flagged unknowns only)
+2. Output structure (numbered prefix for sort order):
+   02_solution/nfrs/01_nfr-performance.md
+   02_solution/nfrs/02_nfr-security.md
+   02_solution/nfrs/03_nfr-privacy.md
+   02_solution/nfrs/04_nfr-reliability.md
+   02_solution/nfrs/05_nfr-observability.md
+   02_solution/nfrs/06_nfr-accessibility.md
+   02_solution/nfrs/07_nfr-compliance.md
+   02_solution/nfrs/08_nfr-unknowns.md   (flagged unknowns only)
 3. Generate summary index:
-   02_solution/nfrs/<feature>_nfr-index.md
+   02_solution/nfrs/nfr-index.md
    Columns: Category | Requirement Count | File
 4. Each NFR must include:
    - Specific, measurable target

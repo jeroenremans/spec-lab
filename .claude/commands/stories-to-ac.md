@@ -12,8 +12,8 @@ Pre-flight check:
 Task:
 1. Generate acceptance criteria — one AC file per epic
 2. File naming convention (include epic slug):
-   02_solution/acceptance-criteria/<feature>_<EP-ID>_<epic-slug>_ac.md
-   Example: spec-app_EP1_foundation-local-server_ac.md
+   02_solution/acceptance-criteria/<EP-ID>_<epic-slug>_ac.md
+   Example: EP1_foundation-local-server_ac.md
 3. Mirror the epic grouping from story files exactly
 4. Use Given / When / Then for each criterion
 5. Include per story:
@@ -22,7 +22,7 @@ Task:
    - Role-based behavior
    - Data state variations
 6. Generate summary index:
-   02_solution/acceptance-criteria/<feature>_ac-index.md
+   02_solution/acceptance-criteria/ac-index.md
    Columns: Epic | Title | AC Count | File
 
 Rules:

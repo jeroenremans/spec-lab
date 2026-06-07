@@ -12,8 +12,8 @@ Pre-flight check:
 Task:
 1. Generate sprint-ready user stories — one file per story
 2. File naming convention (include epic slug):
-   02_solution/user-stories/<feature>/<EP-ID>_<epic-slug>/story-<NNN>.md
-   Example: 02_solution/user-stories/spec-app/EP1_foundation-local-server/story-001.md
+   02_solution/user-stories/<EP-ID>_<epic-slug>/story-<NNN>.md
+   Example: 02_solution/user-stories/EP1_foundation-local-server/story-001.md
 3. If an epic has > 15 stories, keep them in the same subdirectory (no further splitting)
 4. Each story file must include:
    - Story ID and title (H1)
@@ -23,7 +23,7 @@ Task:
    - Dependencies
    - Non-goals
 5. Generate summary index:
-   02_solution/user-stories/<feature>/stories-index.md
+   02_solution/user-stories/stories-index.md
    Columns: Story ID | Title | Epic | Priority | File
 
 Rules:
