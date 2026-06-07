@@ -21,7 +21,7 @@ EXCLUDE_DIRS = {
 }
 EXCLUDE_FILES = {"files.json", "_sidebar.md", "package.json", "tsconfig.json", "angular.json"}
 
-TAG_RE = re.compile(r"\[(TODO|REVIEW|REWORK|CLARIFY|COMMENT)\]([^\n]*)")
+TAG_RE = re.compile(r"\[(TODO|REVIEW|REWORK|CLARIFY|COMMENT)(?:\|(AI|HUMAN))?\]([^\n]*)")
 
 
 # ── Project registry ───────────────────────────────────────────────────────
@@ -287,11 +287,35 @@ def get_tags():
             tags = []
             for i, line in enumerate(content.splitlines(), 1):
                 for m in TAG_RE.finditer(line):
-                    tags.append({"type": m.group(1), "text": m.group(2).strip(), "line": i})
+                    tags.append({
+                            "type": m.group(1),
+                            "recipient": m.group(2) or "AI",
+                            "text": m.group(3).strip(),
+                            "line": i,
+                        })
             if tags:
                 results.append({"path": rel, "tags": tags})
                 total += len(tags)
     return jsonify({"files": results, "total": total})
+
+
+# ── Directory browser ────────────────────────────────────────────────────
+
+@app.route("/api/browse")
+def browse_dirs():
+    raw = request.args.get("path", str(Path.home()))
+    p = Path(raw).resolve()
+    if not p.is_dir():
+        p = p.parent
+    try:
+        dirs = sorted(
+            [e.name for e in p.iterdir() if e.is_dir() and not e.name.startswith(".")],
+            key=str.lower,
+        )
+    except PermissionError:
+        dirs = []
+    parent = str(p.parent) if p != p.parent else None
+    return jsonify({"path": str(p), "parent": parent, "dirs": dirs})
 
 
 # ── Frontend serving ──────────────────────────────────────────────────────

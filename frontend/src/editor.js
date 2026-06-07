@@ -48,22 +48,22 @@ export function createEditor(initialValue) {
   return _editor;
 }
 
-export function insertTag(tag) {
+export function insertTag(tag, recipient = "AI") {
   if (!_editor) return;
   const cm = _editor.codemirror;
   const cursor = cm.getCursor();
-  cm.replaceRange(`[${tag}] `, cursor);
+  cm.replaceRange(`[${tag}|${recipient}] `, cursor);
   cm.focus();
 }
 
-export function insertTagAroundSelection(tag) {
+export function insertTagAroundSelection(tag, recipient = "AI") {
   if (!_editor) return;
   const cm = _editor.codemirror;
   const sel = cm.getSelection();
   if (sel) {
-    cm.replaceSelection(`[${tag}] ${sel}`);
+    cm.replaceSelection(`[${tag}|${recipient}] ${sel}`);
   } else {
-    cm.replaceRange(`[${tag}] `, cm.getCursor());
+    cm.replaceRange(`[${tag}|${recipient}] `, cm.getCursor());
   }
   cm.focus();
 }

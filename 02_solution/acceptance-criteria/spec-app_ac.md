@@ -6,6 +6,7 @@
 
 ---
 
+[REWORK|AI] Rework deze structuur, ik wil 1 epic per md file. Update ook de commands die dit aanmaken
 ## EP1 — Foundation & Local Server
 
 ### S1.1 — One-command startup

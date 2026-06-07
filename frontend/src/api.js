@@ -64,6 +64,11 @@ export async function getGitDiffStat(projectPath) {
   return r.json();
 }
 
+export async function browseDir(path) {
+  const r = await fetch(`/api/browse?path=${encodeURIComponent(path)}`);
+  return r.json();
+}
+
 export async function getTags(projectPath) {
   const r = await fetch(`${BASE}/tags?project=${encodeURIComponent(projectPath)}`);
   return r.json();

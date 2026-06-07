@@ -1,7 +1,10 @@
 You are acting as a Solution Architect and Quality Engineer.
 
 Input:
-- 02_solution/prds/<feature>_PRD.md
+- Auto-discover: most recently modified file matching 02_solution/prds/*_PRD.md
+
+Pre-flight check:
+- Strip [TAG|AI] tags silently. Flag [TAG|HUMAN] tags as open items in the NFR doc.
 
 Task:
 1. Generate NFR checklist aligned to the feature
@@ -19,3 +22,4 @@ Task:
 Rules:
 - Be specific and measurable where possible
 - Flag unknowns explicitly
+- Output is clean markdown — no tags in generated files

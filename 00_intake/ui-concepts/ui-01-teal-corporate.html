@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spec Workbench — Teal Corporate</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: #f4f5f7; color: #172b4d; }
+
+  /* NAV */
+  .nav { height: 48px; background: #054e5a; display: flex; align-items: center; padding: 0 16px; gap: 16px; flex-shrink: 0; box-shadow: 0 1px 3px rgba(0,0,0,0.3); }
+  .nav-brand { display: flex; align-items: center; gap: 8px; color: #fff; font-weight: 700; font-size: 15px; letter-spacing: -0.2px; white-space: nowrap; }
+  .nav-brand-icon { width: 26px; height: 26px; background: #0a7a8e; border-radius: 6px; display: flex; align-items: center; justify-content: center; font-size: 13px; }
+  .nav-divider { width: 1px; height: 20px; background: rgba(255,255,255,0.2); }
+  .nav-project { color: rgba(255,255,255,0.8); font-size: 13px; display: flex; align-items: center; gap: 4px; cursor: pointer; }
+  .nav-project:hover { color: #fff; }
+  .nav-project-name { font-weight: 500; }
+  .nav-project svg { opacity: 0.6; }
+  .nav-search { flex: 1; max-width: 340px; margin: 0 auto; position: relative; }
+  .nav-search input { width: 100%; height: 30px; background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.15); border-radius: 6px; padding: 0 10px 0 32px; color: #fff; font-size: 13px; outline: none; }
+  .nav-search input::placeholder { color: rgba(255,255,255,0.5); }
+  .nav-search input:focus { background: rgba(255,255,255,0.18); border-color: rgba(255,255,255,0.3); }
+  .nav-search-icon { position: absolute; left: 9px; top: 50%; transform: translateY(-50%); opacity: 0.5; color: #fff; font-size: 12px; }
+  .nav-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .nav-avatar { width: 28px; height: 28px; background: #0a7a8e; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; }
+  .nav-btn { height: 28px; padding: 0 10px; border-radius: 4px; border: 1px solid rgba(255,255,255,0.25); background: transparent; color: rgba(255,255,255,0.85); font-size: 12px; cursor: pointer; }
+  .nav-btn:hover { background: rgba(255,255,255,0.1); }
+
+  /* LAYOUT */
+  .workspace { display: flex; flex: 1; overflow: hidden; }
+
+  /* SIDEBAR */
+  .sidebar { width: 240px; background: #fff; border-right: 1px solid #dfe1e6; display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; }
+  .sidebar-section { padding: 6px 0; }
+  .sidebar-section + .sidebar-section { border-top: 1px solid #f0f1f3; }
+  .sidebar-label { padding: 10px 14px 4px; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; color: #8993a4; }
+  .tree-item { display: flex; align-items: center; gap: 6px; padding: 5px 14px; font-size: 12.5px; color: #42526e; cursor: pointer; user-select: none; border-left: 2px solid transparent; transition: background 0.1s; }
+  .tree-item:hover { background: #f4f5f7; color: #172b4d; }
+  .tree-item.active { background: #e3f0f5; color: #054e5a; border-left-color: #054e5a; font-weight: 600; }
+  .tree-item.folder { font-weight: 500; }
+  .tree-item.indent1 { padding-left: 26px; }
+  .tree-item.indent2 { padding-left: 38px; }
+  .tree-item.indent3 { padding-left: 50px; }
+  .tree-icon { font-size: 12px; width: 14px; text-align: center; flex-shrink: 0; }
+  .tree-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tree-badge { font-size: 10px; background: #ff5630; color: #fff; border-radius: 8px; padding: 1px 5px; font-weight: 600; flex-shrink: 0; }
+  .tree-badge.yellow { background: #ffab00; color: #172b4d; }
+
+  /* TAG pills */
+  .tag-pill { display: flex; align-items: center; gap: 6px; padding: 4px 14px; font-size: 12px; color: #42526e; cursor: pointer; }
+  .tag-pill:hover { background: #f4f5f7; }
+  .tag-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+  .tag-count { margin-left: auto; font-size: 11px; background: #f4f5f7; border-radius: 8px; padding: 1px 6px; color: #8993a4; }
+
+  /* MAIN */
+  .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .doc-toolbar { height: 40px; background: #fff; border-bottom: 1px solid #dfe1e6; display: flex; align-items: center; padding: 0 24px; gap: 8px; flex-shrink: 0; }
+  .breadcrumb { display: flex; align-items: center; gap: 4px; font-size: 12.5px; color: #8993a4; }
+  .breadcrumb span { color: #42526e; }
+  .breadcrumb span:last-child { color: #172b4d; font-weight: 500; }
+  .breadcrumb-sep { color: #c1c7d0; }
+  .toolbar-right { margin-left: auto; display: flex; gap: 6px; }
+  .tb-btn { height: 26px; padding: 0 10px; border-radius: 4px; border: 1px solid #dfe1e6; background: #fff; font-size: 12px; color: #42526e; cursor: pointer; display: flex; align-items: center; gap: 4px; }
+  .tb-btn:hover { background: #f4f5f7; }
+  .tb-btn.primary { background: #054e5a; color: #fff; border-color: #054e5a; }
+  .tb-btn.primary:hover { background: #0a7a8e; }
+
+  .doc-scroll { flex: 1; overflow-y: auto; padding: 40px 60px; background: #fff; }
+  .doc-scroll::-webkit-scrollbar { width: 6px; }
+  .doc-scroll::-webkit-scrollbar-track { background: transparent; }
+  .doc-scroll::-webkit-scrollbar-thumb { background: #dfe1e6; border-radius: 3px; }
+
+  /* DOCUMENT */
+  .doc-meta { display: flex; gap: 16px; margin-bottom: 28px; flex-wrap: wrap; }
+  .doc-meta-item { display: flex; align-items: center; gap: 6px; font-size: 12px; color: #8993a4; }
+  .doc-meta-item strong { color: #42526e; }
+  .doc-status { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 3px; font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.4px; }
+  .status-review { background: #fff7d6; color: #974f0c; border: 1px solid #f0c850; }
+  .status-draft { background: #e3fcef; color: #006644; border: 1px solid #79f2c0; }
+
+  h1.doc-title { font-size: 28px; font-weight: 700; color: #172b4d; line-height: 1.2; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .doc-subtitle { font-size: 14px; color: #8993a4; margin-bottom: 32px; }
+  h2.doc-h2 { font-size: 18px; font-weight: 700; color: #172b4d; margin: 32px 0 12px; padding-bottom: 8px; border-bottom: 2px solid #f0f1f3; }
+  h3.doc-h3 { font-size: 14px; font-weight: 600; color: #42526e; margin: 20px 0 8px; text-transform: uppercase; letter-spacing: 0.4px; }
+  p.doc-p { font-size: 14px; line-height: 1.7; color: #172b4d; margin-bottom: 14px; }
+  ul.doc-ul { margin: 0 0 14px 20px; }
+  ul.doc-ul li { font-size: 14px; line-height: 1.7; color: #172b4d; margin-bottom: 4px; }
+
+  /* INLINE TAGS */
+  .tag-ai { display: inline-flex; align-items: center; background: #fff3e0; color: #e65100; border: 1px solid #ffcc80; border-radius: 3px; font-size: 11px; font-weight: 700; padding: 1px 6px; margin: 0 2px; letter-spacing: 0.3px; }
+  .tag-human { display: inline-flex; align-items: center; background: #fff8e1; color: #f57f17; border: 1px solid #ffe082; border-radius: 3px; font-size: 11px; font-weight: 700; padding: 1px 6px; margin: 0 2px; }
+
+  /* TABLE */
+  .doc-table { width: 100%; border-collapse: collapse; margin: 16px 0 24px; font-size: 13px; }
+  .doc-table th { background: #f4f5f7; text-align: left; padding: 8px 12px; font-weight: 600; color: #42526e; border: 1px solid #dfe1e6; font-size: 12px; text-transform: uppercase; letter-spacing: 0.3px; }
+  .doc-table td { padding: 9px 12px; border: 1px solid #dfe1e6; color: #172b4d; vertical-align: top; line-height: 1.5; }
+  .doc-table tr:nth-child(even) td { background: #f9f9fa; }
+  .doc-table tr:hover td { background: #f0f8fa; }
+  .priority-high { display: inline-flex; padding: 2px 7px; border-radius: 3px; font-size: 11px; font-weight: 600; background: #ffebe6; color: #bf2600; }
+  .priority-med { display: inline-flex; padding: 2px 7px; border-radius: 3px; font-size: 11px; font-weight: 600; background: #fff7d6; color: #974f0c; }
+  .priority-low { display: inline-flex; padding: 2px 7px; border-radius: 3px; font-size: 11px; font-weight: 600; background: #e3fcef; color: #006644; }
+
+  .callout { background: #e3f0f5; border-left: 4px solid #054e5a; border-radius: 0 4px 4px 0; padding: 12px 16px; margin: 16px 0; font-size: 13.5px; line-height: 1.6; color: #172b4d; }
+  .callout strong { color: #054e5a; }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-brand-icon">⚡</div>
+    Spec Workbench
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-project">
+    <svg width="12" height="12" viewBox="0 0 12 12" fill="currentColor"><path d="M2 4h8l-1 6H3L2 4z"/><path d="M4 4V3a2 2 0 014 0v1"/></svg>
+    <span class="nav-project-name">Spec App — we+</span>
+    <svg width="10" height="10" viewBox="0 0 10 10" fill="currentColor"><path d="M2 3l3 3 3-3"/></svg>
+  </div>
+  <div class="nav-search">
+    <span class="nav-search-icon">⌕</span>
+    <input type="text" placeholder="Search specs… (⌘K)">
+  </div>
+  <div class="nav-actions">
+    <button class="nav-btn">+ New</button>
+    <div class="nav-avatar">JR</div>
+  </div>
+</nav>
+
+<div class="workspace">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section">
+      <div class="sidebar-label">Files</div>
+      <div class="tree-item folder"><span class="tree-icon">📁</span><span class="tree-name">00_intake</span></div>
+      <div class="tree-item folder"><span class="tree-icon">📁</span><span class="tree-name">01_discovery</span></div>
+      <div class="tree-item folder" style="background:#f0f8fa;"><span class="tree-icon">📂</span><span class="tree-name">02_solution</span></div>
+      <div class="tree-item indent1 folder"><span class="tree-icon">📂</span><span class="tree-name">prds/</span></div>
+      <div class="tree-item indent2 active"><span class="tree-icon">📄</span><span class="tree-name">spec-workbench.prd.md</span></div>
+      <div class="tree-item indent2"><span class="tree-icon">📄</span><span class="tree-name">intake-module.prd.md</span></div>
+      <div class="tree-item indent1 folder"><span class="tree-icon">📁</span><span class="tree-name">user-stories/</span></div>
+      <div class="tree-item indent2"><span class="tree-icon">📄</span><span class="tree-name">US-001-view-prd.md</span></div>
+      <div class="tree-item indent2"><span class="tree-icon">📄</span><span class="tree-name">US-002-edit-inline.md</span></div>
+      <div class="tree-item indent1 folder"><span class="tree-icon">📁</span><span class="tree-name">acceptance-criteria/</span></div>
+      <div class="tree-item indent2"><span class="tree-icon">📄</span><span class="tree-name">AC-001-search.md</span></div>
+      <div class="tree-item folder"><span class="tree-icon">📁</span><span class="tree-name">03_delivery</span></div>
+      <div class="tree-item folder"><span class="tree-icon">📁</span><span class="tree-name">04_governance</span></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">For AI</div>
+      <div class="tag-pill"><span class="tag-dot" style="background:#9775fa;"></span><span>project-context.md</span></div>
+      <div class="tag-pill"><span class="tag-dot" style="background:#9775fa;"></span><span>naming-conventions.md</span></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">For You</div>
+      <div class="tag-pill"><span class="tag-dot" style="background:#0a7a8e;"></span><span>open-questions.md</span><span class="tag-count">3</span></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">Changes</div>
+      <div class="tree-item"><span class="tree-icon" style="color:#ff5630;">M</span><span class="tree-name" style="color:#ff5630;">spec-workbench.prd.md</span></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="doc-toolbar">
+      <div class="breadcrumb">
+        <span>02_solution</span><span class="breadcrumb-sep">/</span>
+        <span>prds</span><span class="breadcrumb-sep">/</span>
+        <span>spec-workbench.prd.md</span>
+      </div>
+      <div class="toolbar-right">
+        <button class="tb-btn">⎘ Copy link</button>
+        <button class="tb-btn">↗ Export</button>
+        <button class="tb-btn primary">✎ Edit</button>
+      </div>
+    </div>
+
+    <div class="doc-scroll">
+      <div class="doc-meta">
+        <div class="doc-meta-item"><strong>Status:</strong> <span class="doc-status status-review">In Review</span></div>
+        <div class="doc-meta-item"><strong>Owner:</strong> Jeroen Remans</div>
+        <div class="doc-meta-item"><strong>Updated:</strong> 2026-06-05</div>
+        <div class="doc-meta-item"><strong>Version:</strong> 0.4</div>
+      </div>
+
+      <h1 class="doc-title">Spec Workbench — PRD</h1>
+      <p class="doc-subtitle">Product Requirements Document · Spec App — we+ · Sprint 2026-Q2</p>
+
+      <div class="callout"><strong>Note:</strong> This document is under active review. Tags marked <span class="tag-human">REVIEW|HUMAN</span> require sign-off before sprint planning.</div>
+
+      <h2 class="doc-h2">Problem Statement</h2>
+      <p class="doc-p">Business Analysts and Product Managers at we+ currently manage specification documents across a fragmented set of tools — Confluence, SharePoint, and raw markdown files in Git. This creates version drift, makes AI-assisted analysis difficult, and slows down the handover to engineering teams.</p>
+      <p class="doc-p">The core problem is that <strong>spec documents lack a single authoritative home</strong> that supports both human readability and machine-readable structure for AI workflows. <span class="tag-ai">TODO|AI</span> Validate with 3 BA interviews before finalising this statement.</p>
+
+      <h2 class="doc-h2">Business Goals</h2>
+      <ul class="doc-ul">
+        <li>Reduce spec-to-story cycle time by 40% within Q3 2026</li>
+        <li>Provide a single source of truth for all product specification artefacts</li>
+        <li>Enable AI-assisted spec drafting and review workflows</li>
+        <li>Improve traceability from intake requirements through to acceptance criteria</li>
+      </ul>
+      <p class="doc-p"><span class="tag-human">REVIEW|HUMAN</span> The 40% target needs validation with the delivery leads — confirm this is realistic before roadmap commitment.</p>
+
+      <h2 class="doc-h2">Functional Requirements</h2>
+      <h3 class="doc-h3">Core Capabilities</h3>
+      <table class="doc-table">
+        <thead>
+          <tr><th>#</th><th>Requirement</th><th>Priority</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>FR-01</td><td>View rendered markdown spec documents in a browser UI</td><td><span class="priority-high">High</span></td><td>Must support GFM + custom tag extensions</td></tr>
+          <tr><td>FR-02</td><td>Edit spec documents inline with live preview</td><td><span class="priority-high">High</span></td><td>Split-pane or toggle mode</td></tr>
+          <tr><td>FR-03</td><td>Navigate file tree across all lifecycle folders</td><td><span class="priority-high">High</span></td><td>Persist expand/collapse state</td></tr>
+          <tr><td>FR-04</td><td>Search across all spec content</td><td><span class="priority-med">Medium</span></td><td>Full-text + tag-aware</td></tr>
+          <tr><td>FR-05</td><td>Tag-based filtering (For AI / For You)</td><td><span class="priority-med">Medium</span></td><td>Drive sidebar smart sections</td></tr>
+          <tr><td>FR-06</td><td>Export to PDF and Confluence</td><td><span class="priority-low">Low</span></td><td>Phase 2 candidate</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="doc-h2">Out of Scope</h2>
+      <p class="doc-p">The following are explicitly excluded from this release: real-time collaborative editing, Jira ticket creation automation, and mobile application support. These are tracked as Phase 2 candidates in the roadmap.</p>
+    </div>
+  </main>
+</div>
+</body>
+</html>

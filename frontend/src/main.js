@@ -4,7 +4,7 @@ import {
   getProjects, addProject, deleteProject,
   getFiles, getFileContent, saveFile,
   getGitStatus, getGitDiffStat, getGitHeadContent,
-  getTags,
+  getTags, browseDir,
 } from "./api.js";
 import { buildTreeHTML } from "./tree.js";
 import {
@@ -38,9 +38,10 @@ let state = {
 document.getElementById("app").innerHTML = html();
 attachListeners();
 loadProjects().then(() => {
-  if (state.projects.length > 0) {
-    switchProject(state.projects[0]);
-  }
+  const lastPath = localStorage.getItem("lastProjectPath");
+  const last = state.projects.find((p) => p.path === lastPath);
+  const initial = last || state.projects[0];
+  if (initial) switchProject(initial);
 });
 
 function html() {
@@ -93,13 +94,21 @@ function html() {
       <button class="filter-chip" data-filter="tags">Has Tags<span class="chip-count" id="fc-tags"></span></button>
       <button class="filter-chip" data-filter="recent">Recent</button>
     </div>
-    <div class="sb-section" id="sb-review" style="display:none">
-      <div class="sb-section-hdr" id="sb-review-hdr">
-        <span>To Review</span>
-        <span class="sb-count empty" id="sb-review-count">0</span>
+    <div class="sb-section" id="sb-ai" style="display:none">
+      <div class="sb-section-hdr" id="sb-ai-hdr">
+        <span class="tag-recipient tag-recipient-ai" style="font-size:8px">AI</span> For AI
+        <span class="sb-count empty" id="sb-ai-count">0</span>
         <span class="sb-arrow">▾</span>
       </div>
-      <div class="sb-section-body" id="sb-review-body"></div>
+      <div class="sb-section-body" id="sb-ai-body"></div>
+    </div>
+    <div class="sb-section" id="sb-human" style="display:none">
+      <div class="sb-section-hdr" id="sb-human-hdr">
+        <span class="tag-recipient tag-recipient-human" style="font-size:8px">YOU</span> For You
+        <span class="sb-count empty" id="sb-human-count">0</span>
+        <span class="sb-arrow">▾</span>
+      </div>
+      <div class="sb-section-body" id="sb-human-body"></div>
     </div>
     <div class="sb-section" id="sb-changes" style="display:none">
       <div class="sb-section-hdr" id="sb-changes-hdr">
@@ -185,8 +194,15 @@ function html() {
     <h2>Projects</h2>
     <ul class="project-list" id="project-list"></ul>
     <hr class="modal-sep">
-    <label>Add project path</label>
-    <input type="text" id="modal-path" placeholder="/Users/you/my-spec-repo">
+    <label>Browse to project folder</label>
+    <div class="dir-browser" id="dir-browser">
+      <div class="dir-browser-path">
+        <button id="dir-up" title="Up">↑</button>
+        <span id="dir-current-path" style="flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap"></span>
+      </div>
+      <div class="dir-browser-list" id="dir-list"></div>
+    </div>
+    <button class="dir-select-btn" id="dir-select-btn" disabled>Select This Folder</button>
     <label>Display name (optional)</label>
     <input type="text" id="modal-name" placeholder="My Project">
     <div class="modal-actions">
@@ -229,7 +245,8 @@ function attachListeners() {
   });
 
   // Sidebar section toggles
-  document.getElementById("sb-review-hdr").addEventListener("click", () => toggleSbSection("review"));
+  document.getElementById("sb-ai-hdr").addEventListener("click", () => toggleSbSection("ai"));
+  document.getElementById("sb-human-hdr").addEventListener("click", () => toggleSbSection("human"));
   document.getElementById("sb-changes-hdr").addEventListener("click", () => toggleSbSection("changes"));
 
   // Refresh
@@ -266,16 +283,57 @@ async function loadProjects() {
   state.projects = await getProjects();
 }
 
+let _selectedDirPath = null;
+
 function openProjectModal() {
   renderProjectList();
+  _selectedDirPath = null;
+  document.getElementById("dir-select-btn").disabled = true;
+  document.getElementById("modal-name").value = "";
   document.getElementById("modal-overlay").classList.remove("hidden");
-  document.getElementById("modal-path").focus();
+  loadDirBrowser(null);
 }
 
 function closeProjectModal() {
   document.getElementById("modal-overlay").classList.add("hidden");
-  document.getElementById("modal-path").value = "";
-  document.getElementById("modal-name").value = "";
+  _selectedDirPath = null;
+}
+
+async function loadDirBrowser(path) {
+  const data = await browseDir(path || "~");
+  const currentEl = document.getElementById("dir-current-path");
+  const listEl = document.getElementById("dir-list");
+  const upBtn = document.getElementById("dir-up");
+  currentEl.textContent = data.path;
+  currentEl.title = data.path;
+  upBtn.disabled = !data.parent;
+  upBtn.onclick = () => data.parent && loadDirBrowser(data.parent);
+
+  if (data.dirs.length === 0) {
+    listEl.innerHTML = `<div class="dir-browser-empty">No subdirectories</div>`;
+  } else {
+    listEl.innerHTML = data.dirs
+      .map((d) => `<div class="dir-browser-item" data-path="${esc(data.path + "/" + d)}">📁 ${esc(d)}</div>`)
+      .join("");
+    listEl.querySelectorAll(".dir-browser-item").forEach((item) => {
+      item.addEventListener("click", () => {
+        listEl.querySelectorAll(".dir-browser-item").forEach((el) => el.classList.remove("selected"));
+        item.classList.add("selected");
+        _selectedDirPath = item.dataset.path;
+        document.getElementById("dir-select-btn").disabled = false;
+        if (!document.getElementById("modal-name").value) {
+          document.getElementById("modal-name").value = item.dataset.path.split("/").pop();
+        }
+      });
+      item.addEventListener("dblclick", () => loadDirBrowser(item.dataset.path));
+    });
+  }
+  document.getElementById("dir-select-btn").onclick = () => {
+    if (_selectedDirPath) {
+      document.getElementById("dir-current-path").textContent = _selectedDirPath;
+      loadDirBrowser(_selectedDirPath);
+    }
+  };
 }
 
 function renderProjectList() {
@@ -317,9 +375,9 @@ function renderProjectList() {
 }
 
 async function handleAddProject() {
-  const path = document.getElementById("modal-path").value.trim();
+  const path = (_selectedDirPath || "").trim();
   const name = document.getElementById("modal-name").value.trim();
-  if (!path) return;
+  if (!path) { alert("Select a folder first."); return; }
   const result = await addProject(path, name);
   if (!result.ok) { alert(result.error); return; }
   await loadProjects();
@@ -329,6 +387,7 @@ async function handleAddProject() {
 
 async function switchProject(project) {
   state.activeProject = project;
+  localStorage.setItem("lastProjectPath", project.path);
   state.currentFile = null;
   state.tree = [];
   document.getElementById("nav-project-btn").textContent = project.name;
@@ -392,34 +451,39 @@ function renderTree() {
   }
 }
 
+function renderTagSection(id, files) {
+  const el = document.getElementById(`sb-${id}`);
+  const body = document.getElementById(`sb-${id}-body`);
+  const count = document.getElementById(`sb-${id}-count`);
+  if (files.length === 0) { el.style.display = "none"; return; }
+  el.style.display = "";
+  count.textContent = files.length;
+  count.className = "sb-count";
+  body.innerHTML = files.map((f) => {
+    const chips = [...new Set(f.tags.map((t) => t.type))]
+      .map((t) => `<span class="sb-tag-chip tag-${t.toLowerCase()}">${t}</span>`).join("");
+    return `<div class="sb-file-row" data-path="${esc(f.path)}">
+        <span class="sb-fname">${esc(f.path.split("/").pop())}</span>
+        <span class="sb-stat">${f.tags.length}</span>
+      </div>
+      <div class="sb-tag-chips">${chips}</div>`;
+  }).join("");
+  body.querySelectorAll(".sb-file-row").forEach((row) => {
+    row.addEventListener("click", () => openFile(row.dataset.path));
+  });
+}
+
 function renderSidebarSections() {
-  // To Review
-  const reviewEl = document.getElementById("sb-review");
-  const reviewBody = document.getElementById("sb-review-body");
-  const reviewCount = document.getElementById("sb-review-count");
-  if (state.tagData.length > 0) {
-    reviewEl.style.display = "";
-    reviewCount.textContent = state.tagFiles.size;
-    reviewCount.className = "sb-count";
-    reviewBody.innerHTML = state.tagData
-      .map((f) => {
-        const chips = [...new Set(f.tags.map((t) => t.type))]
-          .map((t) => `<span class="sb-tag-chip tag-${t.toLowerCase()}">${t}</span>`)
-          .join("");
-        return `
-          <div class="sb-file-row" data-path="${esc(f.path)}">
-            <span class="sb-fname">${esc(f.path.split("/").pop())}</span>
-            <span class="sb-stat">${f.tags.length}</span>
-          </div>
-          <div class="sb-tag-chips">${chips}</div>`;
-      })
-      .join("");
-    reviewBody.querySelectorAll(".sb-file-row").forEach((row) => {
-      row.addEventListener("click", () => openFile(row.dataset.path));
-    });
-  } else {
-    reviewEl.style.display = "none";
-  }
+  // Split tags by recipient
+  const aiFiles = state.tagData
+    .map((f) => ({ ...f, tags: f.tags.filter((t) => (t.recipient || "AI") === "AI") }))
+    .filter((f) => f.tags.length > 0);
+  const humanFiles = state.tagData
+    .map((f) => ({ ...f, tags: f.tags.filter((t) => t.recipient === "HUMAN") }))
+    .filter((f) => f.tags.length > 0);
+
+  renderTagSection("ai", aiFiles, "For AI");
+  renderTagSection("human", humanFiles, "For You");
 
   // Changes
   const changesEl = document.getElementById("sb-changes");

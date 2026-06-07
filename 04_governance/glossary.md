@@ -1,3 +1,5 @@
+
+
 # Glossary — Spec-Driven Development Workbench
 
 _This glossary defines abbreviations and domain terms used across the spec pipeline. Maintained in `04_governance/glossary.md` and editable via the in-app editor._
@@ -64,3 +66,5 @@ These tags can be inserted into any spec file to flag content for follow-up.
 | `[REWORK]` | Red | Content is wrong or insufficient — must be rewritten |
 | `[CLARIFY]` | Blue | Ambiguous — needs clarification from a stakeholder or subject matter expert |
 | `[COMMENT]` | Purple | Non-blocking note or context for the reader |
+
+[REWORK] bovenstaande tags zijn puur documentatie, deze mogen niet geflagged worden als een todo. Dus als ze tussen dezequotes staan negeren in het links menu?

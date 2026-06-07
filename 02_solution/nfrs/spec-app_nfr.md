@@ -7,6 +7,7 @@
 
 ---
 
+[REWORK|AI] Rework deze pagina maak van Performance, ... apparte MD files, en update ook  commands
 ## 1. Performance
 
 ### NFR-P1 — App startup time

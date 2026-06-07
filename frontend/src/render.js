@@ -1,6 +1,6 @@
 import { marked } from "marked";
 
-const TAG_RE = /\[(TODO|REVIEW|REWORK|CLARIFY|COMMENT)\]([^\n]*)/g;
+const TAG_RE = /\[(TODO|REVIEW|REWORK|CLARIFY|COMMENT)(?:\|(AI|HUMAN))?\]([^\n]*)/g;
 const HEX_RE = /#([0-9a-fA-F]{6}|[0-9a-fA-F]{3})\b/g;
 
 const TAG_CLASS = {
@@ -13,9 +13,12 @@ const TAG_CLASS = {
 
 export function applyTagHighlights(html) {
   return html.replace(
-    /\[(TODO|REVIEW|REWORK|CLARIFY|COMMENT)\]([^<\n]*)/g,
-    (_, tag, rest) =>
-      `<span class="tag-inline ${TAG_CLASS[tag]}"><b>${tag}</b>${rest ? " " + esc(rest.trim()) : ""}</span>`
+    /\[(TODO|REVIEW|REWORK|CLARIFY|COMMENT)(?:\|(AI|HUMAN))?\]([^<\n]*)/g,
+    (_, tag, recipient, rest) => {
+      const r = recipient || "AI";
+      const badge = `<span class="tag-recipient tag-recipient-${r.toLowerCase()}">${r}</span>`;
+      return `<span class="tag-inline ${TAG_CLASS[tag]}">${badge}<b>${tag}</b>${rest ? " " + esc(rest.trim()) : ""}</span>`;
+    }
   );
 }
 

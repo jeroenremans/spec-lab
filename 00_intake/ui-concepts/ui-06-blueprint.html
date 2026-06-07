@@ -1,0 +1,246 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spec Workbench — Blueprint</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'Courier New', Courier, monospace; height: 100vh; display: flex; flex-direction: column; overflow: hidden; background: #e8f0f7; color: #1a2e45; }
+
+  /* Blueprint grid background */
+  .bg-grid { position: fixed; inset: 0; background-image: linear-gradient(rgba(100,140,180,0.15) 1px, transparent 1px), linear-gradient(90deg, rgba(100,140,180,0.15) 1px, transparent 1px); background-size: 24px 24px; pointer-events: none; z-index: 0; }
+  .bg-grid-major { position: fixed; inset: 0; background-image: linear-gradient(rgba(80,120,160,0.12) 1px, transparent 1px), linear-gradient(90deg, rgba(80,120,160,0.12) 1px, transparent 1px); background-size: 120px 120px; pointer-events: none; z-index: 0; }
+
+  /* NAV */
+  .nav { height: 46px; background: #1a2e45; border-bottom: 2px solid #0d4c7c; display: flex; align-items: center; padding: 0 16px; gap: 16px; flex-shrink: 0; position: relative; z-index: 10; }
+  .nav-brand { display: flex; align-items: center; gap: 8px; color: #adc6e0; font-weight: 700; font-size: 13px; letter-spacing: 1.5px; text-transform: uppercase; white-space: nowrap; font-family: 'Courier New', monospace; }
+  .nav-brand-icon { width: 26px; height: 26px; border: 2px solid #4a8fc0; border-radius: 3px; display: flex; align-items: center; justify-content: center; font-size: 12px; color: #4a8fc0; }
+  .nav-divider { width: 1px; height: 20px; background: #2a4a6a; }
+  .nav-project { color: #5a8cb0; font-size: 11px; font-family: 'Courier New', monospace; display: flex; align-items: center; gap: 5px; cursor: pointer; letter-spacing: 0.5px; }
+  .nav-project:hover { color: #adc6e0; }
+  .nav-project span { color: #7aaac8; }
+  .nav-search { flex: 1; max-width: 320px; margin: 0 auto; position: relative; }
+  .nav-search input { width: 100%; height: 28px; background: rgba(255,255,255,0.07); border: 1px solid #2a4a6a; border-radius: 2px; padding: 0 8px 0 28px; color: #adc6e0; font-size: 11px; font-family: 'Courier New', monospace; outline: none; letter-spacing: 0.3px; }
+  .nav-search input::placeholder { color: #3a5a78; }
+  .nav-search input:focus { border-color: #4a8fc0; background: rgba(255,255,255,0.1); }
+  .nav-search-icon { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); color: #3a5a78; font-size: 11px; }
+  .nav-actions { display: flex; align-items: center; gap: 8px; margin-left: auto; }
+  .nav-avatar { width: 26px; height: 26px; border: 1px solid #4a8fc0; border-radius: 2px; display: flex; align-items: center; justify-content: center; color: #4a8fc0; font-size: 10px; font-weight: 700; cursor: pointer; background: rgba(74,143,192,0.1); }
+  .nav-btn { height: 26px; padding: 0 10px; border-radius: 2px; border: 1px solid #2a4a6a; background: transparent; color: #5a8cb0; font-size: 11px; font-family: 'Courier New', monospace; cursor: pointer; letter-spacing: 0.5px; text-transform: uppercase; }
+  .nav-btn:hover { border-color: #4a8fc0; color: #adc6e0; }
+  .nav-btn.primary { border-color: #4a8fc0; background: rgba(74,143,192,0.15); color: #7aaac8; }
+  .nav-btn.primary:hover { background: rgba(74,143,192,0.25); }
+
+  /* LAYOUT */
+  .workspace { display: flex; flex: 1; overflow: hidden; position: relative; z-index: 1; }
+
+  /* SIDEBAR */
+  .sidebar { width: 248px; background: rgba(232,240,247,0.92); border-right: 2px solid #b8cede; display: flex; flex-direction: column; flex-shrink: 0; overflow: hidden; backdrop-filter: blur(4px); }
+  .sidebar-header { padding: 10px 12px 6px; border-bottom: 1px solid #b8cede; }
+  .sidebar-header-title { font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 2px; color: #5a8cb0; font-family: 'Courier New', monospace; }
+  .sidebar-section { padding: 4px 0; }
+  .sidebar-section + .sidebar-section { border-top: 1px dashed #b8cede; }
+  .sidebar-label { padding: 8px 12px 3px; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 1.5px; color: #5a8cb0; font-family: 'Courier New', monospace; }
+  .tree-item { display: flex; align-items: center; gap: 6px; padding: 4px 12px; font-size: 11px; color: #3a5a78; cursor: pointer; border-left: 3px solid transparent; font-family: 'Courier New', monospace; transition: all 0.1s; }
+  .tree-item:hover { background: rgba(74,143,192,0.08); color: #1a2e45; border-left-color: rgba(74,143,192,0.3); }
+  .tree-item.active { background: rgba(74,143,192,0.12); color: #0d4c7c; border-left-color: #0d4c7c; font-weight: 700; }
+  .tree-item.folder { font-weight: 700; color: #1a2e45; }
+  .tree-item.indent1 { padding-left: 22px; }
+  .tree-item.indent2 { padding-left: 32px; }
+  .tree-item.indent3 { padding-left: 42px; }
+  .tree-icon { font-size: 10px; width: 12px; text-align: center; flex-shrink: 0; }
+  .tree-name { flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .tree-mod { font-size: 9px; color: #c05621; font-weight: 700; border: 1px solid #c05621; border-radius: 2px; padding: 0 3px; font-family: 'Courier New', monospace; }
+
+  .tag-pill { display: flex; align-items: center; gap: 6px; padding: 4px 12px; font-size: 11px; color: #3a5a78; cursor: pointer; font-family: 'Courier New', monospace; }
+  .tag-pill:hover { background: rgba(74,143,192,0.08); }
+  .tag-dot { width: 7px; height: 7px; border-radius: 1px; flex-shrink: 0; }
+  .tag-count { margin-left: auto; font-size: 9px; border: 1px solid #b8cede; border-radius: 2px; padding: 0 4px; color: #5a8cb0; }
+
+  /* MAIN */
+  .main { flex: 1; overflow: hidden; display: flex; flex-direction: column; }
+  .doc-toolbar { height: 38px; background: rgba(232,240,247,0.95); border-bottom: 2px solid #b8cede; display: flex; align-items: center; padding: 0 20px; gap: 8px; flex-shrink: 0; backdrop-filter: blur(4px); }
+  .breadcrumb { display: flex; align-items: center; gap: 4px; font-size: 10px; color: #5a8cb0; font-family: 'Courier New', monospace; letter-spacing: 0.3px; }
+  .breadcrumb span { color: #3a5a78; }
+  .breadcrumb span:last-child { color: #0d4c7c; font-weight: 700; }
+  .breadcrumb-sep { color: #b8cede; }
+  .toolbar-right { margin-left: auto; display: flex; gap: 6px; }
+  .tb-btn { height: 24px; padding: 0 9px; border-radius: 2px; border: 1px solid #b8cede; background: rgba(232,240,247,0.8); font-size: 10px; color: #5a8cb0; cursor: pointer; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+  .tb-btn:hover { border-color: #4a8fc0; color: #0d4c7c; }
+  .tb-btn.primary { border-color: #0d4c7c; background: rgba(13,76,124,0.08); color: #0d4c7c; font-weight: 700; }
+
+  .doc-scroll { flex: 1; overflow-y: auto; padding: 32px 48px; background: rgba(255,255,255,0.85); backdrop-filter: blur(4px); }
+  .doc-scroll::-webkit-scrollbar { width: 6px; }
+  .doc-scroll::-webkit-scrollbar-track { background: #e8f0f7; }
+  .doc-scroll::-webkit-scrollbar-thumb { background: #b8cede; border-radius: 0; }
+
+  /* DOCUMENT */
+  .doc-header-block { border: 1px solid #b8cede; padding: 14px 16px; margin-bottom: 24px; background: rgba(232,240,247,0.5); position: relative; }
+  .doc-header-block::before { content: 'DOCUMENT HEADER'; position: absolute; top: -8px; left: 12px; background: rgba(232,240,247,0.95); padding: 0 6px; font-size: 8px; font-weight: 700; letter-spacing: 2px; color: #5a8cb0; font-family: 'Courier New', monospace; }
+  .doc-meta { display: flex; gap: 20px; flex-wrap: wrap; }
+  .doc-meta-item { font-size: 10px; color: #5a8cb0; font-family: 'Courier New', monospace; display: flex; gap: 4px; }
+  .doc-meta-item label { color: #3a5a78; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+  .doc-status { display: inline-flex; align-items: center; padding: 1px 6px; border-radius: 0; font-size: 9px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.8px; }
+  .status-review { background: rgba(245,158,11,0.1); color: #92400e; border: 1px solid #d97706; font-family: 'Courier New', monospace; }
+
+  h1.doc-title { font-size: 22px; font-weight: 700; color: #0d4c7c; line-height: 1.2; margin: 14px 0 4px; letter-spacing: -0.2px; font-family: -apple-system, sans-serif; border-bottom: 3px solid #0d4c7c; padding-bottom: 8px; }
+  .doc-subtitle { font-size: 10px; color: #5a8cb0; margin-top: 6px; letter-spacing: 0.5px; font-family: 'Courier New', monospace; text-transform: uppercase; }
+  h2.doc-h2 { font-size: 13px; font-weight: 700; color: #0d4c7c; margin: 28px 0 10px; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 1px; border-bottom: 1px dashed #b8cede; padding-bottom: 6px; display: flex; align-items: center; gap: 8px; }
+  h2.doc-h2 .ref { font-size: 9px; color: #5a8cb0; border: 1px solid #b8cede; padding: 0 4px; }
+  h3.doc-h3 { font-size: 10px; font-weight: 700; color: #5a8cb0; margin: 16px 0 6px; text-transform: uppercase; letter-spacing: 1.2px; font-family: 'Courier New', monospace; }
+  p.doc-p { font-size: 13px; line-height: 1.7; color: #1a2e45; margin-bottom: 12px; font-family: -apple-system, sans-serif; }
+  p.doc-p strong { color: #0d4c7c; font-family: 'Courier New', monospace; font-weight: 700; }
+  ul.doc-ul { margin: 0 0 12px 0; list-style: none; }
+  ul.doc-ul li { font-size: 13px; line-height: 1.7; color: #1a2e45; margin-bottom: 3px; padding-left: 16px; font-family: -apple-system, sans-serif; }
+  ul.doc-ul li::before { content: '→'; color: #5a8cb0; font-family: 'Courier New', monospace; font-size: 10px; margin-left: -16px; margin-right: 6px; }
+
+  /* INLINE TAGS */
+  .tag-ai { display: inline-flex; align-items: center; background: rgba(234,88,12,0.08); color: #c2410c; border: 1px solid #ea580c; border-radius: 0; font-size: 9px; font-weight: 700; padding: 1px 5px; margin: 0 2px; letter-spacing: 0.5px; font-family: 'Courier New', monospace; text-transform: uppercase; }
+  .tag-human { display: inline-flex; align-items: center; background: rgba(234,179,8,0.08); color: #92400e; border: 1px solid #d97706; border-radius: 0; font-size: 9px; font-weight: 700; padding: 1px 5px; margin: 0 2px; letter-spacing: 0.5px; font-family: 'Courier New', monospace; text-transform: uppercase; }
+
+  /* TABLE */
+  .doc-table { width: 100%; border-collapse: collapse; margin: 10px 0 20px; font-size: 11px; font-family: 'Courier New', monospace; }
+  .doc-table th { background: rgba(13,76,124,0.07); text-align: left; padding: 7px 10px; font-weight: 700; color: #0d4c7c; border: 1px solid #b8cede; font-size: 9px; text-transform: uppercase; letter-spacing: 1px; }
+  .doc-table td { padding: 7px 10px; border: 1px solid #d0dde8; color: #1a2e45; vertical-align: top; line-height: 1.5; font-family: -apple-system, sans-serif; font-size: 12px; }
+  .doc-table td:first-child { font-family: 'Courier New', monospace; color: #0d4c7c; font-size: 11px; font-weight: 700; }
+  .doc-table tr:nth-child(even) td { background: rgba(232,240,247,0.5); }
+  .doc-table tr:hover td { background: rgba(74,143,192,0.06); }
+  .priority-high { display: inline-flex; padding: 1px 6px; border-radius: 0; font-size: 9px; font-weight: 700; background: rgba(192,86,33,0.1); color: #c05621; border: 1px solid #c05621; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+  .priority-med { display: inline-flex; padding: 1px 6px; border-radius: 0; font-size: 9px; font-weight: 700; background: rgba(180,140,0,0.08); color: #92400e; border: 1px solid #d97706; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+  .priority-low { display: inline-flex; padding: 1px 6px; border-radius: 0; font-size: 9px; font-weight: 700; background: rgba(6,78,59,0.08); color: #065f46; border: 1px solid #059669; font-family: 'Courier New', monospace; text-transform: uppercase; letter-spacing: 0.5px; }
+
+  .callout { background: rgba(13,76,124,0.06); border-left: 4px solid #0d4c7c; padding: 10px 14px; margin: 12px 0; font-size: 12.5px; line-height: 1.65; color: #1a2e45; font-family: -apple-system, sans-serif; }
+  .callout strong { color: #0d4c7c; font-family: 'Courier New', monospace; }
+</style>
+</head>
+<body>
+<div class="bg-grid"></div>
+<div class="bg-grid-major"></div>
+
+<!-- NAV -->
+<nav class="nav">
+  <div class="nav-brand">
+    <div class="nav-brand-icon">⚡</div>
+    SPEC WORKBENCH
+  </div>
+  <div class="nav-divider"></div>
+  <div class="nav-project">
+    PROJ: <span>SPEC APP — we+</span>
+    <span style="color:#2a4a6a;margin-left:2px;">▾</span>
+  </div>
+  <div class="nav-search">
+    <span class="nav-search-icon">⌕</span>
+    <input type="text" placeholder="SEARCH DOCS... [⌘K]">
+  </div>
+  <div class="nav-actions">
+    <button class="nav-btn primary">+ NEW</button>
+    <div class="nav-avatar">JR</div>
+  </div>
+</nav>
+
+<div class="workspace">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-header">
+      <div class="sidebar-header-title">// FILE TREE</div>
+    </div>
+    <div class="sidebar-section">
+      <div class="tree-item folder"><span class="tree-icon">▸</span><span class="tree-name">00_intake/</span></div>
+      <div class="tree-item folder"><span class="tree-icon">▸</span><span class="tree-name">01_discovery/</span></div>
+      <div class="tree-item folder"><span class="tree-icon">▾</span><span class="tree-name">02_solution/</span></div>
+      <div class="tree-item indent1 folder"><span class="tree-icon">▾</span><span class="tree-name">prds/</span></div>
+      <div class="tree-item indent2 active"><span class="tree-icon">■</span><span class="tree-name">spec-workbench.prd.md</span></div>
+      <div class="tree-item indent2"><span class="tree-icon">□</span><span class="tree-name">intake-module.prd.md</span></div>
+      <div class="tree-item indent1 folder"><span class="tree-icon">▸</span><span class="tree-name">user-stories/</span></div>
+      <div class="tree-item indent2"><span class="tree-icon">□</span><span class="tree-name">US-001-view-prd.md</span></div>
+      <div class="tree-item indent2"><span class="tree-icon">□</span><span class="tree-name">US-002-edit-inline.md</span></div>
+      <div class="tree-item indent1 folder"><span class="tree-icon">▸</span><span class="tree-name">acceptance-criteria/</span></div>
+      <div class="tree-item indent2"><span class="tree-icon">□</span><span class="tree-name">AC-001-search.md</span></div>
+      <div class="tree-item folder"><span class="tree-icon">▸</span><span class="tree-name">03_delivery/</span></div>
+      <div class="tree-item folder"><span class="tree-icon">▸</span><span class="tree-name">04_governance/</span></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">// FOR AI</div>
+      <div class="tag-pill"><span class="tag-dot" style="background:#6e3ff3;"></span><span>project-context.md</span></div>
+      <div class="tag-pill"><span class="tag-dot" style="background:#6e3ff3;"></span><span>naming-conventions.md</span></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">// FOR YOU</div>
+      <div class="tag-pill"><span class="tag-dot" style="background:#0d4c7c;"></span><span>open-questions.md</span><span class="tag-count">3</span></div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-label">// CHANGES</div>
+      <div class="tree-item"><span class="tree-mod">MOD</span><span class="tree-name" style="margin-left:4px;">spec-workbench.prd.md</span></div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main">
+    <div class="doc-toolbar">
+      <div class="breadcrumb">
+        <span>02_SOLUTION</span><span class="breadcrumb-sep"> // </span>
+        <span>PRDS</span><span class="breadcrumb-sep"> // </span>
+        <span>SPEC-WORKBENCH.PRD.MD</span>
+      </div>
+      <div class="toolbar-right">
+        <button class="tb-btn">COPY</button>
+        <button class="tb-btn">EXPORT</button>
+        <button class="tb-btn primary">EDIT</button>
+      </div>
+    </div>
+
+    <div class="doc-scroll">
+      <div class="doc-header-block">
+        <div class="doc-meta">
+          <div class="doc-meta-item"><label>Status:</label> <span class="doc-status status-review">IN REVIEW</span></div>
+          <div class="doc-meta-item"><label>Owner:</label> JEROEN REMANS</div>
+          <div class="doc-meta-item"><label>Updated:</label> 2026-06-05</div>
+          <div class="doc-meta-item"><label>Version:</label> v0.4</div>
+        </div>
+        <h1 class="doc-title">Spec Workbench — PRD</h1>
+        <p class="doc-subtitle">Product Requirements Document · Spec App — we+ · Sprint 2026-Q2</p>
+      </div>
+
+      <div class="callout"><strong>NOTE:</strong> This document is under active review. Tags marked <span class="tag-human">REVIEW|HUMAN</span> require sign-off before sprint planning.</div>
+
+      <h2 class="doc-h2"><span class="ref">§1</span> Problem Statement</h2>
+      <p class="doc-p">Business Analysts and Product Managers at we+ currently manage specification documents across a fragmented set of tools — Confluence, SharePoint, and raw markdown files in Git. This creates version drift, makes AI-assisted analysis difficult, and slows down the handover to engineering teams.</p>
+      <p class="doc-p">The core problem is that <strong>spec documents lack a single authoritative home</strong> that supports both human readability and machine-readable structure for AI workflows. <span class="tag-ai">TODO|AI</span> Validate with 3 BA interviews before finalising this statement.</p>
+
+      <h2 class="doc-h2"><span class="ref">§2</span> Business Goals</h2>
+      <ul class="doc-ul">
+        <li>Reduce spec-to-story cycle time by 40% within Q3 2026</li>
+        <li>Provide a single source of truth for all product specification artefacts</li>
+        <li>Enable AI-assisted spec drafting and review workflows</li>
+        <li>Improve traceability from intake requirements through to acceptance criteria</li>
+      </ul>
+      <p class="doc-p"><span class="tag-human">REVIEW|HUMAN</span> The 40% target needs validation with the delivery leads — confirm this is realistic before roadmap commitment.</p>
+
+      <h2 class="doc-h2"><span class="ref">§3</span> Functional Requirements</h2>
+      <h3 class="doc-h3">// Core Capabilities</h3>
+      <table class="doc-table">
+        <thead>
+          <tr><th>ID</th><th>Requirement</th><th>Priority</th><th>Notes</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>FR-01</td><td>View rendered markdown spec documents in a browser UI</td><td><span class="priority-high">HIGH</span></td><td>Must support GFM + custom tag extensions</td></tr>
+          <tr><td>FR-02</td><td>Edit spec documents inline with live preview</td><td><span class="priority-high">HIGH</span></td><td>Split-pane or toggle mode</td></tr>
+          <tr><td>FR-03</td><td>Navigate file tree across all lifecycle folders</td><td><span class="priority-high">HIGH</span></td><td>Persist expand/collapse state</td></tr>
+          <tr><td>FR-04</td><td>Search across all spec content</td><td><span class="priority-med">MED</span></td><td>Full-text + tag-aware</td></tr>
+          <tr><td>FR-05</td><td>Tag-based filtering (For AI / For You)</td><td><span class="priority-med">MED</span></td><td>Drive sidebar smart sections</td></tr>
+          <tr><td>FR-06</td><td>Export to PDF and Confluence</td><td><span class="priority-low">LOW</span></td><td>Phase 2 candidate</td></tr>
+        </tbody>
+      </table>
+
+      <h2 class="doc-h2"><span class="ref">§4</span> Out of Scope</h2>
+      <p class="doc-p">The following are explicitly excluded from this release: real-time collaborative editing, Jira ticket creation automation, and mobile application support. These are tracked as Phase 2 candidates in the roadmap.</p>
+    </div>
+  </main>
+</div>
+</body>
+</html>
