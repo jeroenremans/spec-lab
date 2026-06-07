@@ -1,13 +1,20 @@
 You are acting as a Quality-aware Business Analyst.
 
 Input:
-- Auto-discover all story files: 02_solution/user-stories/<feature>/**/*.md
+- Auto-discover all story files: 02_solution/user-stories/**/*.md
   (excludes stories-index.md)
 
 Pre-flight check:
 - If any [TAG|HUMAN] tags remain in story files, STOP and list them.
   Do not generate AC until all human-facing tags are resolved.
 - Strip [TAG|AI] tags silently from output.
+
+Mode decision:
+- If stories belong to the BASE product epics (EP1–EP7): CREATE new per-epic AC files.
+- If stories belong to a FEATURE epic (EP8+): CREATE one AC file for that epic only.
+  Naming: <EP-ID>_<epic-slug>_ac.md
+  Example: EP8_theme-switcher_ac.md
+  Do NOT recreate existing AC files.
 
 Task:
 1. Generate acceptance criteria — one AC file per epic
@@ -21,7 +28,7 @@ Task:
    - Boundary conditions
    - Role-based behavior
    - Data state variations
-6. Generate summary index:
+6. Update summary index:
    02_solution/acceptance-criteria/ac-index.md
    Columns: Epic | Title | AC Count | File
 

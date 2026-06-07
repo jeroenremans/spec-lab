@@ -26,3 +26,14 @@
 | S6.1 | See files with uncommitted changes | EP6 | Should-have | [link](EP6_git-awareness/story-001.md) |
 | S6.2 | View what changed in a file | EP6 | Should-have | [link](EP6_git-awareness/story-002.md) |
 | S7.1 | Read the built-in pipeline guide | EP7 | Nice-to-have | [link](EP7_workflow-guide/story-001.md) |
+| S8.1 | Define light theme token sets | EP8 | Must-have | [link](EP8_theme-switcher/story-001.md) |
+| S8.2 | Define dark theme token sets | EP8 | Must-have | [link](EP8_theme-switcher/story-002.md) |
+| S8.3 | Theme button in topnav | EP8 | Must-have | [link](EP8_theme-switcher/story-003.md) |
+| S8.4 | Theme dropdown with colour swatches | EP8 | Must-have | [link](EP8_theme-switcher/story-004.md) |
+| S8.5 | Active theme indicator in dropdown | EP8 | Must-have | [link](EP8_theme-switcher/story-005.md) |
+| S8.6 | Save theme preference on switch | EP8 | Must-have | [link](EP8_theme-switcher/story-006.md) |
+| S8.7 | Restore theme on app load without flash | EP8 | Must-have | [link](EP8_theme-switcher/story-007.md) |
+| S8.8 | Topnav and sidebar fully themed | EP8 | Must-have | [link](EP8_theme-switcher/story-008.md) |
+| S8.9 | Content area and editor fully themed | EP8 | Must-have | [link](EP8_theme-switcher/story-009.md) |
+| S8.10 | Modals and tag highlights themed | EP8 | Must-have | [link](EP8_theme-switcher/story-010.md) |
+| S8.11 | No hardcoded colours bypass theming | EP8 | Should-have | [link](EP8_theme-switcher/story-011.md) |

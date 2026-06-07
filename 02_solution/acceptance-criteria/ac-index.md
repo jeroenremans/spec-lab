@@ -9,5 +9,6 @@
 | EP5 | Spec Editing | 18 | [EP5_spec-editing_ac.md](EP5_spec-editing_ac.md) |
 | EP6 | Git Awareness | 12 | [EP6_git-awareness_ac.md](EP6_git-awareness_ac.md) |
 | EP7 | Workflow Guide | 6 | [EP7_workflow-guide_ac.md](EP7_workflow-guide_ac.md) |
+| EP8 | Theme Switcher | 23 | [EP8_theme-switcher_ac.md](EP8_theme-switcher_ac.md) |
 
-**Total:** 100 acceptance criteria across 7 epics
+**Total:** 123 acceptance criteria across 8 epics

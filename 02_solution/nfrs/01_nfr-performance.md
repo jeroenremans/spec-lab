@@ -39,4 +39,16 @@
 - **Requirement:** The Flask backend must handle **1 concurrent user** reliably. Multi-user concurrency is out of scope for v1.
 - **Unknown:** If colleagues share a machine or run on a shared network, concurrent request handling is undefined. Flag for v2.
 
+### NFR-P8 — Theme switch latency (EP8)
+- **Requirement:** Theme switch from click to full visual re-render in **< 100ms**.
+- **Rationale:** CSS custom property cascade on `data-theme` attribute change is near-instant; no layout recalculation triggered.
+
+### NFR-P9 — Theme restore on load (EP8)
+- **Requirement:** Theme applied before first paint — **no visible flash** of wrong theme on page reload.
+- **Rationale:** Inline `<script>` in `<head>` applies `data-theme` before body renders.
+
+### NFR-P10 — Theme CSS bundle size (EP8)
+- **Requirement:** All 4 theme token sets add **< 5 kB** to the CSS bundle (gzipped).
+- **Rationale:** 4 blocks × ~30 tokens each; compresses well with gzip.
+
 ---

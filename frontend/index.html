@@ -5,6 +5,13 @@
   <meta name="viewport" content="width=device-width,initial-scale=1">
   <title>Spec Workbench — we+</title>
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 18 18'><rect width='18' height='18' rx='2' fill='%23054e5a'/><rect x='3' y='4' width='8' height='1.5' rx='.75' fill='%23fff'/><rect x='3' y='7' width='12' height='1.5' rx='.75' fill='%23fff'/><rect x='3' y='10' width='10' height='1.5' rx='.75' fill='%23fff'/><rect x='3' y='13' width='6' height='1.5' rx='.75' fill='%23fff'/></svg>">
+  <script>
+    try {
+      var _t = localStorage.getItem("spec-theme");
+      var _v = ["teal-corporate","midnight","warm-paper","bold-agency"];
+      document.documentElement.setAttribute("data-theme", _v.includes(_t) ? _t : "teal-corporate");
+    } catch(e) { document.documentElement.setAttribute("data-theme","teal-corporate"); }
+  </script>
 </head>
 <body>
   <div id="app"></div>

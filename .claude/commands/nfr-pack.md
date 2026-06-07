@@ -6,8 +6,12 @@ Input:
 Pre-flight check:
 - Strip [TAG|AI] tags silently. Flag [TAG|HUMAN] tags as open items in the relevant NFR file.
 
-Task:
-1. Generate NFR checklist aligned to the feature — ONE FILE PER CATEGORY
+Mode decision:
+- If this is the BASE product PRD (no feature prefix, e.g. PRD.md): CREATE the NFR files from scratch.
+- If this is a FEATURE PRD (feature prefix, e.g. theme-switcher_PRD.md): ADD delta items to existing NFR files — do NOT recreate them.
+
+Task (base product):
+1. Generate NFR checklist — ONE FILE PER CATEGORY
 2. Output structure (numbered prefix for sort order):
    02_solution/nfrs/01_nfr-performance.md
    02_solution/nfrs/02_nfr-security.md
@@ -20,10 +24,18 @@ Task:
 3. Generate summary index:
    02_solution/nfrs/nfr-index.md
    Columns: Category | Requirement Count | File
-4. Each NFR must include:
-   - Specific, measurable target
-   - Rationale (1 line)
-   - Unknown flag if not determinable yet
+
+Task (feature delta):
+1. Append new NFR items to the RELEVANT existing category files only
+   - Prefix added items with the feature epic number (e.g. NFR-P8, NFR-A7)
+   - Add a comment line: `### EP<N> additions — <feature-name>`
+2. Update nfr-index.md requirement counts
+3. Do NOT create new files; do NOT overwrite existing content
+
+Each NFR must include:
+- Specific, measurable target
+- Rationale (1 line)
+- Unknown flag if not determinable yet
 
 Rules:
 - One file per category — never combine into a single file

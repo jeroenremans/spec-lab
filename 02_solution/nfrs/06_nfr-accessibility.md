@@ -34,4 +34,16 @@
 - **Requirement:** Review tag badges (TODO / REVIEW / REWORK / CLARIFY / COMMENT) must convey type not only by color but also by label text. Users who are color-blind must be able to distinguish tag types.
 - **Measurable:** Tag type is always shown as text; verified with color-blindness simulation filter.
 
+### NFR-A7 — Theme contrast — all 4 themes (EP8)
+- **Requirement:** Body text on background meets **WCAG AA (4.5:1)** in all 4 themes. Tag badge text on badge background meets WCAG AA in all 4 themes.
+- **Rationale:** Theme switcher changes colour context; each theme must independently pass contrast requirements.
+
+### NFR-A8 — Theme button accessible label (EP8)
+- **Requirement:** Theme switcher button has `aria-label` or `title` attribute describing its purpose.
+- **Measurable:** Inspect button element; confirm accessible name is present.
+
+### NFR-A9 — Focus ring in all themes (EP8)
+- **Requirement:** Theme button and dropdown options show a visible focus ring in all 4 themes.
+- **Rationale:** Keyboard users must see focus indicator regardless of which theme is active.
+
 ---

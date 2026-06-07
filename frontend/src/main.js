@@ -17,6 +17,44 @@ import {
 
 mermaid.initialize({ startOnLoad: false, theme: "neutral", securityLevel: "loose" });
 
+// ── Themes ────────────────────────────────────────────────────────────────
+
+const THEMES = [
+  { id: "teal-corporate", name: "Teal Corporate", swatches: ["#054e5a", "#f4f5f7", "#e1b77e"] },
+  { id: "midnight",       name: "Midnight",       swatches: ["#1a1b2e", "#13131f", "#60a5fa"] },
+  { id: "warm-paper",     name: "Warm Paper",     swatches: ["#7c4700", "#faf6ef", "#d97706"] },
+  { id: "bold-agency",    name: "Bold Agency",    swatches: ["#0a0a0a", "#ff5f1f", "#ffd700"] },
+];
+
+function applyTheme(id) {
+  document.documentElement.setAttribute("data-theme", id);
+  try { localStorage.setItem("spec-theme", id); } catch(e) {}
+  renderThemeDropdown();
+}
+
+function renderThemeDropdown() {
+  const current = document.documentElement.getAttribute("data-theme") || "teal-corporate";
+  const dd = document.getElementById("theme-dropdown");
+  dd.innerHTML = THEMES.map((t) => `
+    <div class="theme-option${t.id === current ? " active" : ""}" data-tid="${t.id}">
+      <span class="theme-swatches">${t.swatches.map((c) => `<span style="background:${c}"></span>`).join("")}</span>
+      <span class="theme-name">${t.name}</span>
+      <span class="theme-check">✓</span>
+    </div>`).join("");
+  dd.querySelectorAll(".theme-option").forEach((el) => {
+    el.addEventListener("click", () => { applyTheme(el.dataset.tid); closeThemeDropdown(); });
+  });
+}
+
+function openThemeDropdown() {
+  renderThemeDropdown();
+  document.getElementById("theme-dropdown").classList.add("open");
+}
+
+function closeThemeDropdown() {
+  document.getElementById("theme-dropdown").classList.remove("open");
+}
+
 // ── State ─────────────────────────────────────────────────────────────────
 let state = {
   projects: [],
@@ -65,6 +103,12 @@ function html() {
     <div class="nav-project-switcher">
       <button class="nav-project-btn" id="nav-project-btn">No project</button>
       <button class="nav-btn-icon" id="nav-add-project" title="Manage projects">⊕</button>
+    </div>
+    <div class="theme-switcher" id="theme-switcher">
+      <button class="nav-btn-icon" id="theme-btn" title="Switch theme" aria-label="Switch theme">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><circle cx="8" cy="8" r="6.5" stroke="currentColor" stroke-width="1.4"/><circle cx="5.5" cy="8" r="1.8" fill="currentColor"/><circle cx="10.5" cy="8" r="1.8" fill="currentColor" opacity=".4"/><circle cx="8" cy="5" r="1.8" fill="currentColor" opacity=".7"/></svg>
+      </button>
+      <div class="theme-dropdown" id="theme-dropdown"></div>
     </div>
     <div class="nav-avatar">JR</div>
   </div>
@@ -267,6 +311,17 @@ function attachListeners() {
 
   // Float tag bar global handler
   window.__insertTagSel = (tag) => insertTagAroundSelection(tag);
+
+  // Theme switcher
+  document.getElementById("theme-btn").addEventListener("click", (e) => {
+    e.stopPropagation();
+    const dd = document.getElementById("theme-dropdown");
+    if (dd.classList.contains("open")) closeThemeDropdown();
+    else openThemeDropdown();
+  });
+  document.addEventListener("click", (e) => {
+    if (!e.target.closest("#theme-switcher")) closeThemeDropdown();
+  });
 
   // Warn on unsaved changes
   window.addEventListener("beforeunload", (e) => {
@@ -511,6 +566,18 @@ function renderSidebarSections() {
   } else {
     changesEl.style.display = "none";
   }
+
+  // Restore section open states from localStorage
+  const savedSections = JSON.parse(localStorage.getItem("sbSections") || "{}");
+  ["ai", "human", "changes"].forEach((id) => {
+    if (savedSections[id]) {
+      const section = document.getElementById(`sb-${id}`);
+      if (section.style.display !== "none") {
+        document.getElementById(`sb-${id}-hdr`).classList.add("open");
+        document.getElementById(`sb-${id}-body`).classList.add("open");
+      }
+    }
+  });
 }
 
 // ── Filters ────────────────────────────────────────────────────────────────
@@ -528,6 +595,9 @@ function toggleSbSection(id) {
   const body = document.getElementById(`sb-${id}-body`);
   hdr.classList.toggle("open");
   body.classList.toggle("open");
+  const saved = JSON.parse(localStorage.getItem("sbSections") || "{}");
+  saved[id] = hdr.classList.contains("open");
+  localStorage.setItem("sbSections", JSON.stringify(saved));
 }
 
 // ── File open ──────────────────────────────────────────────────────────────

@@ -1,13 +1,17 @@
 You are acting as a Delivery-focused Product Manager.
 
 Input:
-- Auto-discover epic files: 02_solution/prds/<feature>_EP*_epic.md
-  Fall back to: 02_solution/prds/<feature>_epics.md if per-epic files don't exist yet
+- Auto-discover epic files: 02_solution/prds/<feature>_EP*_epic.md or EP*_<slug>_epic.md
+  Fall back to: 02_solution/prds/epics.md if per-epic files don't exist yet
 
 Pre-flight check:
 - If any [TAG|HUMAN] tags remain in the epic files, STOP and list them.
   Do not generate stories until all human-facing tags are resolved.
 - Strip [TAG|AI] tags silently from output.
+
+Mode decision:
+- BASE product epics (EP1–EP7): create subdirs EP1_slug/ through EP7_slug/ under 02_solution/user-stories/
+- FEATURE epics (EP8+): create ONE subdir EP<N>_<slug>/ for that feature — do NOT touch existing subdirs.
 
 Task:
 1. Generate sprint-ready user stories — one file per story
@@ -22,7 +26,7 @@ Task:
    - Priority (Must / Should / Nice-to-have)
    - Dependencies
    - Non-goals
-5. Generate summary index:
+5. Update summary index:
    02_solution/user-stories/stories-index.md
    Columns: Story ID | Title | Epic | Priority | File
 
