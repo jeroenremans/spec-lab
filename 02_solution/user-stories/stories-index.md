@@ -16,13 +16,20 @@
 | S3.3 | Search files by name | EP3 | Should-have | [link](EP3_file-navigation-sidebar/story-003.md) |
 | S3.4 | See files needing review at a glance | EP3 | Should-have | [link](EP3_file-navigation-sidebar/story-004.md) |
 | S3.5 | Sidebar collapse state persists on reload | EP3 | Must-have | [link](EP3_file-navigation-sidebar/story-005.md) |
+| S3.6 | Clean filename display in sidebar | EP3 | Should-have | [link](EP3_file-navigation-sidebar/story-006.md) |
+| S3.7 | Alphabetical sorting of sidebar files and folders | EP3 | Should-have | [link](EP3_file-navigation-sidebar/story-007.md) |
+| S3.8 | Collapsible folder tree nodes | EP3 | Should-have | [link](EP3_file-navigation-sidebar/story-008.md) |
+| S3.9 | Hover tooltip on sidebar files | EP3 | Nice-to-have | [link](EP3_file-navigation-sidebar/story-009.md) |
 | S4.1 | Read markdown specs with full formatting | EP4 | Must-have | [link](EP4_content-viewing/story-001.md) |
 | S4.2 | See review tags as colored badges | EP4 | Must-have | [link](EP4_content-viewing/story-002.md) |
 | S4.3 | View meeting transcripts | EP4 | Should-have | [link](EP4_content-viewing/story-003.md) |
 | S4.4 | View color swatches and Mermaid diagrams inline | EP4 | Should-have | [link](EP4_content-viewing/story-004.md) |
+| S4.5 | Clickable cross-file links with hover preview | EP4 | Should-have | [link](EP4_content-viewing/story-005.md) |
 | S5.1 | Edit a spec file in-app | EP5 | Must-have | [link](EP5_spec-editing/story-001.md) |
 | S5.2 | Insert review tags while editing | EP5 | Must-have | [link](EP5_spec-editing/story-002.md) |
 | S5.3 | Tag content while reading | EP5 | Should-have | [link](EP5_spec-editing/story-003.md) |
+| S5.4 | Create new markdown files and folders from app | EP5 | Should-have | [link](EP5_spec-editing/story-004.md) |
+| S5.5 | Auto-stage new files with git add | EP5 | Should-have | [link](EP5_spec-editing/story-005.md) |
 | S6.1 | See files with uncommitted changes | EP6 | Should-have | [link](EP6_git-awareness/story-001.md) |
 | S6.2 | View what changed in a file | EP6 | Should-have | [link](EP6_git-awareness/story-002.md) |
 | S7.1 | Read the built-in pipeline guide | EP7 | Nice-to-have | [link](EP7_workflow-guide/story-001.md) |

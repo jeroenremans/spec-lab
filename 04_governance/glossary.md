@@ -67,4 +67,4 @@ These tags can be inserted into any spec file to flag content for follow-up.
 | `[CLARIFY]` | Blue | Ambiguous — needs clarification from a stakeholder or subject matter expert |
 | `[COMMENT]` | Purple | Non-blocking note or context for the reader |
 
-[REWORK] bovenstaande tags zijn puur documentatie, deze mogen niet geflagged worden als een todo. Dus als ze tussen dezequotes staan negeren in het links menu?
+> **Note:** Tags wrapped in backticks (e.g. `` `[TODO]` ``) or inside fenced code blocks are documentation examples and are excluded from sidebar tag scanning.

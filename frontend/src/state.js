@@ -1,0 +1,15 @@
+export const state = {
+  projects: [],
+  activeProject: null,
+  tree: [],
+  modifiedFiles: new Set(),
+  tagFiles: new Set(),
+  tagData: [],
+  diffStatFiles: {},
+  currentFile: null,
+  originalContent: "",
+  currentMdContent: "",
+  inlineDiffActive: false,
+  activeFilter: "all",
+  searchQ: "",
+};

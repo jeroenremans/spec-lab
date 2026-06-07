@@ -22,6 +22,8 @@ EXCLUDE_DIRS = {
 EXCLUDE_FILES = {"files.json", "_sidebar.md", "package.json", "tsconfig.json", "angular.json"}
 
 TAG_RE = re.compile(r"\[(TODO|REVIEW|REWORK|CLARIFY|COMMENT)(?:\|(AI|HUMAN))?\]([^\n]*)")
+_CODE_SPAN_RE = re.compile(r"`[^`\n]+`")
+_FENCE_RE = re.compile(r"^\s*```")
 
 
 # ── Project registry ───────────────────────────────────────────────────────
@@ -285,8 +287,15 @@ def get_tags():
             except Exception:
                 continue
             tags = []
+            in_fence = False
             for i, line in enumerate(content.splitlines(), 1):
-                for m in TAG_RE.finditer(line):
+                if _FENCE_RE.match(line):
+                    in_fence = not in_fence
+                    continue
+                if in_fence:
+                    continue
+                clean = _CODE_SPAN_RE.sub("", line)
+                for m in TAG_RE.finditer(clean):
                     tags.append({
                             "type": m.group(1),
                             "recipient": m.group(2) or "AI",
