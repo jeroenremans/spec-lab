@@ -1,0 +1,26 @@
+{
+  "intake": {
+    "label": "00 Intake",
+    "color": "#c4a882"
+  },
+  "discovery": {
+    "label": "01 Discovery",
+    "color": "#7ea8c4"
+  },
+  "solution": {
+    "label": "02 Solution",
+    "color": "#68b2a0"
+  },
+  "delivery": {
+    "label": "03 Delivery",
+    "color": "#7b91d4"
+  },
+  "governance": {
+    "label": "04 Governance",
+    "color": "#e0a060"
+  },
+  "architecture": {
+    "label": "05 Architecture",
+    "color": "#b088cc"
+  }
+}

@@ -1,0 +1,491 @@
+[
+  {
+    "phase": "delivery",
+    "key": "dod",
+    "title": "Definition of Done",
+    "sub": "When is a story truly complete",
+    "path": "[project]/03_delivery/definition-of-done.md",
+    "owner": "Tech Lead",
+    "reviewers": [
+      "Full Team"
+    ],
+    "signoff": "Full Team",
+    "lifecycle": "Living — reviewed every 3 sprints or at retrospectives",
+    "trigger": "Team start or retrospective",
+    "doel": "Create shared understanding of \"done\" so stories are consistently and completely delivered.",
+    "inputs": [
+      "Team quality agreements",
+      "Lessons from previous sprints"
+    ],
+    "outputs": [
+      "Checklist every story must pass"
+    ],
+    "flow": [
+      {
+        "name": "Team Start / Retro",
+        "sub": "Trigger",
+        "type": "trigger"
+      },
+      {
+        "name": "Workshop",
+        "sub": "Full team",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Gather team input",
+            "method": "Retrospective or dedicated workshop",
+            "tools": "Miro, Mentimeter",
+            "aiTask": ""
+          },
+          {
+            "name": "Review against industry standards",
+            "method": "Benchmark against DORA, ISTQB",
+            "tools": "Claude, research",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Team Consensus",
+        "sub": "Vote or discuss",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Draft checklist",
+            "method": "Binary criteria writing",
+            "tools": "Claude, Confluence",
+            "aiTask": ""
+          },
+          {
+            "name": "Team consensus",
+            "method": "Vote / review",
+            "tools": "Slack poll, Jira",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Living Doc",
+        "sub": "Reviewed every 3 sprints",
+        "type": "output"
+      }
+    ],
+    "note": "",
+    "refs": [],
+    "template": "# Definition of Done\n\nVersion: [date] | From sprint: [N]\n\n## Code\n- [ ] Code reviewed by ≥1 peer\n- [ ] No new linting errors\n- [ ] Unit tests written and passing\n- [ ] No TODO/FIXME in code\n\n## Functionality\n- [ ] All ACs verified by tester\n- [ ] Happy path and edge cases tested\n- [ ] Tested in staging\n\n## Non-Functional\n- [ ] Response time within NFR targets\n- [ ] No new security vulnerabilities\n- [ ] Logging added for key operations\n\n## Documentation\n- [ ] API contract updated if changed\n- [ ] ADR written if architectural decision made\n- [ ] Release notes entry added\n\n## Task Quality\n- [ ] No single implementation task exceeded 8h\n- [ ] All tasks have a clear done-when criterion\n\n## Process\n- [ ] PO has accepted the story\n- [ ] Story moved to Done in backlog tool\n\n## Feature Handoff Ceremony (end of feature, not per story)\n- [ ] Spec walkthrough done with dev team\n- [ ] Task sequence agreed and parallel tasks identified\n- [ ] All open questions in Clarification Log resolved\n- [ ] Test environment ready\n- [ ] Stakeholder sign-off received\n- [ ] Consistency Analysis gate: PASS\n",
+    "aiTasks": [
+      {
+        "name": "DoD Reviewer",
+        "persona": "Agile Coach",
+        "objective": "Review DoD against industry standards and flag vague or unverifiable items.",
+        "prompt": "You are an Agile Coach. Review this DoD: (1) Are items objectively binary (pass/fail)? (2) Are categories missing (security, observability, documentation)? (3) Are items too broad? Suggest a revised DoD with specific, verifiable criteria.",
+        "step": "Workshop"
+      }
+    ]
+  },
+  {
+    "phase": "delivery",
+    "key": "sprint",
+    "title": "Sprint Plan",
+    "sub": "What we build this sprint",
+    "path": "[project]/03_delivery/sprint-[N]-plan.md",
+    "owner": "Product Owner",
+    "reviewers": [
+      "Tech Lead",
+      "Scrum Master"
+    ],
+    "signoff": "",
+    "lifecycle": "Per sprint — new file each sprint",
+    "trigger": "Start of each sprint",
+    "doel": "Document team commitment for this sprint based on capacity and priorities.",
+    "inputs": [
+      "Prioritised backlog",
+      "Team velocity",
+      "Team availability"
+    ],
+    "outputs": [
+      "Sprint backlog with committed stories",
+      "Sprint goal"
+    ],
+    "flow": [
+      {
+        "name": "Sprint Start",
+        "sub": "Every 2 weeks",
+        "type": "trigger"
+      },
+      {
+        "name": "Backlog Review",
+        "sub": "PO + team",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Backlog refinement",
+            "method": "Story review with team",
+            "tools": "Jira, Planning Poker",
+            "aiTask": ""
+          },
+          {
+            "name": "Capacity planning",
+            "method": "Team availability check",
+            "tools": "Calendar, spreadsheet",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Commitment",
+        "sub": "Team sets capacity",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Sprint planning ceremony",
+            "method": "Scrum sprint planning",
+            "tools": "Jira, Scrum Poker, Zoom",
+            "aiTask": ""
+          },
+          {
+            "name": "Document sprint goal",
+            "method": "Collaborative writing",
+            "tools": "Confluence, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sprint Backlog",
+        "sub": "Sprint goal defined",
+        "type": "output"
+      }
+    ],
+    "note": "",
+    "refs": [],
+    "template": "# Sprint [N] Plan\n\n**Sprint Goal:**\n\n**Dates:** [start] – [end]\n**Team Capacity:** [SP]\n**Velocity (prev):** [SP]\n\n## Committed Stories\n| Story | Points | Feature | Assigned | Risk |\n|---|---|---|---|---|\n\n## Risks & Dependencies\n\n## Out-of-sprint items to watch\n",
+    "aiTasks": [
+      {
+        "name": "Risk Flagger",
+        "persona": "Scrum Master",
+        "objective": "Identify stories with unresolved dependencies or vague ACs that risk non-completion.",
+        "prompt": "You are a Scrum Master. For each committed story, flag: (1) ACs not approved, (2) unresolved tech dependencies, (3) stakeholder unavailability, (4) underestimated complexity. Output: Story | Risk | Action.",
+        "step": "Backlog Review"
+      }
+    ]
+  },
+  {
+    "phase": "delivery",
+    "key": "release",
+    "title": "Release Notes",
+    "sub": "What is available in production",
+    "path": "[project]/03_delivery/release-notes.md",
+    "owner": "Tech Lead",
+    "reviewers": [
+      "Product Owner"
+    ],
+    "signoff": "Product Owner",
+    "lifecycle": "Per release — kept cumulatively",
+    "trigger": "Deployment to production approved",
+    "doel": "Inform stakeholders of what has been delivered and serve as a reference for support.",
+    "inputs": [
+      "Closed stories from the release",
+      "Known limitations"
+    ],
+    "outputs": [
+      "Communication to stakeholders",
+      "Reference for support team"
+    ],
+    "flow": [
+      {
+        "name": "Deploy Approved",
+        "sub": "PO + Tech Lead",
+        "type": "trigger"
+      },
+      {
+        "name": "Changelog",
+        "sub": "TL collects closed stories",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Collect closed stories",
+            "method": "Jira query / git log",
+            "tools": "Jira, GitHub, Claude",
+            "aiTask": ""
+          },
+          {
+            "name": "Write plain-language summary",
+            "method": "Stakeholder-focused rewriting",
+            "tools": "Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "PO Review",
+        "sub": "Language and completeness",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "PO review",
+            "method": "Content review",
+            "tools": "Confluence, Slack",
+            "aiTask": ""
+          },
+          {
+            "name": "Publish and distribute",
+            "method": "Email / Confluence publish",
+            "tools": "Confluence, email",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Published",
+        "sub": "Sent to stakeholders",
+        "type": "output"
+      }
+    ],
+    "note": "",
+    "refs": [],
+    "template": "# Release Notes — v[X.Y.Z]\n\n**Date:** [date]\n**Deployed by:** [name]\n\n## What's New\n- [Feature]: short plain-language description\n\n## Improvements\n\n## Bug Fixes\n\n## Known Issues\n| Issue | Workaround | Planned fix |\n|---|---|---|\n\n## Out of Scope (next release)\n",
+    "aiTasks": [
+      {
+        "name": "Stakeholder Summary Writer",
+        "persona": "Business Analyst",
+        "objective": "Rewrite technical release notes in plain language for non-technical stakeholders.",
+        "prompt": "You are a BA skilled in stakeholder communication. Rewrite these release notes in plain, non-technical language. Focus on: what the user can do now, how it improves their experience, known limitations. Max 3 sentences per feature. No jargon.",
+        "step": "Changelog"
+      }
+    ]
+  },
+  {
+    "phase": "delivery",
+    "key": "test-plan",
+    "title": "Test Plan",
+    "sub": "Test scope, approach, and test cases",
+    "path": "[project]/03_delivery/test-plan-[feature].md",
+    "owner": "QA Engineer",
+    "reviewers": [
+      "Tech Lead",
+      "Business Analyst"
+    ],
+    "signoff": "Tech Lead",
+    "lifecycle": "Per feature or release — created before development starts on a feature",
+    "trigger": "Feature approved and before sprint development begins",
+    "doel": "Define what will be tested, how, and by whom — before development starts — so quality is built in, not checked at the end.",
+    "inputs": [
+      "Feature (scope and business rules)",
+      "Acceptance criteria (ac.md)",
+      "NFR (performance targets if applicable)"
+    ],
+    "outputs": [
+      "Test scope and out-of-scope",
+      "Test cases linked to ACs",
+      "Test environment requirements",
+      "Entry and exit criteria"
+    ],
+    "flow": [
+      {
+        "name": "Feature Approved",
+        "sub": "Trigger",
+        "type": "trigger"
+      },
+      {
+        "name": "Write Test Plan",
+        "sub": "QA Engineer",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Analyse ACs and feature",
+            "method": "Requirements analysis",
+            "tools": "Claude, Markdown",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Review with TL + BA",
+        "sub": "Completeness check",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Define test scope",
+            "method": "Risk-based test scope selection",
+            "tools": "Spreadsheet, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off TL",
+        "sub": "Plan approved",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Write test cases",
+            "method": "Equivalence partitioning, boundary analysis",
+            "tools": "Jira, TestRail, Claude",
+            "aiTask": ""
+          },
+          {
+            "name": "Review with team",
+            "method": "Walkthrough session",
+            "tools": "Video call, Confluence",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Tests Executed",
+        "sub": "During and after sprint",
+        "type": "output"
+      }
+    ],
+    "note": "A test plan written before development guides implementation. Writing it after development is a test report, not a test plan.",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "ac"
+      },
+      {
+        "dir": "←",
+        "key": "feature"
+      },
+      {
+        "dir": "←",
+        "key": "nfr"
+      }
+    ],
+    "template": "# Test Plan: [Feature Name]\n\nVersion: 1.0 | Date: [date]\nFeature: [link]\nAC: [link to ac.md]\n\n## Test Scope\n\n### In Scope\n\n### Out of Scope\n\n## Test Approach\n\n| Level | Type | Tool | Owner |\n|---|---|---|---|\n| Unit | Automated | Jest / pytest | Developer |\n| Integration | Automated | Supertest / pytest | Developer |\n| E2E | Manual + Automated | Playwright | QA |\n| Performance | Automated | k6 | QA |\n\n## Entry Criteria\n- [ ] Feature development complete\n- [ ] Unit tests passing\n- [ ] Deployed to test environment\n\n## Exit Criteria\n- [ ] All ACs verified\n- [ ] Zero open critical/high bugs\n- [ ] Performance targets met (if NFR defined)\n\n## Test Cases\n\n| ID | AC | Description | Steps | Expected Result | Pass/Fail |\n|---|---|---|---|---|---|\n| TC-1 | AC-1 | Happy path | 1. ... | ... | |\n| TC-2 | AC-2 | Edge case | 1. ... | ... | |\n\n## Test Environment\n\n- URL: \n- Test data:\n- External systems: \n\n## Risks\n\n| Risk | Mitigation |\n|---|---|\n",
+    "aiTasks": [
+      {
+        "name": "Test Case Generator",
+        "persona": "QA Engineer",
+        "objective": "Generate comprehensive test cases from the ACs and feature description.",
+        "prompt": "You are a QA Engineer. Based on the ACs and feature description, generate test cases covering: (1) one test case per AC (happy path), (2) edge case test cases (boundaries, empty inputs, max values), (3) negative test cases (invalid input, permission denied, system errors). For each: ID, linked AC, description, steps, expected result. Format as a markdown table.",
+        "step": "Write Test Plan"
+      },
+      {
+        "name": "Risk-Based Scope Advisor",
+        "persona": "Test Manager",
+        "objective": "Identify the highest-risk areas to focus test effort on.",
+        "prompt": "You are a Test Manager with expertise in risk-based testing. Analyse this feature and ACs. Identify: (1) highest-risk areas by probability × impact, (2) areas where automated testing adds most value, (3) areas requiring manual exploratory testing. Suggest a test priority order: critical (must test) / important (should test) / optional (nice to test).",
+        "step": "Write Test Plan"
+      }
+    ]
+  },
+  {
+    "phase": "delivery",
+    "key": "task-breakdown",
+    "title": "Task Breakdown",
+    "sub": "Discrete implementation tasks per feature with traceability",
+    "path": "[project]/03_delivery/tasks-[feature].md",
+    "owner": "Tech Lead",
+    "reviewers": [
+      "Developer",
+      "Senior Developer"
+    ],
+    "signoff": "Tech Lead",
+    "lifecycle": "Per feature — created during sprint planning, updated as work progresses",
+    "trigger": "Feature approved, sprint planning starts",
+    "doel": "Break a feature into discrete tasks (≤8h each) with traceability to stories and ACs, and mark which tasks can run in parallel.",
+    "inputs": [
+      "Feature doc",
+      "User stories",
+      "Acceptance criteria (ac.md)",
+      "Technical plan / architecture"
+    ],
+    "outputs": [
+      "Discrete tasks ≤8h",
+      "Parallelism map [P]",
+      "Traceability matrix (story → task → test)",
+      "Affected files per task"
+    ],
+    "flow": [
+      {
+        "name": "Feature Approved",
+        "sub": "Sprint planning starts",
+        "type": "trigger"
+      },
+      {
+        "name": "Task Design",
+        "sub": "TL + Senior Dev",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Analyse feature and ACs",
+            "method": "Requirements breakdown",
+            "tools": "Claude, Markdown",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Team Review",
+        "sub": "Dev team check",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Identify tasks",
+            "method": "Work decomposition",
+            "tools": "Jira, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off TL",
+        "sub": "Tasks committed to sprint",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Mark parallel opportunities",
+            "method": "Dependency mapping",
+            "tools": "Miro, draw.io",
+            "aiTask": ""
+          },
+          {
+            "name": "Review with dev team",
+            "method": "Team walkthrough",
+            "tools": "Video call, Jira",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "In Sprint",
+        "sub": "Updated as work progresses",
+        "type": "output"
+      }
+    ],
+    "note": "Tasks exceeding 8h must be split. Mark parallel-executable tasks with [P]. Every task must trace to at least one story or AC.",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "feature"
+      },
+      {
+        "dir": "←",
+        "key": "ac"
+      },
+      {
+        "dir": "←",
+        "key": "story"
+      }
+    ],
+    "template": "# Task Breakdown: [Feature Name]\n\n**Feature:** [link]\n**Sprint:** [N]\n**Total tasks:** [N] | **Parallel [P]:** [N]\n\n## Summary\n\n## Tasks\n\n| ID | Task | Story | AC | Est. | [P] | Affected Files | Status |\n|---|---|---|---|---|---|---|---|\n| T-01 | | US-001 | AC-001 | 4h | | | Todo |\n| T-02 | | US-001 | AC-002 | 3h | ✓ | | Todo |\n\n## Task Details\n\n### T-01: [Task name]\n**Story:** US-XXX-NNN\n**AC:** AC-NNN\n**Estimate:** Xh\n**Parallel:** No / [P]\n**Affected files:**\n- `src/...`\n\n**Steps:**\n1.\n2.\n\n**Done when:** [observable outcome]\n\n---\n\n## Traceability Matrix\n| Story | AC | Task | Test |\n|---|---|---|---|\n| US-001 | AC-001 | T-01 | TC-01 |\n\n## Risk Assessment\n| Task | Risk | Mitigation |\n|---|---|---|\n",
+    "aiTasks": [
+      {
+        "name": "Task Decomposer",
+        "persona": "Senior Developer",
+        "objective": "Break the feature into discrete tasks ≤8h with parallelism markers.",
+        "prompt": "You are a Senior Developer. Decompose this feature into implementation tasks: (1) Each task ≤8h — split larger ones, (2) Mark tasks that can run in parallel as [P], (3) For each task: affected files, linked story/AC, clear done-when criterion, (4) Sequence dependent tasks explicitly. Output as a task table + parallelism summary.",
+        "step": "Task Design"
+      },
+      {
+        "name": "Traceability Validator",
+        "persona": "QA Engineer",
+        "objective": "Verify every AC and story has at least one implementing task and one test.",
+        "prompt": "You are a QA Engineer. Review this task breakdown against the stories and ACs: (1) ACs with no implementing task? (2) Tasks with no linked AC (orphaned work)? (3) ACs with no test case? Output a traceability matrix and flag gaps as HIGH/MEDIUM/LOW.",
+        "step": "Team Review"
+      }
+    ]
+  }
+]

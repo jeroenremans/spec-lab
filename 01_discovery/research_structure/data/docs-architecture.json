@@ -1,0 +1,453 @@
+[
+  {
+    "phase": "architecture",
+    "key": "api",
+    "title": "API Contract",
+    "sub": "Interface for consumers",
+    "path": "[project]/05_architecture/api/[service]-contract.md",
+    "owner": "Tech Lead",
+    "reviewers": [
+      "Developer",
+      "Business Analyst"
+    ],
+    "signoff": "Tech Lead",
+    "lifecycle": "Living — versioned on every breaking change",
+    "trigger": "Feature approved and technical design started",
+    "doel": "Define a formal contract between producers and consumers so teams work in parallel without integration surprises.",
+    "inputs": [
+      "Feature (behaviour)",
+      "Domain model",
+      "NFR (performance, auth)"
+    ],
+    "outputs": [
+      "Formal API contract",
+      "Input for code generation (openapi.yaml)"
+    ],
+    "flow": [
+      {
+        "name": "Feature Approved",
+        "sub": "Trigger",
+        "type": "trigger"
+      },
+      {
+        "name": "API Design",
+        "sub": "Tech Lead + Backend Dev",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Analyse feature requirements",
+            "method": "Feature review with BA",
+            "tools": "Confluence, Miro",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Consumer Review",
+        "sub": "Frontend + BA check",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Design API endpoints",
+            "method": "RESTful API design",
+            "tools": "Stoplight, Postman, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off TL",
+        "sub": "Contract frozen",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Define error codes and auth",
+            "method": "Security review",
+            "tools": "Claude, OWASP docs",
+            "aiTask": ""
+          },
+          {
+            "name": "Consumer review",
+            "method": "Walkthrough with frontend dev",
+            "tools": "Stoplight, GitHub PR",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Versioned + Living",
+        "sub": "Breaking changes → new version",
+        "type": "output"
+      }
+    ],
+    "note": "Breaking changes require a new version (v2). Backward-compatible changes do not.",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "feature"
+      },
+      {
+        "dir": "←",
+        "key": "domain"
+      }
+    ],
+    "template": "# API Contract: [Service Name]\n\nVersion: v[N] | Status: Draft / Approved\nBase URL: `/api/v[N]/`\n\n## Authentication\n- Method: Bearer JWT / API key / None\n\n## Endpoints\n\n### POST /[resource]\n\n**Purpose:**\n**Auth required:** Yes / No\n\n**Request Body**\n```json\n{\n  \"field\": \"type | required\"\n}\n```\n\n**Response 200**\n```json\n{\n  \"field\": \"value\"\n}\n```\n\n**Errors**\n| Status | Code | Description |\n|---|---|---|\n| 400 | VALIDATION_ERROR | |\n| 401 | UNAUTHORIZED | |\n| 404 | NOT_FOUND | |\n\n## Changelog\n| Version | Date | Change |\n|---|---|---|\n",
+    "aiTasks": [
+      {
+        "name": "Contract Completeness Reviewer",
+        "persona": "Senior Backend Developer",
+        "objective": "Review the API contract for missing error cases and naming inconsistencies.",
+        "prompt": "You are a Senior Backend Developer. Review this contract: (1) missing HTTP status codes, (2) incomplete auth spec, (3) missing pagination on lists, (4) naming inconsistencies, (5) missing required fields, (6) unmarked breaking changes. Output a prioritised issue list.",
+        "step": "API Design"
+      },
+      {
+        "name": "Security Auditor",
+        "persona": "Security Engineer",
+        "objective": "Identify authentication, authorisation, and input validation gaps.",
+        "prompt": "You are a Security Engineer (OWASP API Security Top 10). Check: (1) missing auth on sensitive endpoints, (2) over-permissive endpoints, (3) missing input validation, (4) IDOR risk, (5) missing rate limiting. Output findings by severity (critical/high/medium/low).",
+        "step": "Consumer Review"
+      },
+      {
+        "name": "API Sequence Diagram",
+        "persona": "Solution Architect",
+        "step": "API Design",
+        "objective": "Generate a sequence diagram for this API only if it involves 3+ actors or non-trivial async/error flows.",
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a Solution Architect designing an API contract.\n\nAssessment: Does this API involve 3+ actors (client, API gateway, service, database, external system)? Are there async callbacks, webhooks, or complex error retry flows? A simple sync request/response to one endpoint does not warrant a diagram.\n\nIf warranted, generate a `sequenceDiagram` showing:\n- All actors\n- Happy path request/response\n- At least one error path (4xx/5xx) with `opt` or `alt` block\n- Auth token validation as a separate step if applicable\n\nOutput only the mermaid code block, no explanation."
+      }
+    ]
+  },
+  {
+    "phase": "architecture",
+    "key": "domain",
+    "title": "Domain Model",
+    "sub": "Entities, enums, and business rules",
+    "path": "[project]/05_architecture/domain/[domain]-model.md",
+    "owner": "Tech Lead",
+    "reviewers": [
+      "Business Analyst",
+      "Developer"
+    ],
+    "signoff": "Tech Lead",
+    "lifecycle": "Living — updated on domain changes",
+    "trigger": "Epic or feature introduces new entities or rules",
+    "doel": "Provide one shared domain model so backend, frontend, and specs all speak the same language.",
+    "inputs": [
+      "Epic (business outcome)",
+      "Feature (business rules)",
+      "ADRs for technical constraints"
+    ],
+    "outputs": [
+      "Shared domain model",
+      "Input for database schema",
+      "Basis for API contract"
+    ],
+    "flow": [
+      {
+        "name": "Feature Describes Rule",
+        "sub": "Trigger",
+        "type": "trigger"
+      },
+      {
+        "name": "Model Design",
+        "sub": "Tech Lead + BA",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "EventStorming workshop",
+            "method": "EventStorming",
+            "tools": "Miro, sticky notes (online)",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Review",
+        "sub": "Developer + BA",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Entity extraction",
+            "method": "DDD entity analysis",
+            "tools": "Miro, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off TL",
+        "sub": "Model frozen",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Define relationships",
+            "method": "ER diagram",
+            "tools": "draw.io, dbdiagram.io, Claude",
+            "aiTask": ""
+          },
+          {
+            "name": "Validate with BA",
+            "method": "Domain walkthrough",
+            "tools": "Miro, video call",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Living Doc",
+        "sub": "Updated on domain changes",
+        "type": "output"
+      }
+    ],
+    "note": "",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "epic"
+      },
+      {
+        "dir": "→",
+        "key": "adr"
+      }
+    ],
+    "template": "# Domain Model: [Domain Name]\n\n## Entities\n\n### [EntityName]\n| Field | Type | Required | Constraints | Description |\n|---|---|---|---|---|\n| id | UUID | Yes | unique | |\n\n## Enums\n\n### [EnumName]\n| Value | Label | Description |\n|---|---|---|\n\n## Business Rules\n1. IF [condition] THEN [result]\n\n## Relationships\n```\n[EntityA] 1──* [EntityB]  (description)\n```\n\n## Changelog\n| Date | Change | Author |\n|---|---|---|\n",
+    "aiTasks": [
+      {
+        "name": "DDD Entity Validator",
+        "persona": "DDD Expert",
+        "objective": "Validate the domain model against DDD principles.",
+        "prompt": "You are a DDD expert. Review this model: (1) Rich vs. anemic entities? (2) Aggregate boundaries correct? (3) Value objects used where appropriate? (4) Domain events identified? (5) Ubiquitous language consistent? Suggest concrete improvements.",
+        "step": "Model Design"
+      },
+      {
+        "name": "Database Schema Advisor",
+        "persona": "Database Architect",
+        "objective": "Translate the domain model into a database schema.",
+        "prompt": "You are a Database Architect. Based on this domain model, suggest: (1) schema with keys and constraints, (2) recommended indexes, (3) normalisation issues, (4) JSON/JSONB candidates. Format as CREATE TABLE statements with comments.",
+        "step": "Model Design"
+      },
+      {
+        "name": "Domain Model Diagram",
+        "persona": "Solution Architect",
+        "step": "Model Design",
+        "objective": "Generate an ER diagram only if this domain model has 4+ entities with non-obvious relationships.",
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a Solution Architect modelling a domain.\n\nAssessment: Are there 4 or more entities with relationships that are not self-evident (many-to-many, optional vs required, inheritance)? A single entity or two entities with a simple 1:N relationship does not need a diagram.\n\nIf warranted, generate an `erDiagram` with:\n- All entities and their key attributes (max 5 attributes per entity)\n- Relationship cardinality labels (||, |o, }|, }o)\n- Relationship action verbs (\"CUSTOMER ||--o{ ORDER : places\")\n\nOutput only the mermaid code block, no explanation."
+      }
+    ]
+  },
+  {
+    "phase": "architecture",
+    "key": "integration",
+    "title": "Integration Spec",
+    "sub": "Connection to external systems",
+    "path": "[project]/05_architecture/integrations/[system]-integration.md",
+    "owner": "Tech Lead",
+    "reviewers": [
+      "Developer",
+      "Business Analyst"
+    ],
+    "signoff": "Tech Lead",
+    "lifecycle": "Living — updated on external API changes",
+    "trigger": "Feature requires an external integration",
+    "doel": "Document external system integrations including error handling so developers are not dependent on tribal knowledge.",
+    "inputs": [
+      "Feature (behaviour)",
+      "External API documentation",
+      "ADR (partner choice)"
+    ],
+    "outputs": [
+      "Technical integration description",
+      "Retry logic and fallback strategy"
+    ],
+    "flow": [
+      {
+        "name": "Integration Needed",
+        "sub": "From feature",
+        "type": "trigger"
+      },
+      {
+        "name": "Analyse External API",
+        "sub": "Tech Lead",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Analyse external API",
+            "method": "API documentation review",
+            "tools": "Postman, Stoplight, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Write Integration Doc",
+        "sub": "TL writes",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Design integration flow",
+            "method": "Sequence diagram",
+            "tools": "Miro, draw.io, PlantUML",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Review + Sign-off",
+        "sub": "TL + developer",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Define error handling",
+            "method": "Error code analysis",
+            "tools": "Claude, spreadsheet",
+            "aiTask": ""
+          },
+          {
+            "name": "Developer review",
+            "method": "Code walkthrough",
+            "tools": "GitHub PR, video call",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Living Doc",
+        "sub": "Updated on API changes",
+        "type": "output"
+      }
+    ],
+    "note": "",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "adr"
+      },
+      {
+        "dir": "←",
+        "key": "feature"
+      }
+    ],
+    "template": "# Integration Spec: [External System]\n\n## Purpose\n\n## External System\n- **Provider:**\n- **API Version:**\n- **Auth Method:**\n- **Docs URL:**\n- **Sandbox URL:**\n\n## Integration Points\n\n### [Endpoint / Trigger]\n**Direction:** Inbound / Outbound\n**When:**\n\n**Request**\n```json\n{}\n```\n\n**Response**\n```json\n{}\n```\n\n## Error Handling\n| Error | Code | Retry? | Max | Backoff | Fallback |\n|---|---|---|---|---|---|\n\n## Monitoring\n\n## Changelog\n",
+    "aiTasks": [
+      {
+        "name": "Error Handling Advisor",
+        "persona": "Senior Backend Developer",
+        "objective": "Review error handling and retry logic for completeness.",
+        "prompt": "You are a Senior Backend Dev experienced in distributed systems. Review this integration: (1) All error codes handled? (2) Retry strategy appropriate (exponential backoff, circuit breaker)? (3) Dead letter queue / fallback for unrecoverable failures? (4) Idempotent? (5) Behaviour during outage? Suggest concrete improvements.",
+        "step": "Write Integration Doc"
+      },
+      {
+        "name": "Integration Flow Diagram",
+        "persona": "Solution Architect",
+        "step": "Write Integration Doc",
+        "objective": "Generate a sequence or flow diagram only if the integration involves 3+ systems or has retry/fallback logic.",
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a Solution Architect documenting a system integration.\n\nAssessment: Does this integration involve 3+ systems, or does it have retry logic, fallback paths, circuit breaking, or async processing? A simple point-to-point synchronous call does not need a diagram.\n\nIf warranted, generate a `sequenceDiagram` showing:\n- All systems as actors\n- Happy path data flow\n- Error/retry/fallback paths using `alt` or `opt` blocks\n- Async operations marked with `->>+` notation\n\nOutput only the mermaid code block, no explanation."
+      }
+    ]
+  },
+  {
+    "phase": "architecture",
+    "key": "nfr",
+    "title": "Non-Functional Requirements",
+    "sub": "Performance, availability, observability",
+    "path": "[project]/05_architecture/nfr/[domain]-nfr.md",
+    "owner": "Tech Lead",
+    "reviewers": [
+      "Product Owner",
+      "Business Analyst"
+    ],
+    "signoff": "Product Owner",
+    "lifecycle": "Living — reviewed on production issues or new SLAs",
+    "trigger": "Epic or feature has measurable quality requirements",
+    "doel": "Define measurable quality targets early in design so they are built in, not bolted on.",
+    "inputs": [
+      "Epic KPIs",
+      "Production data",
+      "Stakeholder expectations"
+    ],
+    "outputs": [
+      "Measurable performance and availability targets",
+      "Basis for load testing and monitoring"
+    ],
+    "flow": [
+      {
+        "name": "KPI in Epic",
+        "sub": "Trigger",
+        "type": "trigger"
+      },
+      {
+        "name": "Define NFRs",
+        "sub": "Tech Lead + PO",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Analyse epic KPIs",
+            "method": "KPI-to-NFR translation workshop",
+            "tools": "Spreadsheet, Claude",
+            "aiTask": ""
+          },
+          {
+            "name": "Benchmark against production",
+            "method": "APM data analysis",
+            "tools": "Grafana, DataDog, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off PO",
+        "sub": "Business value confirmed",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Define test strategy",
+            "method": "Load test planning",
+            "tools": "k6, Claude",
+            "aiTask": ""
+          },
+          {
+            "name": "Sign-off with PO",
+            "method": "Review meeting",
+            "tools": "Confluence, Zoom",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Living Doc",
+        "sub": "Reviewed based on data",
+        "type": "output"
+      }
+    ],
+    "note": "NFRs added post-development are hard to retrofit. Define alongside the epic.",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "epic"
+      }
+    ],
+    "template": "# Non-Functional Requirements: [Domain]\n\n## Performance\n| Metric | Target | Percentile | Measurement |\n|---|---|---|---|\n| Response time | < 500ms | p95 | APM |\n| Throughput | > 100 req/s | sustained | Load test |\n\n## Availability\n- **Uptime target:** 99.9%\n- **RTO:**\n- **RPO:**\n\n## Security\n- Auth requirements:\n- Encryption at rest: Yes / No\n- Encryption in transit: TLS 1.2+\n\n## Scalability\n- Expected DAU:\n- Peak multiplier:\n\n## Observability\n- Logging: structured JSON\n- Alerting: on error rate > X%\n\n## Test Strategy\n| Test Type | Tool | Pass Criteria |\n|---|---|---|\n| Load | k6 | p95 < 500ms @ 100 req/s |\n| Soak | k6 | No memory leak over 4h |\n",
+    "aiTasks": [
+      {
+        "name": "Metric Definer",
+        "persona": "Solution Architect",
+        "objective": "Convert vague quality goals into specific, measurable NFR targets.",
+        "prompt": "You are a Solution Architect. Review these NFRs: (1) Convert vague requirements into specific targets with percentile specs (p50/p95/p99), (2) Add measurement methods per metric, (3) Suggest missing categories (GDPR, data retention), (4) Flag unrealistic targets. Output a revised NFR table.",
+        "step": "Define NFRs"
+      },
+      {
+        "name": "Test Strategy Advisor",
+        "persona": "Performance Engineer",
+        "objective": "Define a test strategy validating each NFR before production deployment.",
+        "prompt": "You are a Performance Engineer. Define a test strategy: (1) load test scenarios with user counts, (2) stress test thresholds, (3) soak test duration, (4) tools needed, (5) go/no-go criteria. Format as a test plan with phases: baseline, load, stress, soak.",
+        "step": "Define NFRs"
+      },
+      {
+        "name": "NFR Test Strategy Diagram",
+        "persona": "QA Engineer",
+        "step": "Define NFRs",
+        "objective": "Generate a flowchart of the NFR test strategy only if it spans multiple test types and environments with non-obvious sequencing.",
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a QA Engineer planning NFR testing.\n\nAssessment: Does the test strategy span 3+ test types (load, stress, soak, spike, volume) across multiple environments? Is the sequencing non-obvious? A single load test does not need a diagram.\n\nIf warranted, generate a `flowchart TD` showing:\n- Test phases in sequence\n- Pass/fail gates between phases\n- Which environment each phase runs in\n- Escalation path if a gate fails\n\nOutput only the mermaid code block, no explanation."
+      }
+    ]
+  }
+]

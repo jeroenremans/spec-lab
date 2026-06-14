@@ -1,0 +1,499 @@
+[
+  {
+    "phase": "discovery",
+    "key": "as-is",
+    "title": "As-Is Process",
+    "sub": "Current state before digitalisation",
+    "path": "[project]/01_discovery/as-is-process.md",
+    "owner": "Business Analyst",
+    "reviewers": [
+      "End User",
+      "Stakeholder"
+    ],
+    "signoff": "",
+    "lifecycle": "One-time — reference for to-be comparison",
+    "trigger": "Start of discovery phase",
+    "doel": "Document the current way of working as the baseline for identifying pain points and improvement opportunities.",
+    "inputs": [
+      "On-site observations",
+      "Staff interviews",
+      "Stakeholder map"
+    ],
+    "outputs": [
+      "Visual process diagram of current state",
+      "Input for pain points analysis"
+    ],
+    "flow": [
+      {
+        "name": "Observation",
+        "sub": "BA on-site",
+        "type": "trigger"
+      },
+      {
+        "name": "Interviews",
+        "sub": "Staff & end users",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "On-site observation",
+            "method": "Shadowing / fly-on-the-wall",
+            "tools": "Notebook, camera",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Modelling",
+        "sub": "BA writes as-is",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Staff interviews",
+            "method": "Semi-structured interviews",
+            "tools": "Zoom, Miro",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Validation",
+        "sub": "Staff confirms accuracy",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Model the process",
+            "method": "BPMN / swimlane diagram",
+            "tools": "Miro, draw.io, Claude",
+            "aiTask": ""
+          },
+          {
+            "name": "Validate with staff",
+            "method": "Walkthrough session",
+            "tools": "Miro, screen share",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Validated Doc",
+        "sub": "Input for pain points",
+        "type": "output"
+      }
+    ],
+    "note": "",
+    "refs": [
+      {
+        "dir": "→",
+        "key": "pijnpunten"
+      }
+    ],
+    "template": "# As-Is Process: [Process Name]\n\n## Overview\n\n## Process Steps\n| Step | Actor | Input | Output | Tool / System |\n|---|---|---|---|---|\n| 1 | | | | |\n\n## Roles Involved\n\n## Systems & Tools Used\n\n## Process Diagram (Mermaid)\n```mermaid\nflowchart LR\n  A[Start] --> B[Step 1]\n  B --> C[End]\n```\n\n## Known Issues\n\n## Open Questions\n",
+    "aiTasks": [
+      {
+        "name": "Process Gap Analyst",
+        "persona": "Business Process Consultant",
+        "objective": "Identify inefficiencies, bottlenecks, and manual workarounds.",
+        "prompt": "You are a Business Process Consultant. Review this as-is process: (1) bottlenecks, (2) manual steps to automate, (3) handoff points with high error risk, (4) undocumented exception paths. Output a prioritised gap list with impact H/M/L.",
+        "step": "Modelling"
+      },
+      {
+        "name": "Quick Win Identifier",
+        "persona": "Lean Process Expert",
+        "objective": "Surface low-effort improvements deliverable before the full digital solution.",
+        "prompt": "You are a Lean expert. Identify 3-5 quick wins achievable without a full digital solution (process changes, better use of existing tools). For each: effort (low/medium) and expected impact.",
+        "step": "Modelling"
+      },
+      {
+        "name": "Multi-Role Process Reviewer",
+        "persona": "Multi-Agent Facilitator",
+        "step": "Validation",
+        "objective": "Review this as-is process from 3 organisational roles and identify shared friction points.",
+        "prompt": "You are facilitating a multi-role review of this as-is process document. Three reviewers each read the process and react independently.\n\n**Reviewer 1 — Operations / Floor Worker (does the process daily)**\nWhere does this process slow you down? Where do you work around the official steps? What's the most frustrating moment? What would you fix first if you could?\n\n**Reviewer 2 — Manager / Team Lead (responsible for outcomes)**\nWhere does this process create reporting blind spots or escalation delays? Where are handoffs breaking down? What metrics does this process make hard to track?\n\n**Reviewer 3 — IT / Systems Owner (supports the tooling)**\nWhere does the process depend on manual workarounds for missing system support? Where do data quality issues originate? Where is automation feasible but not implemented?\n\n---\n**Common Ground & Synthesis**\n1. Which friction points appear in 2 or 3 perspectives? These are your highest-confidence pain points.\n2. Which pain points are perspective-specific (valid but not shared)?\n3. Rank the top 3 cross-cutting improvement opportunities.\n4. Are there any contradictions between perspectives that need a decision before proceeding?",
+        "perspectives": [
+          "Operations",
+          "Manager / Team Lead",
+          "IT / Systems"
+        ]
+      },
+      {
+        "name": "Process Flow Diagram",
+        "persona": "Business Analyst",
+        "step": "Modelling",
+        "objective": "Generate a flowchart of the as-is process only if it has branching or parallel paths that text cannot convey clearly.",
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a BA modelling an as-is process.\n\nAssessment: Does this process have decision points, parallel lanes, or handoffs between 3+ actors? If yes, a flowchart is warranted. If it is a simple linear sequence, it is not.\n\nIf warranted, generate a `flowchart LR` with:\n- Swimlanes per actor (using `subgraph`)\n- Decision nodes (diamond shape with `{}`)\n- Handoff points clearly marked\n- No more than 12 nodes — simplify if needed\n\nOutput only the mermaid code block, no explanation."
+      }
+    ]
+  },
+  {
+    "phase": "discovery",
+    "key": "pijnpunten",
+    "title": "Pain Points",
+    "sub": "Structured problem analysis",
+    "path": "[project]/01_discovery/pain-points.md",
+    "owner": "Business Analyst",
+    "reviewers": [
+      "Product Owner",
+      "Executive Sponsor"
+    ],
+    "signoff": "Product Owner",
+    "lifecycle": "One-time — input for epic prioritisation",
+    "trigger": "As-is process validated",
+    "doel": "Prioritise pain points so that the right problems are in scope for the solution phase.",
+    "inputs": [
+      "As-is process description",
+      "Interviews and observations",
+      "Customer feedback (if available)"
+    ],
+    "outputs": [
+      "Prioritised pain point list",
+      "Basis for epic scope",
+      "KPI targets per pain point"
+    ],
+    "flow": [
+      {
+        "name": "As-Is Complete",
+        "sub": "Trigger",
+        "type": "trigger"
+      },
+      {
+        "name": "Analysis",
+        "sub": "BA clusters pain points",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Cluster raw observations",
+            "method": "Affinity mapping",
+            "tools": "Miro, sticky notes",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Prioritisation",
+        "sub": "Workshop with PO",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Root cause analysis",
+            "method": "5-Whys per pain point",
+            "tools": "Miro, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off PO",
+        "sub": "Scope confirmed",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Prioritisation workshop",
+            "method": "Impact/effort matrix",
+            "tools": "Miro, Jira",
+            "aiTask": ""
+          },
+          {
+            "name": "Document and sign off",
+            "method": "Structured writing",
+            "tools": "Confluence, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Input for Epics",
+        "sub": "Discovery closed",
+        "type": "output"
+      }
+    ],
+    "note": "Sign-off by the PO determines which pain points are in scope for V1.",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "as-is"
+      },
+      {
+        "dir": "→",
+        "key": "epic"
+      }
+    ],
+    "template": "# Pain Points\n\n## Summary\n\n## Pain Points\n\n### [Pain Point Name]\n- **Impact**: High / Medium / Low\n- **Frequency**: Daily / Weekly / Occasionally\n- **Description**:\n- **Root Cause** (5-Whys):\n- **KPI Target**:\n\n## Prioritisation Matrix\n| Pain Point | Impact | Effort | Priority |\n|---|---|---|---|\n\n## V1 Scope Decision\n### In Scope for V1\n\n### Deferred to V2+\n",
+    "aiTasks": [
+      {
+        "name": "Root Cause Analyst",
+        "persona": "Business Analyst",
+        "objective": "Identify root causes vs. symptoms for each pain point.",
+        "prompt": "You are a BA skilled in root cause analysis. For each pain point, apply 5-Whys. Distinguish symptoms from root causes. Flag where the stated cause appears to be a symptom. Output: Pain Point | Symptom | Root Cause | Confidence.",
+        "step": "Analysis"
+      },
+      {
+        "name": "Priority Matrix Advisor",
+        "persona": "Product Owner",
+        "objective": "Score pain points by business impact and effort.",
+        "prompt": "You are a Product Owner. Score each pain point 1-5 on impact and effort. Calculate priority (impact/effort). Suggest a V1 scope maximising value within a realistic effort budget. Output as a prioritisation matrix.",
+        "step": "Prioritisation"
+      },
+      {
+        "name": "Cross-Persona Pain Validator",
+        "persona": "Multi-Agent Facilitator",
+        "step": "Prioritisation",
+        "objective": "Validate each pain point from the perspective of 3 user personas and find common ground.",
+        "prompt": "You are running a cross-persona validation of this pain points document. Three distinct user personas each review the pain points and respond.\n\n**Persona A — Power User (experienced, high-frequency user)**\nWhich pain points match your daily reality? Which feel minor to you — you've found workarounds? Which are dealbreakers that make you avoid the system?\n\n**Persona B — Occasional User (low frequency, low confidence)**\nWhich pain points block you from even starting? Which pain points do you not even recognise — suggesting the problem is invisible to you because you avoid that part entirely?\n\n**Persona C — Manager / Decision Maker (uses outputs, not the system directly)**\nWhich pain points create downstream problems you see in reports, delays, or escalations? Which would you not even notice because they're invisible at your level?\n\n---\n**Common Ground & Synthesis**\n1. Which pain points are felt across ALL three personas? Mark these HIGH PRIORITY.\n2. Which are felt by exactly two personas? MEDIUM PRIORITY.\n3. Which are persona-specific? Flag these — fixing them may not justify the cost if the persona is small.\n4. Are there pain points missing from this document that multiple personas would raise?\n5. Revised priority ranking with justification.",
+        "perspectives": [
+          "Power User",
+          "Occasional User",
+          "Manager / Decision Maker"
+        ]
+      },
+      {
+        "name": "Priority Matrix Diagram",
+        "persona": "Product Owner",
+        "step": "Prioritisation",
+        "objective": "Generate an impact vs effort quadrant for prioritised pain points only if there are 4+ items to compare.",
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a PO creating a prioritisation matrix.\n\nAssessment: Are there 4 or more distinct pain points with differing impact/effort profiles? If fewer, a simple ranked list in text is clearer.\n\nIf warranted, generate a `quadrantChart` with:\n- X axis: Effort (Low → High)\n- Y axis: Impact (Low → High)\n- Each pain point plotted as a point with a short label\n- Keep labels under 20 characters\n\nOutput only the mermaid code block, no explanation."
+      }
+    ]
+  },
+  {
+    "phase": "discovery",
+    "key": "persona",
+    "title": "User Persona",
+    "sub": "Primary end user profile",
+    "path": "[project]/01_discovery/persona-primary.md",
+    "owner": "Business Analyst",
+    "reviewers": [
+      "Product Owner"
+    ],
+    "signoff": "",
+    "lifecycle": "One-time — reference throughout the project",
+    "trigger": "User interviews completed",
+    "doel": "Create a shared picture of the primary user so UX decisions are consistent and user-centred.",
+    "inputs": [
+      "User interviews (min. 3)",
+      "On-site observations"
+    ],
+    "outputs": [
+      "Persona document",
+      "Reference for UX decisions in solution phase"
+    ],
+    "flow": [
+      {
+        "name": "Interviews",
+        "sub": "Min. 3 end users",
+        "type": "trigger"
+      },
+      {
+        "name": "Synthesis",
+        "sub": "BA builds persona",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "User interviews",
+            "method": "Semi-structured, contextual inquiry",
+            "tools": "Zoom, Calendly, recording (with consent)",
+            "aiTask": ""
+          },
+          {
+            "name": "Synthesise patterns",
+            "method": "Affinity mapping, empathy mapping",
+            "tools": "Miro, FigJam",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "PO Review",
+        "sub": "Informal",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Write persona",
+            "method": "Narrative + data synthesis",
+            "tools": "Figma, Claude, Notion",
+            "aiTask": ""
+          },
+          {
+            "name": "Validate with team",
+            "method": "Presentation",
+            "tools": "Slides, Miro",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Published",
+        "sub": "Team reference",
+        "type": "output"
+      }
+    ],
+    "note": "",
+    "refs": [],
+    "template": "# Persona: [Name]\n\n## Profile\n- **Role**:\n- **Age range**:\n- **Tech comfort**: Low / Medium / High\n- **Context**: Where and how they work\n\n## Goals\n1.\n2.\n\n## Frustrations\n1.\n2.\n\n## A Day in the Life\n\n## Quote\n> \"[typical thing this person would say]\"\n\n## What success looks like\n",
+    "aiTasks": [
+      {
+        "name": "Interview Guide Creator",
+        "persona": "UX Researcher",
+        "objective": "Generate a structured interview guide to uncover user behaviours and frustrations.",
+        "prompt": "You are a UX Researcher. Create a semi-structured interview guide for this persona. Include: warm-up, current behaviour & workarounds, frustration probes, goals/motivations, closing questions about ideal solutions. 3-4 questions per section with interviewer tips.",
+        "step": "Interviews"
+      },
+      {
+        "name": "Journey Mapper",
+        "persona": "UX Designer",
+        "objective": "Map the user journey to identify key touchpoints and emotional highs/lows.",
+        "prompt": "You are a UX Designer. Based on this persona, create a user journey map for their primary workflow: stages, actions, thoughts/feelings, pain points, opportunities. Highlight the 2-3 moments most important for UX investment. Format as a markdown table.",
+        "step": "Synthesis"
+      },
+      {
+        "name": "Stakeholder Perspective Panel",
+        "persona": "Multi-Agent Facilitator",
+        "step": "PO Review",
+        "objective": "Validate this persona from 3 stakeholder viewpoints and synthesise consensus.",
+        "prompt": "You are facilitating a multi-perspective panel review of this persona document. Simulate three distinct reviewers in sequence — each reads the full persona and responds independently.\n\n**Reviewer 1 — End User Representative**\nDoes this persona feel real? What rings true? What feels assumed or missing from lived experience? Are the goals and frustrations genuine?\n\n**Reviewer 2 — Product Owner**\nDoes this persona give clear enough direction for prioritisation? Which of their needs are already addressed? Which create scope risk? Is this persona distinct enough from others to be useful?\n\n**Reviewer 3 — Developer / Tech Lead**\nAre the technical expectations realistic? Does anything in this persona imply constraints we haven't planned for (performance, accessibility, device, data)?\n\n---\n**Common Ground & Synthesis**\n1. What do all three reviewers agree on?\n2. Where do perspectives conflict — and why?\n3. What one change to the persona would address the most cross-cutting concern?\n4. Is this persona strong enough to drive feature decisions? Verdict: Ready / Needs Work / Rethink.",
+        "perspectives": [
+          "End User",
+          "Product Owner",
+          "Developer / Tech Lead"
+        ]
+      },
+      {
+        "name": "User Journey Diagram",
+        "persona": "UX Researcher",
+        "step": "Synthesis",
+        "objective": "Generate a user journey map for this persona only if their path has multiple stages with distinct emotional shifts.",
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a UX Researcher mapping a user journey.\n\nAssessment: Does this persona have 4+ distinct journey stages with varying sentiment? If the persona description only covers demographics and goals without a journey, a diagram adds no value.\n\nIf warranted, generate a `journey` diagram with:\n- Section per journey stage\n- Tasks per stage (score 1–5 for satisfaction)\n- Actor: the persona name\n\nOutput only the mermaid code block, no explanation."
+      }
+    ]
+  },
+  {
+    "phase": "discovery",
+    "key": "spike",
+    "title": "Spike / Research",
+    "sub": "Technical exploration before committing to spec",
+    "path": "[project]/01_discovery/spike-[topic].md",
+    "owner": "Tech Lead",
+    "reviewers": [
+      "Business Analyst",
+      "Senior Developer"
+    ],
+    "signoff": "",
+    "lifecycle": "One-time — archived after decision; re-validate if unused after 90 days",
+    "trigger": "Technical uncertainty blocks spec writing or architecture decision",
+    "doel": "Explore approaches in parallel before committing so specs are written on validated ground, not assumptions.",
+    "inputs": [
+      "Epic or feature describing the problem",
+      "Technical constraints (NFR, existing stack)",
+      "Identified unknowns"
+    ],
+    "outputs": [
+      "Recommended approach with rationale",
+      "Alternatives considered",
+      "Decision log",
+      "Refresh cadence for re-validation"
+    ],
+    "flow": [
+      {
+        "name": "Uncertainty Identified",
+        "sub": "Blocks spec writing",
+        "type": "trigger"
+      },
+      {
+        "name": "Define Exploration",
+        "sub": "TL scopes the spike",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Define unknowns",
+            "method": "Problem framing",
+            "tools": "Miro, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Parallel Exploration",
+        "sub": "1–2 approaches prototyped",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Design exploration paths",
+            "method": "Parallel option design",
+            "tools": "Claude, draw.io",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Decision",
+        "sub": "TL + BA pick approach",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Build minimal proof",
+            "method": "Timebox (1–3 days)",
+            "tools": "IDE, Postman, Claude",
+            "aiTask": ""
+          },
+          {
+            "name": "Document findings",
+            "method": "Decision log writing",
+            "tools": "Markdown, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Archived + Linked",
+        "sub": "Spike linked to spec/ADR",
+        "type": "output"
+      }
+    ],
+    "note": "A spike older than 90 days without a linked decision should be marked stale and re-validated before use.",
+    "refs": [
+      {
+        "dir": "→",
+        "key": "adr"
+      },
+      {
+        "dir": "→",
+        "key": "feature"
+      }
+    ],
+    "template": "# Spike: [Topic]\n\n**Status:** In Progress / Concluded\n**Date:** [date]\n**Timebox:** [N] days\n**Staleness warning:** Re-validate if unused after 90 days from [date]\n\n## Problem / Question\n\n## What We Need to Know\n\n## Approaches Explored\n\n### Option A: [name]\n**Approach:**\n**Findings:**\n**Pros:**\n**Cons:**\n**Effort:**\n\n### Option B: [name]\n**Approach:**\n**Findings:**\n**Pros:**\n**Cons:**\n**Effort:**\n\n## Decision\n\n**Chosen:** Option [A/B/other]\n**Rationale:**\n\n## Decision Log\n| Date | Question | Options | Resolution | Impact |\n|---|---|---|---|---|\n\n## Linked Artifacts\n- ADR: [link if architectural decision was made]\n- Feature/Spec: [link]\n- Refresh cadence: [date or condition for re-validation]\n",
+    "aiTasks": [
+      {
+        "name": "Spike Planner",
+        "persona": "Solution Architect",
+        "objective": "Define parallel exploration paths and timebox for the spike.",
+        "prompt": "You are a Solution Architect. Based on this technical uncertainty, define a spike plan: (1) What specific question must be answered? (2) What are 2-3 feasible approaches to explore? (3) What is the minimum viable proof for each? (4) What is a realistic timebox (1-3 days)? (5) What are the go/no-go criteria per option? Output a structured spike plan.",
+        "step": "Define Exploration"
+      },
+      {
+        "name": "Findings Synthesiser",
+        "persona": "Tech Lead",
+        "objective": "Synthesise exploration findings into a clear decision recommendation.",
+        "prompt": "You are a Tech Lead. Review these spike findings: (1) Which option best fits the constraints (NFR, stack, team skill)? (2) What are the risks of the chosen option? (3) What would change this decision? (4) Does this require an ADR? Output: recommendation + rationale + conditions that would invalidate the choice.",
+        "step": "Decision"
+      },
+      {
+        "name": "Multi-Perspective Decision Council",
+        "persona": "Multi-Agent Facilitator",
+        "step": "Decision",
+        "objective": "Challenge the spike decision from tech, business, and UX perspectives before committing.",
+        "prompt": "You are running a pre-commitment review of this spike's findings and proposed decision. Three council members challenge the recommendation independently.\n\n**Council Member 1 — Tech Lead (implementation risk)**\nIs the chosen option technically sound? What hidden complexity does the spike NOT address yet? What would make you confident vs. worried about committing to this approach? What's the most likely technical failure mode?\n\n**Council Member 2 — Product Owner (business risk)**\nDoes the chosen option serve the original user problem — or did we optimise for technical elegance? Does the timebox justify the confidence level? What's the cost of being wrong? Is there a faster path to the same outcome?\n\n**Council Member 3 — UX / BA (user & requirements risk)**\nDoes the chosen option preserve all user-facing behaviours we need? Are there edge cases in the user journeys that this approach makes harder to handle? Did the spike test the right scenarios?\n\n---\n**Common Ground & Synthesis**\n1. Where do all three agree the decision is sound?\n2. Where do concerns overlap across 2+ perspectives? These are your blocking risks — resolve before committing.\n3. What one additional validation would give the most confidence across all perspectives?\n4. Final gate: Proceed / Proceed with conditions / Re-spike.",
+        "perspectives": [
+          "Tech Lead",
+          "Product Owner",
+          "UX / BA"
+        ]
+      },
+      {
+        "name": "Options Comparison Diagram",
+        "persona": "Solution Architect",
+        "step": "Parallel Exploration",
+        "objective": "Visualise the spike options side-by-side only if comparing 3+ attributes across 2+ options would be clearer visually.",
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a Solution Architect comparing spike options.\n\nAssessment: Are there 2+ options with 3+ comparable dimensions (effort, risk, scalability, etc.)? If it is a binary choice with one clear winner, text is sufficient.\n\nIf warranted, generate a `flowchart TD` showing:\n- Each option as a branch from the decision node\n- Key properties listed under each option node\n- A \"Decision\" node at the bottom with the chosen path highlighted using a style\n\nOutput only the mermaid code block, no explanation."
+      }
+    ]
+  }
+]

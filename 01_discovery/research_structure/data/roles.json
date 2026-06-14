@@ -1,0 +1,72 @@
+[
+  {
+    "key": "executive-sponsor",
+    "title": "Executive Sponsor",
+    "name": ""
+  },
+  {
+    "key": "product-owner",
+    "title": "Product Owner",
+    "name": ""
+  },
+  {
+    "key": "business-analyst",
+    "title": "Business Analyst",
+    "name": ""
+  },
+  {
+    "key": "tech-lead",
+    "title": "Tech Lead",
+    "name": ""
+  },
+  {
+    "key": "solution-architect",
+    "title": "Solution Architect",
+    "name": ""
+  },
+  {
+    "key": "developer",
+    "title": "Developer",
+    "name": ""
+  },
+  {
+    "key": "senior-developer",
+    "title": "Senior Developer",
+    "name": ""
+  },
+  {
+    "key": "tester",
+    "title": "Tester",
+    "name": ""
+  },
+  {
+    "key": "qa-engineer",
+    "title": "QA Engineer",
+    "name": ""
+  },
+  {
+    "key": "scrum-master",
+    "title": "Scrum Master",
+    "name": ""
+  },
+  {
+    "key": "stakeholder",
+    "title": "Stakeholder",
+    "name": ""
+  },
+  {
+    "key": "end-user",
+    "title": "End User",
+    "name": ""
+  },
+  {
+    "key": "security-officer",
+    "title": "Security Officer",
+    "name": ""
+  },
+  {
+    "key": "full-team",
+    "title": "Full Team",
+    "name": ""
+  }
+]

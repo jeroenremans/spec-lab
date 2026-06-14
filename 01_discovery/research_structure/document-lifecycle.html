@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Document Lifecycle</title>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500&family=JetBrains+Mono:wght@400&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="lifecycle-style.css">
+</head>
+<body>
+
+<div class="topbar">
+  <div class="topbar-title">Document Lifecycle</div>
+  <div class="topbar-sub">Spec-Driven Development</div>
+  <div style="display:flex;gap:6px">
+    <button class="btn btn-sm" onclick="openPhasesModal()">⚙ Phases</button>
+    <button class="btn btn-sm" onclick="exportJSON()">↓ Export</button>
+    <label class="btn btn-sm" style="cursor:pointer">↑ Import<input type="file" accept=".json" onchange="importJSON(event)" style="display:none"></label>
+    <button class="btn btn-sm btn-danger" onclick="resetData()">↺ Reset</button>
+  </div>
+</div>
+
+<div class="phase-nav" id="phase-nav"></div>
+
+<div class="page">
+  <div class="doc-list" id="doc-list"></div>
+  <div class="detail" id="detail">
+    <div class="detail-empty">← Select a document</div>
+  </div>
+</div>
+
+<div id="modal-root"></div>
+
+<!-- Mermaid diagram renderer -->
+<script src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.min.js"></script>
+<script>mermaid.initialize({startOnLoad:false,theme:'neutral',securityLevel:'loose'});</script>
+
+<!-- App (data loaded via fetch in storage.js) -->
+<script src="js/storage.js"></script>
+<script src="js/view.js"></script>
+<script src="js/edit.js"></script>
+<script src="js/tree.js"></script>
+<script src="js/nav.js"></script>
+</body>
+</html>

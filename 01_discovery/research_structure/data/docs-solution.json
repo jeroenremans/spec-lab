@@ -1,0 +1,490 @@
+[
+  {
+    "phase": "solution",
+    "key": "epic",
+    "title": "Epic",
+    "sub": "Overarching goal of an initiative",
+    "path": "[project]/02_solution/epic-[name]/epic.md",
+    "owner": "Product Owner",
+    "reviewers": [
+      "Business Analyst",
+      "Tech Lead",
+      "Executive Sponsor"
+    ],
+    "signoff": "Executive Sponsor",
+    "lifecycle": "Living — updated on scope changes",
+    "trigger": "Pain points prioritised and approved",
+    "doel": "Define a deliverable block of business value that enables traceability and budget control.",
+    "inputs": [
+      "Approved pain points",
+      "PRD (scope)",
+      "User persona"
+    ],
+    "outputs": [
+      "Business outcome with KPIs",
+      "Scope definition",
+      "Basis for feature decomposition"
+    ],
+    "flow": [
+      {
+        "name": "Pain Points OK",
+        "sub": "Trigger",
+        "type": "trigger"
+      },
+      {
+        "name": "Draft Epic",
+        "sub": "Product Owner",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Business outcome workshop",
+            "method": "Value proposition canvas",
+            "tools": "Miro, Jira",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Review",
+        "sub": "BA + Tech Lead",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Define KPIs",
+            "method": "OKR workshop",
+            "tools": "Spreadsheet, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off",
+        "sub": "Executive Sponsor",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Scope definition",
+            "method": "MoSCoW with PO + BA",
+            "tools": "Miro, Confluence",
+            "aiTask": ""
+          },
+          {
+            "name": "Write epic",
+            "method": "Structured writing",
+            "tools": "Claude, Jira, Confluence",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Features Start",
+        "sub": "Epic is living doc",
+        "type": "output"
+      }
+    ],
+    "note": "Sign-off is formal when the epic has budget impact. For smaller initiatives, informal PO agreement suffices.",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "pijnpunten"
+      },
+      {
+        "dir": "→",
+        "key": "domain"
+      }
+    ],
+    "template": "# Epic: [Name]\n\n## Business Outcome\n\n## Problem Statement\n\n## Target Users\n\n## Success Metrics (KPIs)\n| Metric | Baseline | Target | Measurement |\n|---|---|---|---|\n\n## Scope\n### In Scope\n\n### Out of Scope\n\n## Features\n| Feature | Priority | Status |\n|---|---|---|\n\n## Assumptions\n\n## Dependencies\n\n## Open Questions\n",
+    "aiTasks": [
+      {
+        "name": "Business Value Validator",
+        "persona": "Product Owner",
+        "objective": "Validate the epic has a clear, measurable outcome with realistic KPIs.",
+        "prompt": "You are a Product Owner. Review this epic: (1) Is business outcome measurable? (2) Are KPIs SMART? (3) Is scope realistic? (4) Are dependencies identified? Output PASS/WARN/FAIL per criterion.",
+        "step": "Draft Epic"
+      },
+      {
+        "name": "Feature Decomposer",
+        "persona": "Senior Business Analyst",
+        "objective": "Break the epic into logical features with clear boundaries.",
+        "prompt": "You are a Senior BA. Suggest a feature breakdown: (1) full scope coverage, (2) clear boundaries, (3) independently deliverable, (4) logically sequenced. For each: one-sentence description and inter-feature dependencies.",
+        "step": "Draft Epic"
+      },
+      {
+        "name": "Spike Planner",
+        "persona": "Solution Architect",
+        "objective": "Identify technical uncertainties in this epic that need a spike before writing feature specs.",
+        "prompt": "You are a Solution Architect. Review this epic for technical uncertainties that should be explored via a spike before writing feature specs: (1) Unclear implementation approach, (2) New or unfamiliar technology, (3) Performance unknowns, (4) Integration unknowns. For each: name it, estimate risk (H/M/L), propose a spike question, suggest a timebox. Output as a spike candidate list.",
+        "step": "Draft Epic"
+      },
+      {
+        "name": "Epic Scope Diagram",
+        "persona": "Solution Architect",
+        "step": "Draft Epic",
+        "objective": "Generate a mindmap of epic scope only if the epic spans 4+ features or has a non-obvious decomposition.",
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a Solution Architect decomposing an epic.\n\nAssessment: Does this epic contain 4 or more distinct features or capability areas? Is the decomposition non-obvious (i.e., not just a simple list)? If the scope is simple, a diagram adds no clarity.\n\nIf warranted, generate a `mindmap` with:\n- Root: epic name\n- Level 1: capability areas or themes\n- Level 2: features or deliverables under each area\n- Max 3 levels deep\n\nOutput only the mermaid code block, no explanation."
+      }
+    ]
+  },
+  {
+    "phase": "solution",
+    "key": "feature",
+    "title": "Feature",
+    "sub": "Scoped piece of functionality within an epic",
+    "path": "[project]/02_solution/epic-[name]/feature-[name]/feature.md",
+    "owner": "Business Analyst",
+    "reviewers": [
+      "Product Owner",
+      "Tech Lead"
+    ],
+    "signoff": "Product Owner",
+    "lifecycle": "Living — updated on refinement or scope changes",
+    "trigger": "Epic approved and started",
+    "doel": "Document behaviour and business rules per functional block as the basis for stories and technical design.",
+    "inputs": [
+      "Epic (scope and KPIs)",
+      "Technical input from Tech Lead",
+      "User persona"
+    ],
+    "outputs": [
+      "Functional description of behaviour",
+      "Business rules",
+      "Basis for user stories"
+    ],
+    "flow": [
+      {
+        "name": "Epic Approved",
+        "sub": "Trigger",
+        "type": "trigger"
+      },
+      {
+        "name": "Feature Draft",
+        "sub": "Business Analyst",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Feature decomposition session",
+            "method": "Three Amigos (BA + TL + Tester)",
+            "tools": "Miro, video call",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Tech Review",
+        "sub": "Tech Lead feasibility",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Define business rules",
+            "method": "State machine analysis",
+            "tools": "Miro, draw.io",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off PO",
+        "sub": "Functional agreement",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Write feature doc",
+            "method": "Structured writing",
+            "tools": "Claude, Markdown",
+            "aiTask": ""
+          },
+          {
+            "name": "Tech review",
+            "method": "Feasibility review",
+            "tools": "GitHub, Confluence",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Stories Start",
+        "sub": "Feature is living doc",
+        "type": "output"
+      }
+    ],
+    "note": "",
+    "refs": [
+      {
+        "dir": "→",
+        "key": "api"
+      },
+      {
+        "dir": "→",
+        "key": "adr"
+      }
+    ],
+    "template": "# Feature: [Name]\n\nEpic: [link]\n\n## Description\n\n## User Goals\n\n## Business Rules\n| # | Rule | Example |\n|---|---|---|\n\n## State Machine\n| State | Trigger | Next State | Actor |\n|---|---|---|---|\n\n## Acceptance Criteria (summary)\n\n## Out of Scope\n\n## Open Questions\n\n## Change Log\n| Date | Change | Author |\n|---|---|---|\n\n## Traceability Matrix\n| Story | AC | Task | Test |\n|---|---|---|---|\n| US-001 | AC-001 | T-01 | TC-01 |\n",
+    "aiTasks": [
+      {
+        "name": "Business Rules Extractor",
+        "persona": "Senior Business Analyst",
+        "objective": "Surface implicit business rules assumed but not yet documented.",
+        "prompt": "You are a Senior BA. Read this feature and identify implicit business rules. Write each as: \"IF [condition] THEN [result]\". Flag rules that conflict with each other. Output: original assumption | explicit rule | conflict risk.",
+        "step": "Feature Draft"
+      },
+      {
+        "name": "Complexity Estimator",
+        "persona": "Tech Lead",
+        "objective": "Assess technical complexity and surface implementation risks.",
+        "prompt": "You are a Tech Lead. Assess this feature: (1) complexity H/M/L with justification, (2) key implementation risks, (3) architectural decisions required, (4) estimated story count. Flag anything needing clarification before stories are written.",
+        "step": "Tech Review"
+      },
+      {
+        "name": "Clarification Generator",
+        "persona": "Business Analyst",
+        "objective": "Surface ambiguities in this feature and generate structured options for stakeholder resolution.",
+        "prompt": "You are a Business Analyst. Review this feature for ambiguities: (1) Terms with multiple valid interpretations, (2) Business rules that conflict or overlap, (3) Scenarios not covered by ACs, (4) Assumptions stated as facts. For each: write the clarification question, then 2-3 concrete options with trade-offs pre-filled so the stakeholder only needs to choose. Format as CLR-NNN entries ready for the Clarification Log.",
+        "step": "Feature Draft"
+      },
+      {
+        "name": "Feature State Diagram",
+        "persona": "Solution Architect",
+        "step": "Feature Draft",
+        "objective": "Generate a state or flow diagram for this feature only if it involves a lifecycle with multiple states or a non-trivial decision flow.",
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a Solution Architect analysing a feature.\n\nAssessment: Does this feature involve an entity with 4+ lifecycle states, or a user flow with branching decisions? Simple CRUD features or single-path flows do not warrant a diagram.\n\nIf warranted, choose the correct type:\n- Use `stateDiagram-v2` if the feature has an entity with a meaningful lifecycle (draft → review → approved → archived, etc.)\n- Use `flowchart TD` if it is a decision-heavy process (multiple conditions determining next steps)\n\nInclude: all states/steps, transitions with labels, and error/exception paths.\n\nOutput only the mermaid code block, no explanation."
+      }
+    ]
+  },
+  {
+    "phase": "solution",
+    "key": "story",
+    "title": "User Story",
+    "sub": "Smallest unit of user value",
+    "path": "[project]/02_solution/epic-[name]/feature-[name]/stories/[story-name]/story.md",
+    "owner": "Business Analyst",
+    "reviewers": [
+      "Developer",
+      "Tester",
+      "Product Owner"
+    ],
+    "signoff": "Product Owner",
+    "lifecycle": "One-time — closed after sprint review",
+    "trigger": "Feature approved — refinement session planned",
+    "doel": "Define one testable piece of user value. Acceptance criteria live in a separate ac.md file.",
+    "inputs": [
+      "Feature (scope and business rules)",
+      "User persona",
+      "Technical constraints from developer"
+    ],
+    "outputs": [
+      "Story definition",
+      "Linked to ac.md for acceptance criteria",
+      "Ready for sprint after refinement"
+    ],
+    "flow": [
+      {
+        "name": "Refinement",
+        "sub": "BA + Dev + Tester",
+        "type": "trigger"
+      },
+      {
+        "name": "Story Draft",
+        "sub": "BA writes story",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Refinement session",
+            "method": "Three Amigos",
+            "tools": "Jira, video call, Miro",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "AC Written",
+        "sub": "BA writes ac.md (separate)",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Write story in INVEST format",
+            "method": "User story template",
+            "tools": "Jira, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off PO",
+        "sub": "\"Ready for sprint\"",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Define ACs (in ac.md)",
+            "method": "EARS notation",
+            "tools": "Claude, Markdown",
+            "aiTask": ""
+          },
+          {
+            "name": "Estimate",
+            "method": "Planning Poker / T-shirt sizing",
+            "tools": "Scrum poker app, Jira",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "In Sprint",
+        "sub": "Closed after DoD",
+        "type": "output"
+      }
+    ],
+    "note": "Acceptance Criteria are maintained in a separate ac.md file alongside story.md. This improves AI processing and keeps each file focused.",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "feature"
+      },
+      {
+        "dir": "→",
+        "key": "ac"
+      }
+    ],
+    "template": "# User Story: US-XXX-NNN [Name]\n\n**As a** [role],\n**I want to** [action],\n**so that** [value].\n\nFeature: [link]\nStatus: draft / in review / approved / in sprint / done\nPoints: ?\n\n## Open Questions\n| ID | Question | Options | Resolution | Owner |\n|---|---|---|---|---|\n| Q-01 | | A: ... / B: ... | Pending | |\n\n## Out of Scope\n\n## Notes\n\n## Linked Documents\n- Acceptance Criteria: ac.md\n- NFR: nfr.md (if applicable)\n",
+    "aiTasks": [
+      {
+        "name": "INVEST Validator",
+        "persona": "Agile Coach",
+        "objective": "Validate the story meets INVEST criteria (Independent, Negotiable, Valuable, Estimable, Small, Testable).",
+        "prompt": "You are an Agile Coach. Validate this user story against INVEST: (1) Independent — can it be delivered without other stories? (2) Negotiable — is the scope flexible? (3) Valuable — clear user value? (4) Estimable — enough detail to estimate? (5) Small — fits in one sprint? (6) Testable — can it be verified? Output PASS/WARN/FAIL per criterion.",
+        "step": "Story Draft"
+      },
+      {
+        "name": "Story Splitter",
+        "persona": "Senior Business Analyst",
+        "objective": "Split the story into smaller sub-stories if it is too large for a single sprint.",
+        "prompt": "You are a Senior BA. Assess if this user story is too large for one sprint. If yes, suggest 2-3 smaller sub-stories using valid splitting patterns (by workflow step, business rule, user role, data type, CRUD operation, happy path first). Each sub-story must be independently deliverable.",
+        "step": "Story Draft"
+      },
+      {
+        "name": "Clarification Generator",
+        "persona": "Business Analyst",
+        "objective": "Surface ambiguities in this story before refinement.",
+        "prompt": "You are a Business Analyst. Review this user story for ambiguities before refinement: (1) Is the user role specific enough? (2) Is the action clear enough to test? (3) Is the value measurable? (4) Are there implicit business rules not stated? For each: write the question with 2-3 options + trade-offs. Format as Q-NNN entries for the Open Questions section.",
+        "step": "Story Draft"
+      },
+      {
+        "name": "Story Flow Diagram",
+        "persona": "Business Analyst",
+        "step": "AC Written",
+        "objective": "Generate a flow diagram only if this story involves a multi-step interaction or conditional logic that prose cannot make unambiguous.",
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a BA reviewing a user story.\n\nAssessment: Does this story involve 3+ sequential steps with conditional branches, or interactions between 2+ systems? Single-action stories (\"as a user I want to see X\") never need a diagram.\n\nIf warranted, generate a `sequenceDiagram` or `flowchart TD`:\n- Use `sequenceDiagram` if there is an interaction between user + frontend + backend + database\n- Use `flowchart TD` if it is purely a decision flow within one system\n\nKeep to the happy path + one exception path maximum.\n\nOutput only the mermaid code block, no explanation."
+      }
+    ]
+  },
+  {
+    "phase": "solution",
+    "key": "ac",
+    "title": "Acceptance Criteria",
+    "sub": "EARS-format criteria per user story",
+    "path": "[project]/02_solution/epic-[name]/feature-[name]/stories/[story-name]/ac.md",
+    "owner": "Business Analyst",
+    "reviewers": [
+      "QA Engineer",
+      "Product Owner"
+    ],
+    "signoff": "Product Owner",
+    "lifecycle": "One-time — closed with the story after sprint review",
+    "trigger": "User story drafted in story.md",
+    "doel": "Define all testable conditions for accepting a story as done, separated from the story definition for clarity and AI processing efficiency.",
+    "inputs": [
+      "User story (story.md)",
+      "Feature (business rules)",
+      "Technical constraints from developer"
+    ],
+    "outputs": [
+      "Verifiable acceptance criteria in EARS format",
+      "Input for QA test cases",
+      "Edge case coverage"
+    ],
+    "flow": [
+      {
+        "name": "Story Drafted",
+        "sub": "story.md written",
+        "type": "trigger"
+      },
+      {
+        "name": "Write ACs",
+        "sub": "BA — EARS notation",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Read feature and story",
+            "method": "Requirements analysis",
+            "tools": "Markdown, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Edge Case Review",
+        "sub": "QA Engineer adds cases",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Write happy path ACs",
+            "method": "EARS notation",
+            "tools": "Claude, Markdown",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off PO",
+        "sub": "Criteria approved",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Add edge cases and error scenarios",
+            "method": "Boundary analysis, equivalence partitioning",
+            "tools": "Claude, spreadsheet",
+            "aiTask": ""
+          },
+          {
+            "name": "QA review and tester walkthrough",
+            "method": "Review session",
+            "tools": "Video call, GitHub PR",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Linked to Story",
+        "sub": "Closed with story",
+        "type": "output"
+      }
+    ],
+    "note": "EARS notation: WHEN [condition] THE [actor] SHALL [observable behaviour]. Keep each AC independently verifiable.",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "story"
+      },
+      {
+        "dir": "←",
+        "key": "feature"
+      }
+    ],
+    "template": "# Acceptance Criteria: [Story Name] (US-XXX-NNN)\n\nStory: [link to story.md]\nFeature: [link]\nStatus: draft / approved\n\n## Happy Path\n\n### AC-001: [Short name]\nWHEN [condition]\nTHE [actor] SHALL [observable behaviour]\n\n## Edge Cases\n\n### EC-001: [Short name]\nWHEN [condition]\nTHE [actor] SHALL [observable behaviour]\n\n## Error Scenarios\n\n### AC-002: [Short name]\nWHEN [condition]\nTHE [actor] SHALL [observable behaviour]\n\n## Compliance Checklist\n- [ ] GDPR: Does this feature process personal data?\n  - [ ] Consent mechanism in place\n  - [ ] Data retention period defined\n  - [ ] Deletion pathway documented\n- [ ] Auth: All sensitive operations require authenticated session\n- [ ] Logging: No PII written to logs\n- [ ] Encryption: Sensitive data encrypted at rest and in transit\n\n## Notes\n",
+    "aiTasks": [
+      {
+        "name": "AC Generator",
+        "persona": "QA Engineer",
+        "objective": "Generate complete EARS-format ACs covering happy path, edge cases, and error scenarios.",
+        "prompt": "You are a QA Engineer expert in EARS notation (WHEN [condition] THE [actor] SHALL [observable behaviour]). Based on this story and feature, generate: (1) happy path ACs, (2) edge case ACs (boundaries, empty states, max values), (3) error scenario ACs (invalid input, auth failures, system errors). Each AC must be independently testable.",
+        "step": "Write ACs"
+      },
+      {
+        "name": "Edge Case Detective",
+        "persona": "Security Engineer",
+        "objective": "Identify security, permission, and boundary edge cases the BA likely missed.",
+        "prompt": "You are a Security Engineer reviewing requirements. Identify: (1) authorisation edge cases (unauthorised data access), (2) input validation gaps (injection, XSS, oversized input), (3) concurrency issues (race conditions, simultaneous submits), (4) state edge cases (unexpected object states). Output as \"What if...\" scenarios, each a candidate AC.",
+        "step": "Edge Case Review"
+      }
+    ]
+  }
+]

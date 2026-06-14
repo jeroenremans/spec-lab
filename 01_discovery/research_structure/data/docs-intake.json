@@ -1,0 +1,443 @@
+[
+  {
+    "phase": "intake",
+    "key": "org-constitution",
+    "title": "Org Constitution",
+    "sub": "Organisation-wide standards (baseline)",
+    "path": "_org/constitution.md",
+    "owner": "Tech Lead",
+    "reviewers": [
+      "Solution Architect",
+      "Security Officer"
+    ],
+    "signoff": "Solution Architect",
+    "lifecycle": "Versioned — major review yearly, minor updates anytime",
+    "trigger": "New organisation standards or yearly review cycle",
+    "doel": "Establish the baseline coding, security, and process standards that every project must follow or explicitly override.",
+    "inputs": [
+      "Industry standards (OWASP, ISO 27001)",
+      "Lessons from past projects",
+      "Architecture board decisions"
+    ],
+    "outputs": [
+      "Baseline for all project constitutions",
+      "System prompt context for AI agents across all projects"
+    ],
+    "flow": [
+      {
+        "name": "Yearly Review",
+        "sub": "Or triggered by incident",
+        "type": "trigger"
+      },
+      {
+        "name": "Draft Update",
+        "sub": "Principal Architect",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Review industry standards",
+            "method": "Document analysis",
+            "tools": "OWASP, ISO docs, NIST",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Review Board",
+        "sub": "TL + Security + Architect",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Workshop with board",
+            "method": "Facilitated discussion",
+            "tools": "Miro, video call",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off",
+        "sub": "Principal Architect",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Draft document",
+            "method": "Structured writing",
+            "tools": "Markdown, Claude",
+            "aiTask": ""
+          },
+          {
+            "name": "Annual review cycle",
+            "method": "Diff against previous version",
+            "tools": "Git, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Published",
+        "sub": "All projects inherit",
+        "type": "output"
+      }
+    ],
+    "note": "Project constitutions can override specific sections by explicitly declaring an override. Silent conflicts are not allowed.",
+    "refs": [
+      {
+        "dir": "→",
+        "key": "project-constitution"
+      }
+    ],
+    "template": "# Org Constitution\n\nVersion: [X.Y] | Effective: [date]\n\n## Purpose\nBaseline standards for all [Org] software projects.\n\n## Coding Standards\n- Language versions:\n- Linting:\n- Naming conventions:\n- Commit format: Conventional Commits\n\n## Security Baseline\n- Auth standard:\n- Secrets management:\n- Dependency scanning: (required)\n- Data classification levels:\n\n## Quality Gates\n| Gate | Requirement |\n|---|---|\n| Unit test coverage | min. X% |\n| Linting | zero errors |\n| Security scan | zero high/critical |\n\n## Default Tooling\n| Category | Tool |\n|---|---|\n| Version control | |\n| CI/CD | |\n| Monitoring | |\n\n## AI Agent Guidance\n- Language: English\n- Documentation: inline only where non-obvious\n- Never commit secrets\n- Always validate external input\n",
+    "aiTasks": [
+      {
+        "name": "Standards Completeness Checker",
+        "persona": "Enterprise Architect",
+        "objective": "Verify the org constitution covers all mandatory governance areas.",
+        "prompt": "You are an Enterprise Architect. Review this org constitution for completeness: coding standards, security baseline (OWASP alignment), data protection, quality gates, tooling defaults, AI guidance. Flag missing sections with suggested content.",
+        "step": "Draft Update"
+      },
+      {
+        "name": "Security Baseline Reviewer",
+        "persona": "Security Engineer",
+        "objective": "Assess the security section against OWASP SAMM Level 1.",
+        "prompt": "You are a Security Engineer. Review the security section against OWASP SAMM Level 1. Identify missing practices, outdated recommendations, and practices too vague to enforce. Output a gap analysis with recommended additions.",
+        "step": "Review Board"
+      }
+    ]
+  },
+  {
+    "phase": "intake",
+    "key": "project-constitution",
+    "title": "Project Constitution",
+    "sub": "Project-level standards and overrides",
+    "path": "[project]/constitution.md",
+    "owner": "Tech Lead",
+    "reviewers": [
+      "Product Owner",
+      "Business Analyst"
+    ],
+    "signoff": "Executive Sponsor",
+    "lifecycle": "One-time — versioned when major tech decisions change",
+    "trigger": "Project start or adoption of a new tech stack",
+    "doel": "Define project-specific standards (tech stack, conventions, tooling) that extend or override the org constitution.",
+    "inputs": [
+      "Org Constitution (baseline)",
+      "Client tech constraints",
+      "Team skills and preferences"
+    ],
+    "outputs": [
+      "Single source of truth for project conventions",
+      "AI agent system context",
+      "Developer onboarding baseline"
+    ],
+    "flow": [
+      {
+        "name": "Project Start",
+        "sub": "Tech Lead initiates",
+        "type": "trigger"
+      },
+      {
+        "name": "Draft",
+        "sub": "TL + BA + PO",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Define tech requirements",
+            "method": "Architecture workshop",
+            "tools": "Miro, whiteboard",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Org Alignment",
+        "sub": "Check against org constitution",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Check org constitution",
+            "method": "Gap analysis",
+            "tools": "Claude, Markdown diff",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off",
+        "sub": "Executive Sponsor",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Draft document",
+            "method": "Structured writing",
+            "tools": "Markdown, Claude",
+            "aiTask": ""
+          },
+          {
+            "name": "Get sign-off",
+            "method": "Review meeting",
+            "tools": "Video call, Confluence",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Active",
+        "sub": "Used throughout project lifetime",
+        "type": "output"
+      }
+    ],
+    "note": "AI agents should receive this document as system context. Project overrides must explicitly reference the org constitution section they override.",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "org-constitution"
+      }
+    ],
+    "template": "# Project Constitution: [Project Name]\n\nVersion: 1.0 | Date: [date]\nOrg Constitution: v[X.Y]\n\n## Tech Stack\n| Layer | Technology | Version |\n|---|---|---|\n| Frontend | | |\n| Backend | | |\n| Database | | |\n| Cloud | | |\n\n## Project Overrides\n> These sections override the Org Constitution. Reference section by name.\n\n## Coding Conventions\n- Naming:\n- Folder structure:\n- Branching strategy:\n\n## Testing Requirements\n- Unit: min. X% coverage\n- Integration:\n- E2E:\n\n## Security Requirements\n- Auth method:\n- Data classification:\n- Compliance:\n\n## AI Guidance\n- Language: English\n- Commit format:\n- Documentation style:\n\n## Constraints\n\n### MUST (Non-negotiable — align with or document exception)\n\n### SHOULD (Default behaviour — override requires justification)\n\n### MAY (Optional — team decision)\n\n## Exceptions Process\n> To override a MUST: open a PR, document the exception below, get approval from Tech Lead + Security Officer.\n\n| Exception | Org section overridden | Approved by | Review date |\n|---|---|---|---|\n\n## Review Cycle\nFull review: every 90 days or on major tech change.\nLast reviewed: [date]\n",
+    "aiTasks": [
+      {
+        "name": "Stack Validator",
+        "persona": "Solution Architect",
+        "objective": "Validate tech stack consistency and flag EOL versions or missing layers.",
+        "prompt": "You are a Solution Architect. Review this project constitution: (1) Are technology choices compatible? (2) Are any versions EOL or approaching EOL? (3) Are monitoring, CI/CD, and feature flags covered? (4) Does the stack match team skills? Output a risk table per technology choice.",
+        "step": "Draft"
+      },
+      {
+        "name": "Org Alignment Checker",
+        "persona": "Enterprise Architect",
+        "objective": "Identify silent conflicts between project and org constitution.",
+        "prompt": "You are an Enterprise Architect. Compare this project constitution to the org constitution. Classify each section as: aligned / documented override / silent conflict / missing. Silent conflicts are highest priority — flag them explicitly.",
+        "step": "Org Alignment"
+      }
+    ]
+  },
+  {
+    "phase": "intake",
+    "key": "prd",
+    "title": "PRD",
+    "sub": "Product Requirements Document",
+    "path": "[project]/00_intake/prd.md",
+    "owner": "Product Owner",
+    "reviewers": [
+      "Executive Sponsor",
+      "Tech Lead"
+    ],
+    "signoff": "Executive Sponsor",
+    "lifecycle": "One-time — archived after kickoff",
+    "trigger": "Decision to build a new product or major feature",
+    "doel": "Formally capture the initiative, scope, and business objective as the starting point for discovery.",
+    "inputs": [
+      "Strategic goals from executive sponsor",
+      "Market research or customer feedback",
+      "Budget proposal"
+    ],
+    "outputs": [
+      "Approved initiative framework",
+      "Scope + out-of-scope defined",
+      "Discovery phase started"
+    ],
+    "flow": [
+      {
+        "name": "Business Need",
+        "sub": "Sponsor identifies problem",
+        "type": "trigger"
+      },
+      {
+        "name": "Draft PRD",
+        "sub": "Product Owner writes",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Understand business need",
+            "method": "Executive interviews",
+            "tools": "Zoom, Calendly",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Review",
+        "sub": "Tech Lead + Sponsor",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Define scope",
+            "method": "MoSCoW workshop",
+            "tools": "Miro, Notion",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Sign-off",
+        "sub": "Executive Sponsor",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Draft PRD",
+            "method": "Structured writing",
+            "tools": "Claude, Notion",
+            "aiTask": ""
+          },
+          {
+            "name": "Review with stakeholders",
+            "method": "Presentation + feedback",
+            "tools": "Slides, Confluence",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Discovery starts",
+        "sub": "PRD archived",
+        "type": "output"
+      }
+    ],
+    "note": "The PRD is an entry gate, not a living document. After sign-off, epics and stories become the source of truth.",
+    "refs": [
+      {
+        "dir": "→",
+        "key": "stakeholders"
+      },
+      {
+        "dir": "→",
+        "key": "pijnpunten"
+      }
+    ],
+    "template": "# Product Requirements Document\n\n## Problem Statement\n\n## Target Users\n\n## Goals & Success Metrics\n| Metric | Baseline | Target |\n|---|---|---|\n\n## Scope\n### In Scope\n\n### Out of Scope\n\n## Assumptions & Constraints\n\n## Stakeholders\n\n## Budget Indication\n\n## Timeline\n",
+    "aiTasks": [
+      {
+        "name": "Scope Validator",
+        "persona": "Senior Product Manager",
+        "objective": "Validate PRD completeness and flag scope creep risks.",
+        "prompt": "You are a Senior Product Manager. Review this PRD: (1) Is the problem statement specific and measurable? (2) Are success metrics SMART? (3) Is out-of-scope explicit? (4) Are assumptions documented? Output PASS/WARN/FAIL per section with improvements.",
+        "step": "Draft PRD"
+      },
+      {
+        "name": "Stakeholder Impact Analyst",
+        "persona": "Change Manager",
+        "objective": "Identify affected stakeholder groups and flag adoption risks.",
+        "prompt": "You are a Change Manager. Identify all stakeholder groups impacted by this PRD. For each: impact level (H/M/L), likely concerns, and recommended engagement strategy. Flag any group not mentioned but who should be involved.",
+        "step": "Review"
+      },
+      {
+        "name": "Multi-Stakeholder Requirements Review",
+        "persona": "Multi-Agent Facilitator",
+        "step": "Review",
+        "objective": "Review PRD requirements from business, user, and technical perspectives to find conflicts and gaps.",
+        "prompt": "You are running a multi-stakeholder review of this PRD. Three reviewers read it independently and respond.\n\n**Reviewer 1 — Business Sponsor / Executive**\nDo the stated goals map to measurable business outcomes? Is the scope proportional to the business value? What success looks like in 6 months? What's missing that a board would ask about?\n\n**Reviewer 2 — End User Representative**\nDoes this PRD describe something you'd actually want to use? Which goals feel abstract rather than practical? What daily workflow does this improve — and is that clearly stated? What's described that you didn't ask for?\n\n**Reviewer 3 — Solution Architect / Tech Lead**\nAre the scope boundaries realistic? Are there requirements that will drive disproportionate technical complexity? Are NFRs (performance, security, scale) implicit but unstated? What's underspecified?\n\n---\n**Common Ground & Synthesis**\n1. Which requirements all three reviewers support? These are your stable core.\n2. Which requirements only one reviewer cares about? Flag for priority discussion.\n3. Where do reviewers conflict? List the tension and recommend a resolution.\n4. What's missing from the PRD that 2+ perspectives need?\n5. Overall verdict: Proceed to discovery / Clarify first / Rethink scope.",
+        "perspectives": [
+          "Business Sponsor",
+          "End User",
+          "Solution Architect"
+        ]
+      }
+    ]
+  },
+  {
+    "phase": "intake",
+    "key": "stakeholders",
+    "title": "Stakeholder Map",
+    "sub": "Who is involved and why",
+    "path": "[project]/00_intake/stakeholders.md",
+    "owner": "Business Analyst",
+    "reviewers": [
+      "Product Owner"
+    ],
+    "signoff": "",
+    "lifecycle": "Living — updated when new stakeholders are identified",
+    "trigger": "Project start or new stakeholder identified",
+    "doel": "Provide clarity on who has which interests so that communication and reviews are correctly targeted.",
+    "inputs": [
+      "Executive sponsor conversations",
+      "Organisational chart",
+      "PRD (initial version)"
+    ],
+    "outputs": [
+      "Stakeholder list with interests",
+      "Basis for interview planning in discovery"
+    ],
+    "flow": [
+      {
+        "name": "Kickoff Meeting",
+        "sub": "First stakeholders mapped",
+        "type": "trigger"
+      },
+      {
+        "name": "Interviews",
+        "sub": "Business Analyst",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Identify stakeholders",
+            "method": "Org chart analysis + snowball",
+            "tools": "LinkedIn, Miro",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Document",
+        "sub": "BA writes overview",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Conduct stakeholder interviews",
+            "method": "1-on-1 interviews",
+            "tools": "Zoom, Calendly",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Review PO",
+        "sub": "Informal sign-off",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Map interests and influence",
+            "method": "Power-interest grid",
+            "tools": "Miro",
+            "aiTask": ""
+          },
+          {
+            "name": "Document RACI",
+            "method": "RACI matrix",
+            "tools": "Spreadsheet, Claude",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Living Doc",
+        "sub": "Updated as needed",
+        "type": "output"
+      }
+    ],
+    "note": "",
+    "refs": [
+      {
+        "dir": "←",
+        "key": "prd"
+      }
+    ],
+    "template": "# Stakeholder Map\n\n## Stakeholders\n| Name | Role | Interest | Influence | Availability |\n|---|---|---|---|---|\n\n## Power-Interest Grid\n```\nHigh power │ Keep satisfied  │ Manage closely\n           │                 │\n Low power │ Monitor (low)   │ Keep informed\n           ├─────────────────┴──────────────\n           Low interest       High interest\n```\n\n## RACI Summary\n| Deliverable | Responsible | Accountable | Consulted | Informed |\n|---|---|---|---|---|\n\n## Communication Plan\n| Stakeholder | Frequency | Channel | Owner |\n|---|---|---|---|\n",
+    "aiTasks": [
+      {
+        "name": "Interview Planner",
+        "persona": "Senior Business Analyst",
+        "objective": "Generate tailored interview questions per stakeholder group.",
+        "prompt": "You are a Senior Business Analyst. Based on this stakeholder map, generate 5-8 targeted interview questions per stakeholder group. Uncover: unstated requirements, constraints, political sensitivities, success criteria. Format as a table: Stakeholder Group | Questions.",
+        "step": "Interviews"
+      },
+      {
+        "name": "RACI Generator",
+        "persona": "Project Manager",
+        "objective": "Generate a RACI matrix for the key project deliverables.",
+        "prompt": "You are a Project Manager. Based on this stakeholder map, generate a RACI matrix for the main project phases and deliverables. Flag roles with unclear accountability.",
+        "step": "Document"
+      }
+    ]
+  }
+]
