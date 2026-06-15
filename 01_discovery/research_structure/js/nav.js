@@ -15,7 +15,7 @@ function setViewMode(mode) {
   } else {
     renderDocList();
     if (activeKey) showDoc(activeKey);
-    else document.getElementById('detail').innerHTML = '<div class="detail-empty">← Select a document</div>';
+    else renderPhaseOverview();
   }
 }
 
@@ -223,8 +223,7 @@ function confirmDeleteDoc(key) {
   if (!d || !confirm(`Delete "${d.title}"? This cannot be undone.`)) return;
   documents = documents.filter(z => z.key !== key);
   saveData(); activeKey = null; editMode = false; editBuffer = null;
-  renderDocList();
-  document.getElementById('detail').innerHTML = '<div class="detail-empty">← Select a document</div>';
+  renderDocList(); renderPhaseOverview();
 }
 
 // ─── Phase tabs & doc list ────────────────────────────────────────────────────
@@ -305,8 +304,67 @@ function renderDocList() {
 function setPhase(phase) {
   if (editMode && !confirm('Discard unsaved changes?')) return;
   activePhase = phase; activeKey = null; editMode = false; editBuffer = null;
-  renderPhaseTabs(); renderDocList();
-  document.getElementById('detail').innerHTML = '<div class="detail-empty">← Select a document</div>';
+  renderPhaseTabs(); renderDocList(); renderPhaseOverview();
+}
+
+function renderPhaseOverview() {
+  const TYPE_ICON = {trigger:'▷', step:'·', signoff:'✓', output:'◆'};
+  const phaseDocs  = documents.filter(d => d.phase === activePhase && !d.shared);
+  const sharedDocs = documents.filter(d => d.shared);
+  const phaseLabel = phases[activePhase] ? phases[activePhase].label : activePhase;
+  const phaseColor = phases[activePhase] ? phases[activePhase].color : '#888';
+
+  function flowStrip(d, indent) {
+    const flow = d.flow || [];
+    const stepAiCount = {};
+    (d.aiTasks||[]).forEach(t => { if (t.step) stepAiCount[t.step] = (stepAiCount[t.step]||0)+1; });
+    flow.forEach(s => { (s.substeps||[]).forEach(cs => { if (cs.aiTask) stepAiCount[s.name] = (stepAiCount[s.name]||0)+1; }); });
+
+    const steps = flow.map((s,si) => {
+      const ai = stepAiCount[s.name] || 0;
+      return `<span class="po-step po-step--${s.type}" title="${x(s.sub||'')}">
+        ${TYPE_ICON[s.type]||'·'} ${x(s.name)}${ai?`<span class="po-step-ai">${ai}</span>`:''}
+      </span>${si < flow.length-1 ? '<span class="po-arr">›</span>' : ''}`;
+    }).join('');
+
+    return `<div class="po-row" onclick="showDoc('${d.key}')">
+      <div class="po-doc-label" style="${indent?`padding-left:${indent}px`:''}">
+        ${indent ? '<span class="po-doc-indent">└</span>' : ''}
+        <div>
+          <div class="po-doc-title">${x(d.title)}</div>
+          ${d.sub ? `<div class="po-doc-sub">${x(d.sub)}</div>` : ''}
+        </div>
+      </div>
+      <div class="po-flow">${steps || '<span class="po-no-flow">No flow defined</span>'}</div>
+    </div>`;
+  }
+
+  const items = _sortByHierarchy(phaseDocs);
+  const rowsHtml = items.length
+    ? items.map(({d, depth}) => flowStrip(d, depth * 14)).join('')
+    : '<div class="po-empty">No documents in this phase.</div>';
+
+  const sharedHtml = sharedDocs.length
+    ? `<div class="po-section-label">Shared templates</div>${sharedDocs.map(d => flowStrip(d, 0)).join('')}`
+    : '';
+
+  document.getElementById('detail').innerHTML = `
+    <div class="po-wrap">
+      <div class="po-hd">
+        <span class="po-hd-dot" style="background:${phaseColor}"></span>
+        <span class="po-hd-title">${x(phaseLabel)}</span>
+        <span class="po-hd-count">${phaseDocs.length} doc${phaseDocs.length!==1?'s':''}</span>
+        <button class="btn btn-sm" onclick="openNewDocModal()" style="margin-left:auto">+ Add</button>
+      </div>
+      <div class="po-legend">
+        <span class="po-step po-step--trigger">▷ trigger</span>
+        <span class="po-step po-step--step">· step</span>
+        <span class="po-step po-step--signoff">✓ sign-off</span>
+        <span class="po-step po-step--output">◆ output</span>
+        <span class="po-legend-ai">🤖 = AI tasks on step</span>
+      </div>
+      ${rowsHtml}${sharedHtml}
+    </div>`;
 }
 
 // init is called by initData() in storage.js after JSON loads
