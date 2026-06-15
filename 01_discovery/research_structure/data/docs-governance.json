@@ -12,7 +12,7 @@
       "Developer"
     ],
     "signoff": "Tech Lead",
-    "lifecycle": "Permanent — never deleted, only \"superseded\"",
+    "lifecycle": "Permanent \u2014 never deleted, only \"superseded\"",
     "trigger": "A non-trivial decision is made that is hard to reverse",
     "doel": "Permanently document architectural and business decisions with context so future teams understand why something was built a certain way.",
     "inputs": [
@@ -58,7 +58,7 @@
       },
       {
         "name": "Accepted",
-        "sub": "Status → Accepted",
+        "sub": "Status \u2192 Accepted",
         "type": "signoff",
         "substeps": [
           {
@@ -84,11 +84,11 @@
     "note": "An ADR is never deleted. When a decision is revised, the old ADR gets status \"Superseded\" and links to the new one.",
     "refs": [
       {
-        "dir": "←",
+        "dir": "\u2190",
         "key": "story"
       },
       {
-        "dir": "←",
+        "dir": "\u2190",
         "key": "domain"
       }
     ],
@@ -113,7 +113,7 @@
         "persona": "Solution Architect",
         "step": "Draft ADR",
         "objective": "Generate a decision tree only if the ADR evaluated 3+ options with non-obvious trade-offs.",
-        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a Solution Architect documenting an architectural decision.\n\nAssessment: Did this decision involve comparing 3+ genuine alternatives? If it was a straightforward binary choice or the only viable option, a diagram adds no value.\n\nIf warranted, generate a `flowchart TD` showing:\n- Decision context at the top\n- Each option as a branch\n- Key trade-off labels on branches\n- Rejected options with a reason label\n- Chosen option highlighted (`style chosen fill:#d4edda`)\n\nOutput only the mermaid code block, no explanation."
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure \u2014 multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed \u2014 the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a Solution Architect documenting an architectural decision.\n\nAssessment: Did this decision involve comparing 3+ genuine alternatives? If it was a straightforward binary choice or the only viable option, a diagram adds no value.\n\nIf warranted, generate a `flowchart TD` showing:\n- Decision context at the top\n- Each option as a branch\n- Key trade-off labels on branches\n- Rejected options with a reason label\n- Chosen option highlighted (`style chosen fill:#d4edda`)\n\nOutput only the mermaid code block, no explanation."
       }
     ]
   },
@@ -129,7 +129,7 @@
       "Tech Lead"
     ],
     "signoff": "",
-    "lifecycle": "Living — updated at each sprint review",
+    "lifecycle": "Living \u2014 updated at each sprint review",
     "trigger": "Project start or new risk identified",
     "doel": "Keep risks visible and actionable so the team can intervene before they materialise.",
     "inputs": [
@@ -215,7 +215,7 @@
       "Full Team"
     ],
     "signoff": "",
-    "lifecycle": "Living — anyone can add terms",
+    "lifecycle": "Living \u2014 anyone can add terms",
     "trigger": "Ambiguity about a term in a meeting or document",
     "doel": "Prevent miscommunication by defining domain terms unambiguously for the whole team.",
     "inputs": [
@@ -301,7 +301,7 @@
       "Tech Lead"
     ],
     "signoff": "",
-    "lifecycle": "Living — updated throughout the project whenever ambiguity is found",
+    "lifecycle": "Living \u2014 updated throughout the project whenever ambiguity is found",
     "trigger": "Ambiguity or conflicting interpretation discovered in any document or meeting",
     "doel": "Prevent the same ambiguity from re-surfacing by recording every resolution with full context.",
     "inputs": [
@@ -363,18 +363,18 @@
         "type": "output"
       }
     ],
-    "note": "Unresolved entries older than 5 business days should be escalated. Every entry must include options — stakeholders choose, they do not invent answers from scratch.",
+    "note": "Unresolved entries older than 5 business days should be escalated. Every entry must include options \u2014 stakeholders choose, they do not invent answers from scratch.",
     "refs": [
       {
-        "dir": "→",
+        "dir": "\u2192",
         "key": "feature"
       },
       {
-        "dir": "→",
+        "dir": "\u2192",
         "key": "story"
       }
     ],
-    "template": "# Clarification Log\n\nProject: [name]\nLast updated: [date]\n\n## Open\n\n### CLR-001: [Short description]\n**Date opened:** [date]\n**Raised by:**\n**Context:** [Which document / story / meeting triggered this]\n**Question:**\n\n**Options:**\n- **A:** [description] — Trade-off: ...\n- **B:** [description] — Trade-off: ...\n\n**Resolution:** Pending\n**Owner:**\n**Escalate if unresolved after:** [date + 5 business days]\n\n---\n\n## Resolved\n\n### CLR-000: [Short description]\n**Date opened:** [date] | **Resolved:** [date]\n**Question:**\n**Resolution:** Option [A/B/other]\n**Rationale:**\n**Impact:** [Which docs were updated]\n",
+    "template": "# Clarification Log\n\nProject: [name]\nLast updated: [date]\n\n## Open\n\n### CLR-001: [Short description]\n**Date opened:** [date]\n**Raised by:**\n**Context:** [Which document / story / meeting triggered this]\n**Question:**\n\n**Options:**\n- **A:** [description] \u2014 Trade-off: ...\n- **B:** [description] \u2014 Trade-off: ...\n\n**Resolution:** Pending\n**Owner:**\n**Escalate if unresolved after:** [date + 5 business days]\n\n---\n\n## Resolved\n\n### CLR-000: [Short description]\n**Date opened:** [date] | **Resolved:** [date]\n**Question:**\n**Resolution:** Option [A/B/other]\n**Rationale:**\n**Impact:** [Which docs were updated]\n",
     "aiTasks": [
       {
         "name": "Clarification Generator",
@@ -404,9 +404,9 @@
       "QA Engineer"
     ],
     "signoff": "Tech Lead",
-    "lifecycle": "Per feature — run before implementation starts",
+    "lifecycle": "Per feature \u2014 run before implementation starts",
     "trigger": "All pre-implementation artifacts complete (feature, stories, ACs, task breakdown)",
-    "doel": "Verify all artifacts are aligned before coding starts — a gap found here costs minutes, the same gap found in testing costs days.",
+    "doel": "Verify all artifacts are aligned before coding starts \u2014 a gap found here costs minutes, the same gap found in testing costs days.",
     "inputs": [
       "Feature doc",
       "User stories",
@@ -476,28 +476,28 @@
         "type": "output"
       }
     ],
-    "note": "FAIL blocks implementation. PASS WITH WARNINGS requires documented acceptance of each warning. Do not skip this gate to meet velocity targets — the debt is always larger than the saving.",
+    "note": "FAIL blocks implementation. PASS WITH WARNINGS requires documented acceptance of each warning. Do not skip this gate to meet velocity targets \u2014 the debt is always larger than the saving.",
     "refs": [
       {
-        "dir": "←",
+        "dir": "\u2190",
         "key": "feature"
       },
       {
-        "dir": "←",
+        "dir": "\u2190",
         "key": "ac"
       },
       {
-        "dir": "←",
+        "dir": "\u2190",
         "key": "task-breakdown"
       }
     ],
-    "template": "# Consistency Analysis: [Feature Name]\n\n**Date:** [date]\n**Verdict:** PASS / PASS WITH WARNINGS / FAIL\n**Signed off by:**\n\n## Artifacts in Scope\n| Artifact | Link | Present |\n|---|---|---|\n| Feature doc | | ✓ / ✗ |\n| User stories | | ✓ / ✗ |\n| Acceptance criteria | | ✓ / ✗ |\n| Task breakdown | | ✓ / ✗ |\n| NFR | | ✓ / ✗ |\n\n## Checks\n\n### 1. Requirements Coverage\n- [ ] Every story maps to at least one feature section\n- [ ] Every business rule has at least one AC\n- [ ] No orphaned ACs (without a linked story)\n\n### 2. Testability\n- [ ] All ACs are binary (pass/fail, no subjective judgment)\n- [ ] State changes are observable and queryable\n- [ ] Performance thresholds are numeric with percentile specs\n\n### 3. Traceability\n- [ ] Every AC has at least one implementing task\n- [ ] Every task has a done-when criterion\n- [ ] No orphaned tasks (not linked to any AC)\n\n### 4. Technical Completeness\n- [ ] No task exceeds 8h\n- [ ] Parallel tasks identified [P]\n- [ ] Security and auth covered in tasks\n- [ ] Error scenarios covered in ACs\n\n## Gaps\n| ID | Type | Severity | Description | Resolution |\n|---|---|---|---|---|\n| G-01 | | HIGH / MED / LOW | | |\n\n## Verdict Rationale\n\n## Accepted Warnings (PASS WITH WARNINGS only)\n| Warning ID | Description | Accepted by | Reason |\n|---|---|---|---|\n",
+    "template": "# Consistency Analysis: [Feature Name]\n\n**Date:** [date]\n**Verdict:** PASS / PASS WITH WARNINGS / FAIL\n**Signed off by:**\n\n## Artifacts in Scope\n| Artifact | Link | Present |\n|---|---|---|\n| Feature doc | | \u2713 / \u2717 |\n| User stories | | \u2713 / \u2717 |\n| Acceptance criteria | | \u2713 / \u2717 |\n| Task breakdown | | \u2713 / \u2717 |\n| NFR | | \u2713 / \u2717 |\n\n## Checks\n\n### 1. Requirements Coverage\n- [ ] Every story maps to at least one feature section\n- [ ] Every business rule has at least one AC\n- [ ] No orphaned ACs (without a linked story)\n\n### 2. Testability\n- [ ] All ACs are binary (pass/fail, no subjective judgment)\n- [ ] State changes are observable and queryable\n- [ ] Performance thresholds are numeric with percentile specs\n\n### 3. Traceability\n- [ ] Every AC has at least one implementing task\n- [ ] Every task has a done-when criterion\n- [ ] No orphaned tasks (not linked to any AC)\n\n### 4. Technical Completeness\n- [ ] No task exceeds 8h\n- [ ] Parallel tasks identified [P]\n- [ ] Security and auth covered in tasks\n- [ ] Error scenarios covered in ACs\n\n## Gaps\n| ID | Type | Severity | Description | Resolution |\n|---|---|---|---|---|\n| G-01 | | HIGH / MED / LOW | | |\n\n## Verdict Rationale\n\n## Accepted Warnings (PASS WITH WARNINGS only)\n| Warning ID | Description | Accepted by | Reason |\n|---|---|---|---|\n",
     "aiTasks": [
       {
         "name": "Consistency Analyzer",
         "persona": "QA Engineer",
-        "objective": "Map requirements → plan → tasks → tests and flag all gaps.",
-        "prompt": "You are a QA Engineer specialising in requirements consistency. Given these artifacts (feature, stories, ACs, task breakdown), perform a full consistency analysis: (1) Requirements coverage — every story maps to feature sections, every business rule has an AC; (2) Testability — ACs are binary, state changes observable, thresholds numeric; (3) Traceability — every AC has an implementing task, every task has a done-when; (4) Technical completeness — security, error handling, edge cases covered. Output: PASS / PASS WITH WARNINGS / FAIL with a gap table (ID | type | severity | description | recommendation).",
+        "objective": "Map requirements \u2192 plan \u2192 tasks \u2192 tests and flag all gaps.",
+        "prompt": "You are a QA Engineer specialising in requirements consistency. Given these artifacts (feature, stories, ACs, task breakdown), perform a full consistency analysis: (1) Requirements coverage \u2014 every story maps to feature sections, every business rule has an AC; (2) Testability \u2014 ACs are binary, state changes observable, thresholds numeric; (3) Traceability \u2014 every AC has an implementing task, every task has a done-when; (4) Technical completeness \u2014 security, error handling, edge cases covered. Output: PASS / PASS WITH WARNINGS / FAIL with a gap table (ID | type | severity | description | recommendation).",
         "step": "Consistency Review"
       },
       {
@@ -512,8 +512,134 @@
         "persona": "QA Engineer",
         "step": "Consistency Review",
         "objective": "Map the traceability chain from story to AC to task to test only if gaps exist that are hard to see in a table.",
-        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a QA Engineer mapping artifact traceability.\n\nAssessment: Are there more than 6 stories/ACs/tasks in scope? Is there a non-trivial mapping (one AC maps to 3 tasks, one task maps to 2 ACs)? If the mapping is 1:1:1 throughout, the table in the template is sufficient.\n\nIf warranted, generate a `flowchart LR` showing:\n- Story nodes → AC nodes → Task nodes → Test nodes\n- Links between them\n- Orphaned nodes (no link) styled in red: `style X fill:#f8d7da`\n\nOutput only the mermaid code block, no explanation."
+        "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure \u2014 multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed \u2014 the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a QA Engineer mapping artifact traceability.\n\nAssessment: Are there more than 6 stories/ACs/tasks in scope? Is there a non-trivial mapping (one AC maps to 3 tasks, one task maps to 2 ACs)? If the mapping is 1:1:1 throughout, the table in the template is sufficient.\n\nIf warranted, generate a `flowchart LR` showing:\n- Story nodes \u2192 AC nodes \u2192 Task nodes \u2192 Test nodes\n- Links between them\n- Orphaned nodes (no link) styled in red: `style X fill:#f8d7da`\n\nOutput only the mermaid code block, no explanation."
       }
     ]
+  },
+  {
+    "key": "meeting-minutes",
+    "phase": "governance",
+    "title": "Meeting Minutes",
+    "sub": "Cross-phase meeting record",
+    "path": "[project]/[NN_phase]/meetings/YYYY-MM-DD-[topic].md",
+    "lifecycle": "Created per meeting, never expires, filed under relevant phase",
+    "owner": "Scrum Master",
+    "reviewers": [],
+    "signoff": "",
+    "trigger": "Any project meeting: refinement, review, decision, stakeholder sync",
+    "doel": "Capture decisions, action items, and context from any project meeting. Single reusable template across all phases.",
+    "inputs": [
+      "Agenda",
+      "Attendee list",
+      "Relevant artefacts (if any)"
+    ],
+    "outputs": [
+      "Decision log entry",
+      "Action items list",
+      "Distributed minutes"
+    ],
+    "note": "Shared template \u2014 applicable across all phases. File under the relevant phase folder, not governance.",
+    "flow": [
+      {
+        "name": "Meeting scheduled",
+        "sub": "Agenda distributed",
+        "type": "trigger"
+      },
+      {
+        "name": "Prepare",
+        "sub": "Facilitator preps",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Draft agenda",
+            "method": "Async preparation",
+            "tools": "Confluence, email",
+            "aiTask": "Agenda Builder"
+          }
+        ]
+      },
+      {
+        "name": "During meeting",
+        "sub": "Notes captured live",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Live note-taking",
+            "method": "Designated scribe",
+            "tools": "Confluence, Notion",
+            "aiTask": ""
+          },
+          {
+            "name": "Capture decisions + actions",
+            "method": "Structured capture",
+            "tools": "Confluence",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Write minutes",
+        "sub": "Structured within 24h",
+        "type": "step",
+        "substeps": [
+          {
+            "name": "Structure raw notes",
+            "method": "Template fill-in",
+            "tools": "Confluence, Claude",
+            "aiTask": "Minutes Structurer"
+          },
+          {
+            "name": "Assign owners + due dates",
+            "method": "Follow-up",
+            "tools": "Jira, email",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Minutes approved",
+        "sub": "Attendees confirm",
+        "type": "signoff",
+        "substeps": [
+          {
+            "name": "Share with attendees",
+            "method": "Email / Confluence notify",
+            "tools": "Confluence",
+            "aiTask": ""
+          },
+          {
+            "name": "Collect corrections (24h window)",
+            "method": "Async review",
+            "tools": "Confluence comments",
+            "aiTask": ""
+          }
+        ]
+      },
+      {
+        "name": "Published minutes",
+        "sub": "Linked to project log",
+        "type": "output"
+      }
+    ],
+    "refs": [],
+    "aiTasks": [
+      {
+        "name": "Agenda Builder",
+        "persona": "Scrum Master",
+        "objective": "Draft a structured, time-boxed meeting agenda from a topic list and time budget.",
+        "perspectives": [],
+        "prompt": "You are a Scrum Master preparing a meeting agenda. Meeting details:\n\n**Purpose:** [PASTE PURPOSE]\n**Duration:** [X minutes]\n**Attendees:** [PASTE ROLES]\n**Topics to cover:** [PASTE TOPIC LIST]\n\nCreate a time-boxed agenda:\n- Include a 2-minute intro/context slot\n- Group related topics\n- Add estimated time per item\n- Mark items as D (Decision needed), I (Information share), or A (Action required)\n- Leave the last 5 minutes for action item recap\n\nOutput as a clean markdown table: | Time | Topic | Type | Owner |"
+      },
+      {
+        "name": "Minutes Structurer",
+        "persona": "Business Analyst",
+        "objective": "Transform raw meeting notes into structured minutes with decisions, actions, and a parking lot.",
+        "perspectives": [],
+        "prompt": "You are a BA structuring meeting minutes from raw notes:\n\n[PASTE RAW NOTES]\n\nStructure them into:\n\n**Decisions made:**\n| # | Decision | Owner | Rationale |\n\n**Action items:**\n| # | Action | Owner | Due date | Status |\n\n**Key discussion points:**\n- [bullet points \u2014 context worth capturing, not decisions]\n\n**Parking lot:**\n- [topics raised but not addressed \u2014 needs follow-up]\n\nKeep it factual. Do not interpret or editorialize. Flag unclear items with [UNCLEAR]."
+      }
+    ],
+    "template": "# Meeting Minutes \u2014 [Title / Topic]\n\n**Date:** YYYY-MM-DD\n**Phase / Project:** [Phase name]\n**Meeting type:** [Refinement / Review / Decision / Stakeholder sync / ...]\n**Facilitator:** [Name / Role]\n**Scribe:** [Name]\n**Attendees:** [Name \u2014 Role, ...]\n**Next meeting:** [Date or TBD]\n\n---\n\n## Agenda\n\n| # | Topic | Type (D/I/A) | Owner | Time |\n|---|-------|--------------|-------|------|\n| 1 | | | | min |\n\n## Decisions\n\n| # | Decision | Owner | Rationale |\n|---|----------|-------|-----------|\n| 1 | | | |\n\n## Action Items\n\n| # | Action | Owner | Due date | Status |\n|---|--------|-------|----------|--------|\n| 1 | | | | \u2610 |\n\n## Key Discussion Points\n\n-\n\n## Parking Lot\n\n- [Topics deferred to a later meeting]",
+    "diagram": "",
+    "shared": true
   }
 ]

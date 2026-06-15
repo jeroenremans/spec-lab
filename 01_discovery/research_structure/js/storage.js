@@ -215,6 +215,12 @@ function displayRole(title) {
   return title;
 }
 
+function roleAvatarFor(title) {
+  if (!title) return '👤';
+  const r = roles.find(r => r.title === title);
+  return (r && r.avatar) ? r.avatar : '👤';
+}
+
 function roleSelectOptions(selected) {
   return roles.map(r => {
     const label = r.name ? `${r.title} (${r.name})` : r.title;

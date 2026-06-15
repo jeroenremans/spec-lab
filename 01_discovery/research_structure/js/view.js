@@ -67,6 +67,8 @@ function showDoc(key) {
           <span class="ptl-name">${x(s.name)}</span>
           ${s.sub ? `<span class="ptl-sub-label">${x(s.sub)}</span>` : ''}
         </div>
+        ${s.description ? `<div class="ptl-desc">${x(s.description)}</div>` : ''}
+        ${s.tools ? `<div class="ptl-tools">${s.tools.split(',').map(t=>`<span class="ptl-tool-tag">${x(t.trim())}</span>`).join('')}</div>` : ''}
         ${subSteps}
         ${chips ? `<div class="flow-ai-chips" style="margin-top:6px">${chips}</div>` : ''}
       </div>
@@ -137,11 +139,16 @@ function showDoc(key) {
       <div class="mermaid-wrap"><pre class="mermaid">${d.diagram}</pre></div>
     </div>` : '';
 
+  const _parent = d.parent ? documents.find(z => z.key === d.parent) : null;
+  const _children = documents.filter(z => z.parent === d.key);
+
   document.getElementById('detail').innerHTML = `
     <div class="detail-hd">
       <div class="detail-hd-text">
+        ${_parent ? `<div class="doc-breadcrumb"><span class="doc-breadcrumb-link" onclick="showDoc('${_parent.key}')">${x(_parent.title)}</span> <span class="doc-breadcrumb-sep">›</span> </div>` : ''}
         <div class="doc-title">${x(d.title)}</div>
         <div class="doc-path">${x(d.path||'')}</div>
+        ${_children.length ? `<div class="doc-children">${_children.map(c=>`<span class="doc-child-link" onclick="showDoc('${c.key}')">${x(c.title)}</span>`).join('')}</div>` : ''}
       </div>
       <div class="detail-hd-actions">
         <button class="btn" onclick="startEdit('${d.key}')">✏ Edit</button>
@@ -162,15 +169,15 @@ function showDoc(key) {
           </div>
           <div class="meta-card">
             <div class="meta-label">Owner</div>
-            <div class="meta-value"><span class="role-pill owner">👤 ${x(displayRole(d.owner))}</span></div>
+            <div class="meta-value"><span class="role-pill owner">${roleAvatarFor(d.owner)} ${x(displayRole(d.owner))}</span></div>
           </div>
           <div class="meta-card">
             <div class="meta-label">Reviewers</div>
-            <div class="meta-value">${(d.reviewers||[]).map(r=>`<span class="role-pill">👤 ${x(displayRole(r))}</span>`).join('')||'—'}</div>
+            <div class="meta-value">${(d.reviewers||[]).map(r=>`<span class="role-pill">${roleAvatarFor(r)} ${x(displayRole(r))}</span>`).join('')||'—'}</div>
           </div>
           <div class="meta-card">
             <div class="meta-label">Sign-off</div>
-            <div class="meta-value">${d.signoff?`<span class="role-pill owner">✓ ${x(displayRole(d.signoff))}</span>`:'<span style="font-size:12px;color:var(--text-faint)">Not required</span>'}</div>
+            <div class="meta-value">${d.signoff?`<span class="role-pill owner">✓ ${roleAvatarFor(d.signoff)} ${x(displayRole(d.signoff))}</span>`:'<span style="font-size:12px;color:var(--text-faint)">Not required</span>'}</div>
           </div>
           <div class="meta-card">
             <div class="meta-label">Trigger</div>

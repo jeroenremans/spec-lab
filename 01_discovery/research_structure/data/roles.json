@@ -2,71 +2,99 @@
   {
     "key": "executive-sponsor",
     "title": "Executive Sponsor",
-    "name": ""
+    "name": "",
+    "avatar": "🎯",
+    "description": "Strategic decision-maker and budget owner. Approves project charter, resolves escalations, and ensures alignment with organisational goals."
   },
   {
     "key": "product-owner",
     "title": "Product Owner",
-    "name": ""
+    "name": "",
+    "avatar": "📋",
+    "description": "Owns the product backlog and represents business value. Prioritises features, accepts deliverables, and is the single voice of the customer in the team."
   },
   {
     "key": "business-analyst",
     "title": "Business Analyst",
-    "name": ""
+    "name": "",
+    "avatar": "🔍",
+    "description": "Bridges business needs and technical solutions. Elicits, models, and documents requirements. Owns discovery and specification artefacts."
   },
   {
     "key": "tech-lead",
     "title": "Tech Lead",
-    "name": ""
+    "name": "",
+    "avatar": "⚙️",
+    "description": "Leads the development team technically. Reviews architecture decisions, sets coding standards, and resolves technical blockers."
   },
   {
     "key": "solution-architect",
     "title": "Solution Architect",
-    "name": ""
+    "name": "",
+    "avatar": "🏗️",
+    "description": "Designs the overall technical solution. Owns architecture decisions, non-functional requirements, and integration patterns across systems."
   },
   {
     "key": "developer",
     "title": "Developer",
-    "name": ""
+    "name": "",
+    "avatar": "💻",
+    "description": "Implements features and fixes. Writes code and unit tests, participates in code review, and maintains technical documentation."
   },
   {
     "key": "senior-developer",
     "title": "Senior Developer",
-    "name": ""
+    "name": "",
+    "avatar": "🧑‍💻",
+    "description": "Experienced developer who mentors juniors, leads complex implementations, and drives technical quality across the team."
   },
   {
     "key": "tester",
     "title": "Tester",
-    "name": ""
+    "name": "",
+    "avatar": "🧪",
+    "description": "Validates software against requirements. Writes and executes test cases, reports defects, and ensures quality gates are met before release."
   },
   {
     "key": "qa-engineer",
     "title": "QA Engineer",
-    "name": ""
+    "name": "",
+    "avatar": "✅",
+    "description": "Designs the overall quality strategy. Defines test plans, automation frameworks, and non-functional test approaches for the project."
   },
   {
     "key": "scrum-master",
     "title": "Scrum Master",
-    "name": ""
+    "name": "",
+    "avatar": "🔄",
+    "description": "Facilitates the Scrum process. Removes impediments, coaches the team on agile practices, and protects sprint goals from scope creep."
   },
   {
     "key": "stakeholder",
     "title": "Stakeholder",
-    "name": ""
+    "name": "",
+    "avatar": "👔",
+    "description": "Business representative with a vested interest in the outcome. Provides domain input, reviews demos, and approves changes within their area."
   },
   {
     "key": "end-user",
     "title": "End User",
-    "name": ""
+    "name": "",
+    "avatar": "🙋",
+    "description": "The person who uses the product in daily work. Provides feedback on usability, participates in user testing and discovery interviews."
   },
   {
     "key": "security-officer",
     "title": "Security Officer",
-    "name": ""
+    "name": "",
+    "avatar": "🔒",
+    "description": "Ensures compliance with security policies and regulations. Reviews architecture for vulnerabilities and validates security controls before go-live."
   },
   {
     "key": "full-team",
     "title": "Full Team",
-    "name": ""
+    "name": "",
+    "avatar": "👥",
+    "description": "The entire delivery team participates. Used for ceremonies, retrospectives, or decisions requiring full team consensus and buy-in."
   }
 ]

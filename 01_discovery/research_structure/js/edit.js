@@ -2,8 +2,7 @@
 
 function startEdit(key) {
   editBuffer = clone(documents.find(z => z.key === key));
-  if (!editBuffer.aiTasks)  editBuffer.aiTasks = [];
-  if (!editBuffer.creation) editBuffer.creation = [];
+  if (!editBuffer.aiTasks) editBuffer.aiTasks = [];
   editMode = true;
   renderEdit();
 }
@@ -23,6 +22,12 @@ function renderEdit() {
       <div><div class="edit-label">Path</div><input class="edit-input" id="ef-path" value="${x(d.path||'')}"></div>
       <div><div class="edit-label">Phase</div>
         <select class="edit-select" id="ef-phase">${phaseSelectOptions(d.phase)}</select>
+      </div>
+      <div style="grid-column:span 2"><div class="edit-label">Parent Document</div>
+        <select class="edit-select" id="ef-parent">
+          <option value="">— No parent —</option>
+          ${documents.filter(doc=>doc.key!==d.key).map(doc=>`<option value="${x(doc.key)}"${doc.key===d.parent?' selected':''}>${x(doc.title)} (${x(doc.phase)})</option>`).join('')}
+        </select>
       </div>
       <div><div class="edit-label">Owner</div>
         <select class="edit-select" id="ef-owner">
@@ -135,14 +140,27 @@ function renderFlowArr(flow) {
     return `<div class="flow-edit-card">
       <div class="flow-edit-row">
         <input class="edit-input" placeholder="Name" value="${x(s.name||'')}" onchange="updateFlowStep(${i},'name',this.value)">
-        <input class="edit-input" placeholder="Sub-label" style="flex:0 0 160px" value="${x(s.sub||'')}" onchange="updateFlowStep(${i},'sub',this.value)">
-        <select class="edit-select" style="flex:0 0 100px" onchange="updateFlowStep(${i},'type',this.value)">
+        <input class="edit-input" placeholder="Sub-label" style="flex:0 0 140px" value="${x(s.sub||'')}" onchange="updateFlowStep(${i},'sub',this.value)">
+        <select class="edit-select" style="flex:0 0 96px" onchange="updateFlowStep(${i},'type',this.value)">
           ${FLOW_TYPES.map(t=>`<option value="${t}"${s.type===t?' selected':''}>${t}</option>`).join('')}
         </select>
         <button class="btn btn-sm" onclick="removeFlowStep(${i})">✕</button>
       </div>
+      <div class="flow-edit-details">
+        <div class="flow-edit-details-row">
+          <div style="flex:1">
+            <div class="edit-label" style="margin-bottom:3px">Description</div>
+            <textarea class="edit-textarea" rows="2" placeholder="What happens in this step? Who does what?" onchange="updateFlowStep(${i},'description',this.value)">${x(s.description||'')}</textarea>
+          </div>
+          <div style="flex:0 0 200px">
+            <div class="edit-label" style="margin-bottom:3px">Tools</div>
+            <input class="edit-input" placeholder="Miro, Confluence, Claude" value="${x(s.tools||'')}" onchange="updateFlowStep(${i},'tools',this.value)">
+          </div>
+        </div>
+      </div>
       ${hasSubsteps ? `
         <div class="substeps-edit-wrap">
+          <div class="edit-label" style="margin-bottom:4px;font-size:10px">Substeps</div>
           <div id="flow-substeps-${i}">${renderSubstepsForStep(i, s.substeps||[])}</div>
           <button class="btn btn-sm" style="margin-top:4px" onclick="addSubstep(${i})">+ Add substep</button>
         </div>` : ''}
@@ -214,9 +232,11 @@ function capture() {
   const owner   = document.getElementById('ef-owner');
   const signoff = document.getElementById('ef-signoff');
   const phase   = document.getElementById('ef-phase');
+  const parent  = document.getElementById('ef-parent');
   if (owner   && (roles.length > 0 || owner.value   !== '')) editBuffer.owner   = owner.value;
   if (signoff && (roles.length > 0 || signoff.value !== '')) editBuffer.signoff = signoff.value;
-  if (phase)   editBuffer.phase   = phase.value;
+  if (phase)  editBuffer.phase  = phase.value;
+  if (parent) editBuffer.parent = parent.value;
 }
 
 function updateStrItem(f,i,v) { editBuffer[f][i]=v; }
@@ -242,7 +262,7 @@ function addSubstep(fi) {
 
 function updateFlowStep(i,k,v) { editBuffer.flow[i][k]=v; }
 function removeFlowStep(i) { capture(); editBuffer.flow.splice(i,1); document.getElementById('arr-flow').innerHTML=renderFlowArr(editBuffer.flow); }
-function addFlowStep() { capture(); editBuffer.flow.push({name:'',sub:'',type:'step',substeps:[]}); document.getElementById('arr-flow').innerHTML=renderFlowArr(editBuffer.flow); }
+function addFlowStep() { capture(); editBuffer.flow.push({name:'',sub:'',type:'step',description:'',tools:'',substeps:[]}); document.getElementById('arr-flow').innerHTML=renderFlowArr(editBuffer.flow); }
 
 function updateRef(i,k,v) { editBuffer.refs[i][k]=v; }
 function removeRef(i) { capture(); editBuffer.refs.splice(i,1); document.getElementById('arr-refs').innerHTML=renderRefsArr(editBuffer.refs); }

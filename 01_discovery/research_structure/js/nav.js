@@ -29,46 +29,50 @@ function renderRolesPage() {
       Roles used in document owner / reviewer / sign-off fields. Optionally assign a name.
     </div>`;
 
-  const rows = roles.map((r,i) => `
-    <div class="role-edit-row" data-i="${i}">
-      <input class="edit-input" placeholder="Role title" value="${x(r.title)}"
-        onchange="roles[${i}].title=this.value; saveRoles();"
-        style="flex:1">
-      <input class="edit-input" placeholder="Name (optional)" value="${x(r.name||'')}"
-        onchange="roles[${i}].name=this.value; saveRoles();"
-        style="flex:1">
-      <button class="btn btn-sm" onclick="deleteRole(${i})">✕</button>
+  const cards = roles.map((r,i) => `
+    <div class="role-card">
+      <div class="role-card-avatar">
+        <input class="role-avatar-input" maxlength="4" placeholder="👤" value="${x(r.avatar||'')}"
+          onchange="roles[${i}].avatar=this.value; saveRoles(); _refreshRoleAvatars();" title="Avatar emoji">
+      </div>
+      <div class="role-card-body">
+        <div class="role-card-top">
+          <input class="edit-input" placeholder="Role title" value="${x(r.title)}"
+            onchange="roles[${i}].title=this.value; saveRoles();" style="flex:1">
+          <input class="edit-input" placeholder="Person name (optional)" value="${x(r.name||'')}"
+            onchange="roles[${i}].name=this.value; saveRoles();" style="flex:0 0 160px">
+          <button class="btn btn-sm" onclick="deleteRole(${i})">✕</button>
+        </div>
+        <textarea class="edit-textarea" rows="2"
+          placeholder="1–3 lines: who this role is and what they do in this project..."
+          onchange="roles[${i}].description=this.value; saveRoles();">${x(r.description||'')}</textarea>
+      </div>
     </div>`).join('');
 
   document.getElementById('detail').innerHTML = `
-    <div style="max-width:700px">
+    <div style="max-width:760px">
       <div class="detail-hd">
         <div class="detail-hd-text">
           <div class="doc-title">Project Roles</div>
-          <div class="doc-path">Define roles and optionally assign names for this project</div>
+          <div class="doc-path">Define roles, assign people, and describe responsibilities</div>
         </div>
         <div class="detail-hd-actions">
           <button class="btn" onclick="addRole()">+ Add Role</button>
         </div>
       </div>
-      <div style="background:var(--surface-2);border:1px solid var(--border);border-radius:6px;overflow:hidden;margin-bottom:16px">
-        <div style="display:grid;grid-template-columns:1fr 1fr 28px;gap:8px;padding:8px 12px;background:var(--surface);border-bottom:1px solid var(--border)">
-          <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint)">Role</div>
-          <div style="font-size:10px;font-weight:500;text-transform:uppercase;letter-spacing:.07em;color:var(--text-faint)">Name (optional)</div>
-          <div></div>
-        </div>
-        <div id="roles-list" style="padding:8px 12px">
-          ${rows || '<div style="font-size:12px;color:var(--text-faint);padding:8px 0">No roles defined.</div>'}
-        </div>
+      <div id="roles-list">
+        ${cards || '<div style="font-size:12px;color:var(--text-faint);padding:8px 0">No roles defined.</div>'}
       </div>
-      <p style="font-size:12px;color:var(--text-faint);line-height:1.6">
-        Changes are saved automatically. Roles are available in all document owner, reviewer, and sign-off fields.
+      <p style="font-size:12px;color:var(--text-faint);line-height:1.6;margin-top:8px">
+        Changes are saved automatically. Roles appear in all owner, reviewer, and sign-off fields.
       </p>
     </div>`;
+
+  window._refreshRoleAvatars = () => {};
 }
 
 function addRole() {
-  roles.push({ key: 'role-'+Date.now(), title: '', name: '' });
+  roles.push({ key: 'role-'+Date.now(), title: '', name: '', avatar: '👤', description: '' });
   saveRoles();
   renderRolesPage();
 }
@@ -169,6 +173,12 @@ function openNewDocModal() {
               ${Object.entries(phases).map(([k,v])=>`<option value="${x(k)}"${k===activePhase?' selected':''}>${x(v.label)}</option>`).join('')}
             </select>
           </div>
+          <div class="edit-field"><div class="edit-label">Parent Document (optional)</div>
+            <select class="edit-select" id="nd-parent">
+              <option value="">— No parent —</option>
+              ${documents.map(doc=>`<option value="${x(doc.key)}">${x(doc.title)} (${x(doc.phase)})</option>`).join('')}
+            </select>
+          </div>
           <div class="edit-field"><div class="edit-label">Key (unique identifier)</div>
             <input class="edit-input" id="nd-key" placeholder="auto-generated" oninput="this._manual=true">
           </div>
@@ -184,14 +194,15 @@ function openNewDocModal() {
     </div>`;
   window.closeNewDocModal = () => { document.getElementById('modal-root').innerHTML = ''; };
   window.createDoc = () => {
-    const title = document.getElementById('nd-title').value.trim();
-    const sub   = document.getElementById('nd-sub').value.trim();
-    const phase = document.getElementById('nd-phase').value;
-    const key   = document.getElementById('nd-key').value.trim() || uniqueDocKey(title.toLowerCase().replace(/[^a-z0-9]+/g,'-'));
-    const path  = document.getElementById('nd-path').value.trim();
+    const title  = document.getElementById('nd-title').value.trim();
+    const sub    = document.getElementById('nd-sub').value.trim();
+    const phase  = document.getElementById('nd-phase').value;
+    const parent = document.getElementById('nd-parent').value;
+    const key    = document.getElementById('nd-key').value.trim() || uniqueDocKey(title.toLowerCase().replace(/[^a-z0-9]+/g,'-'));
+    const path   = document.getElementById('nd-path').value.trim();
     if (!title) { alert('Title is required'); return; }
     if (!key || documents.find(d => d.key === key)) { alert('Key is empty or already in use'); return; }
-    const doc = { phase, key, title, sub, path, owner:'', reviewers:[], signoff:'', lifecycle:'', trigger:'', doel:'', inputs:[], outputs:[], flow:[], note:'', refs:[], creation:[], template:'', aiTasks:[] };
+    const doc = { phase, key, title, sub, path, parent: parent||'', owner:'', reviewers:[], signoff:'', lifecycle:'', trigger:'', doel:'', inputs:[], outputs:[], flow:[], note:'', refs:[], template:'', aiTasks:[] };
     documents.push(doc); saveData();
     closeNewDocModal();
     activePhase = phase; activeKey = key;
@@ -235,22 +246,60 @@ function setPhaseTab(phase) {
   setPhase(phase);
 }
 
+function _sortByHierarchy(docs) {
+  const docKeys = new Set(docs.map(d => d.key));
+  const byParent = {};
+  docs.forEach(d => {
+    const p = (d.parent && docKeys.has(d.parent)) ? d.parent : '';
+    (byParent[p] = byParent[p] || []).push(d);
+  });
+  const result = [];
+  function dfs(parentKey, depth) {
+    (byParent[parentKey] || []).forEach(d => {
+      result.push({d, depth});
+      dfs(d.key, depth + 1);
+    });
+  }
+  dfs('', 0);
+  // orphans (parent in other phase) — append at depth 0
+  const reached = new Set(result.map(r => r.d.key));
+  docs.forEach(d => { if (!reached.has(d.key)) result.push({d, depth: 0}); });
+  return result;
+}
+
+function _docItemHtml(d, depth) {
+  return `<div class="doc-item${d.key===activeKey?' active':''}${depth>0?' doc-item--child':''}"
+       style="${depth>0?`padding-left:${10+depth*14}px`:''}"
+       onclick="showDoc('${d.key}')">
+    ${depth>0?'<span class="doc-item-indent">└</span>':''}
+    <div class="doc-item-text">
+      <div class="doc-item-title">${x(d.title)}</div>
+      <div class="doc-item-sub">${x(d.sub||'')}</div>
+    </div>
+  </div>`;
+}
+
 function renderDocList() {
   if (viewMode === 'roles' || viewMode === 'tree') return;
-  const docs = documents.filter(d => d.phase === activePhase);
+  const phaseDocs = documents.filter(d => d.phase === activePhase && !d.shared);
+  const sharedDocs = documents.filter(d => d.shared);
   const phaseLabel = phases[activePhase] ? phases[activePhase].label : activePhase;
+  const items = _sortByHierarchy(phaseDocs);
+
+  const phaseHtml = items.length
+    ? items.map(({d, depth}) => _docItemHtml(d, depth)).join('')
+    : `<div style="padding:20px 14px;font-size:12px;color:var(--text-faint)">No documents in this phase.</div>`;
+
+  const sharedHtml = sharedDocs.length
+    ? `<div class="doc-list-divider">Shared templates</div>` +
+      sharedDocs.map(d => _docItemHtml(d, 0)).join('')
+    : '';
+
   document.getElementById('doc-list').innerHTML =
     `<div class="doc-list-header">
       <div class="doc-list-label">${x(phaseLabel)}</div>
       <button class="btn btn-sm" onclick="openNewDocModal()" title="Add document to this phase">+</button>
-    </div>` +
-    (docs.length
-      ? docs.map(d =>
-          `<div class="doc-item${d.key===activeKey?' active':''}" onclick="showDoc('${d.key}')">
-            <div class="doc-item-title">${x(d.title)}</div>
-            <div class="doc-item-sub">${x(d.sub||'')}</div>
-          </div>`).join('')
-      : `<div style="padding:20px 14px;font-size:12px;color:var(--text-faint)">No documents in this phase.</div>`);
+    </div>` + phaseHtml + sharedHtml;
 }
 
 function setPhase(phase) {

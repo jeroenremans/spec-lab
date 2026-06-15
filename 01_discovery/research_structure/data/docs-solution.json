@@ -248,7 +248,8 @@
         "objective": "Generate a state or flow diagram for this feature only if it involves a lifecycle with multiple states or a non-trivial decision flow.",
         "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a Solution Architect analysing a feature.\n\nAssessment: Does this feature involve an entity with 4+ lifecycle states, or a user flow with branching decisions? Simple CRUD features or single-path flows do not warrant a diagram.\n\nIf warranted, choose the correct type:\n- Use `stateDiagram-v2` if the feature has an entity with a meaningful lifecycle (draft → review → approved → archived, etc.)\n- Use `flowchart TD` if it is a decision-heavy process (multiple conditions determining next steps)\n\nInclude: all states/steps, transitions with labels, and error/exception paths.\n\nOutput only the mermaid code block, no explanation."
       }
-    ]
+    ],
+    "parent": "epic"
   },
   {
     "phase": "solution",
@@ -374,7 +375,8 @@
         "objective": "Generate a flow diagram only if this story involves a multi-step interaction or conditional logic that prose cannot make unambiguous.",
         "prompt": "Assess first: only generate a diagram if this document has structural complexity that text alone would obscure — multiple decision points, 4+ interacting actors, entity relationships, or parallel paths. If the content is simple or linear, reply: **\"No diagram needed — the text is sufficient.\"**\n\nIf a diagram IS warranted, generate valid Mermaid syntax.\n\nYou are a BA reviewing a user story.\n\nAssessment: Does this story involve 3+ sequential steps with conditional branches, or interactions between 2+ systems? Single-action stories (\"as a user I want to see X\") never need a diagram.\n\nIf warranted, generate a `sequenceDiagram` or `flowchart TD`:\n- Use `sequenceDiagram` if there is an interaction between user + frontend + backend + database\n- Use `flowchart TD` if it is purely a decision flow within one system\n\nKeep to the happy path + one exception path maximum.\n\nOutput only the mermaid code block, no explanation."
       }
-    ]
+    ],
+    "parent": "feature"
   },
   {
     "phase": "solution",
@@ -485,6 +487,7 @@
         "prompt": "You are a Security Engineer reviewing requirements. Identify: (1) authorisation edge cases (unauthorised data access), (2) input validation gaps (injection, XSS, oversized input), (3) concurrency issues (race conditions, simultaneous submits), (4) state edge cases (unexpected object states). Output as \"What if...\" scenarios, each a candidate AC.",
         "step": "Edge Case Review"
       }
-    ]
+    ],
+    "parent": "story"
   }
 ]
