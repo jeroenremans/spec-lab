@@ -12,6 +12,8 @@ function setViewMode(mode) {
     renderTree();
     if (activeKey) showDoc(activeKey);
     else document.getElementById('detail').innerHTML = '<div class="detail-empty">← Select a document</div>';
+  } else if (mode === 'schema') {
+    renderSchemaView();
   } else {
     renderDocList();
     if (activeKey) showDoc(activeKey);
@@ -232,9 +234,10 @@ function renderPhaseTabs() {
     `<div class="phase-tab${viewMode==='docs'&&k===activePhase?' active':''}" onclick="setPhaseTab('${k}')">
       <span class="phase-dot" style="background:${x(v.color)}"></span>${x(v.label)}
     </div>`).join('');
-  const treeTab = `<div class="phase-tab tree-tab${viewMode==='tree'?' active':''}" onclick="setViewMode('tree')">🌲 Tree</div>`;
-  const rolesTab = `<div class="phase-tab roles-tab${viewMode==='roles'?' active':''}" onclick="setViewMode('roles')" style="margin-left:auto">👥 Roles</div>`;
-  document.getElementById('phase-nav').innerHTML = tabs + treeTab + rolesTab;
+  const treeTab   = `<div class="phase-tab tree-tab${viewMode==='tree'?' active':''}" onclick="setViewMode('tree')">🌲 Tree</div>`;
+  const schemaTab = `<div class="phase-tab${viewMode==='schema'?' active':''}" onclick="setViewMode('schema')">⬛ Schema</div>`;
+  const rolesTab  = `<div class="phase-tab roles-tab${viewMode==='roles'?' active':''}" onclick="setViewMode('roles')" style="margin-left:auto">👥 Roles</div>`;
+  document.getElementById('phase-nav').innerHTML = tabs + treeTab + schemaTab + rolesTab;
 }
 
 function setPhaseTab(phase) {
@@ -365,6 +368,100 @@ function renderPhaseOverview() {
       </div>
       ${rowsHtml}${sharedHtml}
     </div>`;
+}
+
+function renderSchemaView() {
+  document.getElementById('doc-list').innerHTML = '';
+
+  // Build node id map (key → sanitized Mermaid id)
+  const toId = k => k.replace(/[^a-z0-9]/gi, '_');
+  window._schemaKeyMap = {};
+  documents.forEach(d => { window._schemaKeyMap[toId(d.key)] = d.key; });
+
+  window.schemaNodeClick = nodeId => {
+    const key = window._schemaKeyMap[nodeId];
+    if (key) { setViewMode('docs'); showDoc(key); }
+  };
+
+  const phaseOrder = Object.keys(phases);
+  // Main flow phases (left to right)
+  const mainPhases   = phaseOrder.filter(pk => !['governance','architecture'].includes(pk));
+  const bottomPhases = phaseOrder.filter(pk =>  ['governance','architecture'].includes(pk));
+
+  const lines = ['flowchart LR'];
+
+  // classDef per phase (color from phases config)
+  phaseOrder.forEach(pk => {
+    const col = (phases[pk]?.color || '#888').replace('#','');
+    lines.push(`  classDef phase_${pk} fill:#${col}22,stroke:#${col},color:#333,rx:6`);
+  });
+  lines.push('  classDef shared fill:#f0e6ff,stroke:#9b72cf,color:#333');
+
+  // Subgraphs
+  const allPhases = [...mainPhases, ...bottomPhases];
+  allPhases.forEach(pk => {
+    const ph = phases[pk];
+    const docs = documents.filter(d => d.phase === pk && !d.shared);
+    if (!docs.length) return;
+    lines.push(`  subgraph sg_${pk}["${ph.label}"]`);
+    docs.forEach(d => {
+      const label = d.title.length > 22 ? d.title.slice(0,20)+'…' : d.title;
+      lines.push(`    ${toId(d.key)}["${label}"]`);
+    });
+    lines.push('  end');
+  });
+
+  // Shared docs (no subgraph)
+  const shared = documents.filter(d => d.shared);
+  shared.forEach(d => {
+    const label = d.title.length > 22 ? d.title.slice(0,20)+'…' : d.title;
+    lines.push(`  ${toId(d.key)}(["${label}"])`);
+  });
+
+  // Edges — parent relationships (solid)
+  documents.forEach(d => {
+    if (d.parent && documents.find(p => p.key === d.parent)) {
+      lines.push(`  ${toId(d.parent)} --> ${toId(d.key)}`);
+    }
+  });
+
+  // Edges — refs (dashed)
+  documents.forEach(d => {
+    (d.refs||[]).filter(r => r.dir === '→' && r.key).forEach(r => {
+      if (documents.find(t => t.key === r.key)) {
+        lines.push(`  ${toId(d.key)} -.-> ${toId(r.key)}`);
+      }
+    });
+  });
+
+  // class assignments
+  phaseOrder.forEach(pk => {
+    const ids = documents.filter(d => d.phase === pk && !d.shared).map(d => toId(d.key));
+    if (ids.length) lines.push(`  class ${ids.join(',')} phase_${pk}`);
+  });
+  if (shared.length) lines.push(`  class ${shared.map(d=>toId(d.key)).join(',')} shared`);
+
+  // Click handlers
+  documents.forEach(d => {
+    lines.push(`  click ${toId(d.key)} schemaNodeClick`);
+  });
+
+  const mermaidSrc = lines.join('\n');
+
+  document.getElementById('detail').innerHTML = `
+    <div class="sc-diagram-wrap">
+      <div class="sc-diagram-hd">
+        <span style="font-size:13px;font-weight:600;color:var(--text)">Document Schema</span>
+        <span style="font-size:11px;color:var(--text-faint);margin-left:8px">solid arrow = parent/child · dashed = reference · click node to open</span>
+      </div>
+      <div class="sc-diagram-body">
+        <pre class="mermaid sc-mermaid">${mermaidSrc}</pre>
+      </div>
+    </div>`;
+
+  if (window.mermaid) {
+    setTimeout(() => mermaid.run({ querySelector: '.sc-mermaid' }), 0);
+  }
 }
 
 // init is called by initData() in storage.js after JSON loads

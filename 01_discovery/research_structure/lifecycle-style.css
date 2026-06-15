@@ -244,6 +244,16 @@ hr { border: none; border-top: 1px solid var(--border); margin: 20px 0; }
 .po-empty { font-size: 12px; color: var(--text-faint); padding: 16px 0; }
 .po-section-label { font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: var(--text-faint); margin-top: 20px; margin-bottom: 6px; padding-top: 12px; border-top: 1px solid var(--border); }
 
+/* ── Schema view (Mermaid diagram) ───────────────────────────── */
+.sc-diagram-wrap { display: flex; flex-direction: column; height: 100%; }
+.sc-diagram-hd { padding: 12px 16px; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.sc-diagram-body { flex: 1; overflow: auto; padding: 16px; background: var(--surface-2); }
+.sc-mermaid { background: transparent; }
+.sc-mermaid svg { min-width: 600px; cursor: default; }
+.sc-mermaid .node { cursor: pointer; }
+.sc-mermaid .node rect, .sc-mermaid .node polygon { transition: filter .15s; }
+.sc-mermaid .node:hover rect, .sc-mermaid .node:hover polygon { filter: brightness(.93); }
+
 /* ── Tree view ───────────────────────────────────────────────── */
 .tree-scroll { overflow-y: auto; }
 .tree-phase-hd { display: flex; align-items: center; gap: 6px; padding: 8px 14px 5px; font-size: 10px; font-weight: 500; text-transform: uppercase; letter-spacing: .07em; color: var(--text-faint); }
