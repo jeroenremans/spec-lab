@@ -2,7 +2,7 @@
 
 **Product:** Spec-Driven Development Workbench  
 **Date:** 2026-06-07  
-**Status:** Placeholder — not yet in active sprint
+**Status:** Delivered — MVP implemented 2026-06-07
 
 ---
 
