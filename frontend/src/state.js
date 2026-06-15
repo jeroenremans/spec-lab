@@ -1,6 +1,7 @@
 export const state = {
   projects: [],
   activeProject: null,
+  githubRepo: null,
   tree: [],
   modifiedFiles: new Set(),
   tagFiles: new Set(),

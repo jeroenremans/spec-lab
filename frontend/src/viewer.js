@@ -1,7 +1,7 @@
 import { state } from "./state.js";
 import { esc } from "./utils.js";
 import mermaid from "mermaid";
-import { getFileContent, saveFile, getGitHeadContent } from "./api.js";
+import { getFileContent, saveFile, getGitHeadContent, getGithubFile } from "./api.js";
 import { renderMarkdown, renderVTT, renderJSON, paragraphDiff } from "./render.js";
 import { createEditor, destroyEditor, getEditor, isEditing, setupFloatingTagBar } from "./editor.js";
 
@@ -9,10 +9,34 @@ let _afterSave;
 
 export function initViewer({ afterSave }) {
   _afterSave = afterSave;
+
+  // Delegated link handler for relative markdown links (S4.5)
+  document.getElementById("content-scroll").addEventListener("click", (e) => {
+    const link = e.target.closest("a");
+    if (!link) return;
+    const href = link.getAttribute("href");
+    if (!href || /^(https?:|mailto:|#)/.test(href)) return;
+    e.preventDefault();
+    const resolved = resolveRelPath(state.currentFile, href);
+    if (resolved) openFile(resolved);
+  });
+}
+
+function resolveRelPath(currentFile, href) {
+  if (!currentFile) return null;
+  const base = currentFile.split("/").slice(0, -1).join("/");
+  const joined = base ? base + "/" + href : href;
+  const parts = joined.split("/");
+  const out = [];
+  for (const p of parts) {
+    if (p === "..") out.pop();
+    else if (p && p !== ".") out.push(p);
+  }
+  return out.join("/");
 }
 
 export async function openFile(path) {
-  if (!state.activeProject) return;
+  if (!state.activeProject && !state.githubRepo) return;
   if (isEditing()) cancelEdit();
   state.currentFile = path;
   state.inlineDiffActive = false;
@@ -27,7 +51,9 @@ export async function openFile(path) {
   const scroll = document.getElementById("content-scroll");
 
   try {
-    const content = await getFileContent(state.activeProject.path, path);
+    const content = state.githubRepo
+      ? await getGithubFile(state.githubRepo, path)
+      : await getFileContent(state.activeProject.path, path);
 
     if (ext === "md") {
       state.currentMdContent = content;
@@ -45,11 +71,12 @@ export async function openFile(path) {
       showPageHeader(path, ext.toUpperCase());
       document.getElementById("page-actions").style.display = "none";
       const fname = path.split("/").pop();
+      const projPath = state.activeProject?.path || "";
       showContent(`
         <div class="file-info">
           <h2>${esc(fname)}</h2>
           <p>This file type cannot be previewed in the workbench.</p>
-          <a href="/api/file?project=${encodeURIComponent(state.activeProject.path)}&file=${encodeURIComponent(path)}" target="_blank" rel="noopener">Open / Download</a>
+          ${projPath ? `<a href="/api/file?project=${encodeURIComponent(projPath)}&file=${encodeURIComponent(path)}" target="_blank" rel="noopener">Open / Download</a>` : ""}
         </div>`);
     }
   } catch (e) {
@@ -58,15 +85,15 @@ export async function openFile(path) {
 }
 
 function renderMdPage(path, md) {
-  const isModified = state.modifiedFiles.has(path);
-  showPageHeader(path, isModified ? "Modified" : "Doc", isModified);
-  document.getElementById("page-actions").style.display = "flex";
+  const isRemote = !!state.githubRepo;
+  const isModified = !isRemote && state.modifiedFiles.has(path);
+  showPageHeader(path, isRemote ? "Remote" : isModified ? "Modified" : "Doc", isModified);
+  document.getElementById("page-actions").style.display = isRemote ? "none" : "flex";
 
-  const diffBtn = document.getElementById("btn-diff");
-  if (isModified) {
-    diffBtn.classList.remove("hidden");
-  } else {
-    diffBtn.classList.add("hidden");
+  if (!isRemote) {
+    const diffBtn = document.getElementById("btn-diff");
+    if (isModified) diffBtn.classList.remove("hidden");
+    else diffBtn.classList.add("hidden");
   }
 
   const rendered = renderMarkdown(md).replace(/^<h1[^>]*>[\s\S]*?<\/h1>\s*/i, "");
@@ -99,7 +126,9 @@ function updateBreadcrumb(path) {
   const bc = document.getElementById("breadcrumb");
   const parts = path.split("/");
   bc.style.display = "flex";
-  document.getElementById("bc-root").textContent = state.activeProject?.name || "Home";
+  const rootName = state.activeProject?.name
+    || (state.githubRepo ? state.githubRepo.split("/").pop() : "Home");
+  document.getElementById("bc-root").textContent = rootName;
   if (parts.length > 1) {
     document.getElementById("bc-section").textContent = parts.slice(0, -1).join(" › ");
     document.getElementById("bc-sep2").style.display = "";
@@ -128,6 +157,7 @@ async function renderMermaid() {
 }
 
 export async function startEdit() {
+  if (state.githubRepo) return;
   if (!state.currentFile || !state.currentFile.endsWith(".md")) return;
   state.originalContent = state.currentMdContent;
 

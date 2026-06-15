@@ -1,0 +1,446 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Requirements Process — Live Blueprint</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+
+  :root{
+    --bg:#070a12; --panel:#0e131f; --line:#1d2738; --ink:#e7ecf5; --muted:#7e8aa3;
+    --cyan:#22d3ee; --violet:#a78bfa; --green:#34d399; --amber:#fbbf24;
+    --pink:#f472b6; --orange:#fb923c; --lime:#a3e635; --sky:#38bdf8;
+  }
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{
+    font-family:'Space Grotesk',system-ui,sans-serif;
+    color:var(--ink);
+    background:
+      radial-gradient(1200px 600px at 15% -10%, rgba(34,211,238,.10), transparent 60%),
+      radial-gradient(1000px 600px at 100% 120%, rgba(244,114,182,.10), transparent 55%),
+      var(--bg);
+    min-height:100vh; padding:24px 20px 40px; -webkit-font-smoothing:antialiased;
+    overflow-x:hidden;
+  }
+  .wrap{max-width:1280px;margin:0 auto;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:11px;letter-spacing:.28em;text-transform:uppercase;color:var(--cyan);}
+  h1{
+    font-size:34px;font-weight:700;letter-spacing:-.02em;margin:8px 0 6px;line-height:1.05;
+    background:linear-gradient(90deg,#fff,#a9e9ff 40%,#d7b6ff 70%,#ffd1ec);
+    -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+  }
+  .sub{color:var(--muted);font-size:13.5px;max-width:680px;line-height:1.55;}
+
+  .hud{display:flex;gap:10px;flex-wrap:wrap;align-items:center;margin:18px 0 12px;}
+  button.ctl{
+    font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.04em;
+    border:1px solid var(--line);background:rgba(255,255,255,.02);color:var(--ink);
+    padding:9px 15px;border-radius:9px;display:inline-flex;align-items:center;gap:7px;transition:all .15s;
+  }
+  button.ctl:hover{border-color:var(--cyan);color:var(--cyan);box-shadow:0 0 14px rgba(34,211,238,.25);}
+  button.ctl.primary{background:linear-gradient(90deg,var(--cyan),var(--sky));color:#04121a;border:none;}
+  button.ctl.primary:hover{box-shadow:0 0 22px rgba(34,211,238,.55);color:#04121a;}
+  .stat{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);border:1px solid var(--line);padding:8px 12px;border-radius:9px;}
+  .stat b{color:var(--ink);}
+  .stat .v{color:var(--lime);}
+  .spacer{flex:1;}
+  .zoom{display:flex;gap:6px;}
+  .zoom button{width:34px;height:34px;padding:0;justify-content:center;font-size:16px;}
+
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin:0 0 12px;font-family:'IBM Plex Mono',monospace;font-size:11px;color:var(--muted);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .chip{width:10px;height:10px;border-radius:3px;box-shadow:0 0 8px currentColor;}
+
+  .stage{
+    border:1px solid var(--line);border-radius:16px;overflow:auto;cursor:grab;
+    background:
+      linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px) 0 0/26px 26px,
+      linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px) 0 0/26px 26px,
+      var(--panel);
+    box-shadow:inset 0 0 80px rgba(0,0,0,.5);
+    height:74vh;min-height:520px;
+  }
+  .stage.grabbing{cursor:grabbing;}
+  .inner{transform-origin:0 0;width:1470px;}
+  svg{display:block;width:1470px;height:auto;}
+
+  /* edges */
+  .edge-base{fill:none;stroke:#2a3650;stroke-width:1.6;}
+  .edge-flow{fill:none;stroke:var(--cyan);stroke-width:2.4;stroke-linecap:round;stroke-dasharray:9 13;opacity:.26;animation:flow 2.6s linear infinite;}
+  @keyframes flow{to{stroke-dashoffset:-44;}}
+  .edge-flow.hot{opacity:1;animation-duration:.85s;filter:drop-shadow(0 0 6px var(--cyan));}
+  .edge-lbl{font-family:'IBM Plex Mono',monospace;font-size:10.5px;font-weight:600;fill:#9fb0cc;}
+
+  .loop{fill:none;stroke:var(--amber);stroke-width:1.8;stroke-dasharray:5 6;opacity:.55;animation:march 1s linear infinite;}
+  @keyframes march{to{stroke-dashoffset:-22;}}
+  .loop-lbl{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;fill:var(--amber);opacity:.9;}
+
+  /* fast-track shortcut edges */
+  .edge-base.fast{stroke-dasharray:3 8;stroke:#36507a;opacity:.5;}
+  .edge-flow.fast{opacity:0;animation:none;stroke:var(--lime);}
+  .edge-flow.fast.hot{opacity:1;animation:flow .85s linear infinite;filter:drop-shadow(0 0 6px var(--lime));}
+
+  /* dimmed (not part of the active scenario) */
+  .node.dim{opacity:.10;transition:opacity .4s;}
+  .edge-base.dim,.edge-flow.dim,.loop.dim,.loop-lbl.dim{opacity:.05 !important;animation:none;}
+
+  /* nodes */
+  .node{cursor:pointer;}
+  .node .shape{transition:fill .3s,stroke .3s,filter .3s;}
+  .node text{pointer-events:none;}
+  .node .ring{opacity:0;transition:opacity .35s;}
+  .node.active .ring{opacity:.9;}
+  .node.active .shape{filter:drop-shadow(0 0 12px var(--c)) drop-shadow(0 0 26px var(--c));}
+  .node:hover .shape{stroke:#fff;}
+  .nkick{font-family:'IBM Plex Mono',monospace;font-size:8.5px;font-weight:600;letter-spacing:.12em;fill:#8da0bf;}
+  .nlbl{font-size:13px;font-weight:600;fill:var(--ink);}
+  .gtxt{font-size:11.5px;font-weight:700;fill:#0b0f17;}
+
+  #pulses circle{filter:drop-shadow(0 0 6px currentColor);}
+
+  /* modal */
+  .backdrop{position:fixed;inset:0;background:rgba(4,7,14,.66);backdrop-filter:blur(5px);display:none;align-items:center;justify-content:center;padding:20px;z-index:60;opacity:0;transition:opacity .2s;}
+  .backdrop.show{display:flex;opacity:1;}
+  .modal{background:linear-gradient(180deg,#121a29,#0d131f);border:1px solid var(--line);border-radius:18px;max-width:580px;width:100%;overflow:hidden;box-shadow:0 30px 90px rgba(0,0,0,.6);transform:translateY(10px) scale(.97);transition:transform .22s cubic-bezier(.2,.8,.2,1);}
+  .backdrop.show .modal{transform:none;}
+  .mhead{padding:22px 26px 16px;border-bottom:1px solid var(--line);position:relative;}
+  .mhead .tag{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.16em;text-transform:uppercase;}
+  .mhead h2{font-size:23px;font-weight:700;margin:8px 0 5px;letter-spacing:-.01em;}
+  .mhead p{font-size:13px;color:var(--muted);line-height:1.5;}
+  .mhead .x{position:absolute;top:18px;right:18px;width:30px;height:30px;border:1px solid var(--line);border-radius:8px;background:transparent;color:var(--muted);font-size:17px;cursor:pointer;line-height:1;}
+  .mhead .x:hover{color:#fff;border-color:#fff;}
+  .io{display:grid;grid-template-columns:1fr 1fr;}
+  .io>div{padding:18px 24px 24px;}
+  .io>div:first-child{border-right:1px solid var(--line);}
+  .io h3{font-family:'IBM Plex Mono',monospace;font-size:10.5px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:12px;}
+  .io .in h3{color:var(--cyan);} .io .out h3{color:var(--green);}
+  .io ul{list-style:none;display:flex;flex-direction:column;gap:9px;}
+  .io li{font-size:13px;line-height:1.45;padding-left:15px;position:relative;color:#cdd6e6;}
+  .io li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:2px;}
+  .io .in li::before{background:var(--cyan);box-shadow:0 0 6px var(--cyan);}
+  .io .out li::before{background:var(--green);box-shadow:0 0 6px var(--green);}
+  @media(max-width:520px){.io{grid-template-columns:1fr;}.io>div:first-child{border-right:none;border-bottom:1px solid var(--line);}}
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="eyebrow">// live process blueprint</div>
+  <h1>Requirements → Two Parallel Developments</h1>
+  <p class="sub">A full enterprise flow: intake & refinement, analysis, definition, three decision gates, two parallel build streams with cross-team sync, integration and release. <b>New project</b> runs the whole path; <b>New requirement (existing)</b> fast-tracks — reuses the existing architecture and touches one stream (the green dashed shortcuts). Click any node for its input/output. Amber dashed lines are recurring / feedback loops. Scroll or drag to pan, +/− to zoom.</p>
+
+  <div class="hud">
+    <button class="ctl primary" id="playNew">▶ Run: New project</button>
+    <button class="ctl" id="playReq">▶ Run: New requirement (existing)</button>
+    <button class="ctl" id="reset">↺ Reset</button>
+    <span class="stat" id="modeStat">mode <b class="v" id="modeName">—</b></span>
+    <span class="stat">nodes fired <b class="v" id="cNodes">0</b> / <b id="cTotal">0</b></span>
+    <span class="spacer"></span>
+    <div class="zoom"><button class="ctl" id="zout">−</button><button class="ctl" id="zin">+</button></div>
+  </div>
+
+  <div class="legend">
+    <span><i class="chip" style="background:var(--violet);color:var(--violet)"></i>Input</span>
+    <span><i class="chip" style="background:var(--cyan);color:var(--cyan)"></i>Step</span>
+    <span><i class="chip" style="background:var(--green);color:var(--green)"></i>Output</span>
+    <span><i class="chip" style="background:var(--amber);color:var(--amber)"></i>Decision gate</span>
+    <span><i class="chip" style="background:var(--pink);color:var(--pink)"></i>Stream A</span>
+    <span><i class="chip" style="background:var(--orange);color:var(--orange)"></i>Stream B</span>
+    <span><i class="chip" style="background:var(--amber);color:var(--amber)"></i>↻ Loop / feedback</span>
+  </div>
+
+  <div class="stage" id="stage">
+    <div class="inner" id="inner">
+      <svg id="svg" viewBox="0 110 1470 820" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L7,4 L0,8 Z" fill="#3a4a68"/></marker>
+          <marker id="arrA" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L7,4 L0,8 Z" fill="#fbbf24"/></marker>
+        </defs>
+        <g id="loops"></g>
+        <g id="edges"></g>
+        <g id="nodes"></g>
+        <g id="pulses"></g>
+      </svg>
+    </div>
+  </div>
+</div>
+
+<div class="backdrop" id="bd">
+  <div class="modal" role="dialog" aria-modal="true">
+    <div class="mhead">
+      <button class="x" id="mx">×</button>
+      <span class="tag" id="mtag">STEP</span>
+      <h2 id="mtitle"></h2>
+      <p id="mrole"></p>
+    </div>
+    <div class="io">
+      <div class="in"><h3>▸ Input</h3><ul id="min"></ul></div>
+      <div class="out"><h3>▸ Output</h3><ul id="mout"></ul></div>
+    </div>
+  </div>
+</div>
+
+<script>
+const NS="http://www.w3.org/2000/svg";
+const C={violet:"#a78bfa",cyan:"#22d3ee",green:"#34d399",amber:"#fbbf24",pink:"#f472b6",orange:"#fb923c",lime:"#a3e635",sky:"#38bdf8"};
+
+// ---------- NODES ----------
+const NODES=[
+  {id:"intake",      cx:120, cy:200, type:"input", kick:"MEETING",   label:"Intake",        c:C.violet},
+  {id:"interviews",  cx:120, cy:300, type:"input", kick:"MEETING",   label:"Interviews",    c:C.violet},
+  {id:"refinement",  cx:120, cy:400, type:"input", kick:"RECURRING", label:"Refinement",    c:C.violet},
+  {id:"analysis",    cx:360, cy:250, type:"step",  kick:"STEP",      label:"First Analysis",c:C.cyan},
+  {id:"feasibility", cx:360, cy:400, type:"gate",  kick:"GATE",      label:"Feasibility",   c:C.amber, gate:true},
+  {id:"define",      cx:600, cy:300, type:"step",  kick:"STEP",      label:"Define Req.",   c:C.cyan},
+  {id:"userStories", cx:840, cy:190, type:"output",kick:"OUTPUT",    label:"User Stories",  c:C.green},
+  {id:"nfr",         cx:840, cy:300, type:"output",kick:"OUTPUT",    label:"Non-Func Req.", c:C.green},
+  {id:"dataReq",     cx:840, cy:410, type:"output",kick:"OUTPUT",    label:"Data & Integ.", c:C.green},
+  {id:"prioritise",  cx:1080,cy:300, type:"step",  kick:"STEP",      label:"Prioritise",    c:C.cyan},
+  {id:"validation",  cx:1320,cy:300, type:"gate",  kick:"GATE",      label:"Validation",    c:C.amber, gate:true},
+  {id:"design",      cx:1320,cy:620, type:"step",  kick:"STEP",      label:"Solution Design",c:C.sky},
+  {id:"security",    cx:1080,cy:620, type:"gate",  kick:"GATE",      label:"Security & Comp.",c:C.amber, gate:true},
+  {id:"buildA",      cx:840, cy:540, type:"build", kick:"BUILD · A", label:"Stream A",      c:C.pink},
+  {id:"buildB",      cx:840, cy:720, type:"build", kick:"BUILD · B", label:"Stream B",      c:C.orange},
+  {id:"alignA",      cx:600, cy:540, type:"gate",  kick:"SYNC · A",  label:"Align A",       c:C.amber, gate:true},
+  {id:"alignB",      cx:600, cy:720, type:"gate",  kick:"SYNC · B",  label:"Align B",       c:C.amber, gate:true},
+  {id:"integration", cx:360, cy:630, type:"step",  kick:"STEP",      label:"Integration",   c:C.cyan},
+  {id:"release",     cx:120, cy:630, type:"end",   kick:"DELIVER",   label:"Release",       c:C.lime}
+];
+const NMAP={}; NODES.forEach(n=>{n.w=n.gate?128:170;n.h=n.gate?100:66;NMAP[n.id]=n;});
+
+// ---------- DETAILS (example placeholders) ----------
+const D={
+ intake:{role:"Kickoff to capture the initiative and its goals.",in:["Business request","Stakeholder list","High-level objectives"],out:["Shared problem framing","Initial scope sketch"]},
+ interviews:{role:"Targeted stakeholder interviews for depth.",in:["Stakeholder availability","Question guide"],out:["Needs & pain points","Constraints captured"]},
+ refinement:{role:"Recurring sessions sharpening detail across the track.",in:["Open questions","Draft requirements","Feedback"],out:["Clarified details","Resolved ambiguities","Updated backlog"]},
+ analysis:{role:"Turn raw input into a structured baseline.",in:["Intake notes","Interview findings","Refinement output"],out:["Problem baseline","Assumptions & constraints"]},
+ feasibility:{role:"Gate: is this viable to pursue?",in:["Baseline","Rough effort estimate"],out:["Feasible → continue","Not feasible → back to analysis"]},
+ define:{role:"Establish the core functional scope.",in:["Validated baseline","Priorities"],out:["Requirement set","Draft acceptance criteria"]},
+ userStories:{role:"Actionable, testable user stories.",in:["Defined requirements"],out:["Stories + acceptance criteria","Story map"]},
+ nfr:{role:"Quality attributes the solution must meet.",in:["Defined requirements","Quality targets"],out:["Performance / security / scalability targets"]},
+ dataReq:{role:"Data model & integration needs.",in:["Defined requirements","System landscape"],out:["Data contracts","Integration points"]},
+ prioritise:{role:"MoSCoW prioritisation of the backlog.",in:["Stories, NFRs, data req."],out:["Prioritised, sequenced backlog"]},
+ validation:{role:"Gate: requirements approved before build.",in:["Prioritised backlog"],out:["Approved → design","Revise → back to Define Req."]},
+ design:{role:"Architecture & solution design.",in:["Approved requirements"],out:["Solution architecture","Interface contracts"]},
+ security:{role:"Gate: security & compliance review.",in:["Solution design","Compliance frameworks"],out:["Passed → build","Remediate → back to design"]},
+ buildA:{role:"Development of stream A (e.g. product / frontend).",in:["Approved design","Stream A backlog"],out:["Increment A","Stream A tests"]},
+ buildB:{role:"Development of stream B (e.g. platform / backend).",in:["Approved design","Stream B backlog"],out:["Increment B","Stream B tests"]},
+ alignA:{role:"Cross-team sync checkpoint for stream A.",in:["Increment A","Shared contracts"],out:["Aligned → integration","Issues → back to build A"]},
+ alignB:{role:"Cross-team sync checkpoint for stream B.",in:["Increment B","Shared contracts"],out:["Aligned → integration","Issues → back to build B"]},
+ integration:{role:"Integrate both streams & test end-to-end.",in:["Increment A","Increment B"],out:["Integrated build","Defects → back to build B"]},
+ release:{role:"Validated, integrated solution delivered.",in:["Integrated, tested build"],out:["Released to production","Next iteration seeded"]}
+};
+const TAG={input:"INPUT",step:"STEP",output:"OUTPUT",gate:"DECISION GATE",build:"DEVELOPMENT",end:"END STATE"};
+
+// ---------- EDGES ----------
+const E=[
+ ["intake","analysis","r","l"],["interviews","analysis","r","l"],["refinement","analysis","r","l"],
+ ["analysis","feasibility","b","t"],["feasibility","define","r","l"],
+ ["define","userStories","r","l"],["define","nfr","r","l"],["define","dataReq","r","l"],
+ ["userStories","prioritise","r","l"],["nfr","prioritise","r","l"],["dataReq","prioritise","r","l"],
+ ["prioritise","validation","r","l"],["validation","design","b","t"],
+ ["design","security","l","r"],["security","buildA","l","r"],["security","buildB","l","r"],
+ ["buildA","alignA","l","r"],["buildB","alignB","l","r"],
+ ["alignA","integration","l","r"],["alignB","integration","l","r"],["integration","release","l","r"],
+ // fast-track shortcuts used by the "new requirement on existing project" flow
+ ["refinement","define","r","l","fast"],
+ ["validation","security","b","t","fast"]
+].map(e=>({id:e[0]+"_"+e[1],from:e[0],to:e[1],fs:e[2],ts:e[3],kind:e[4]||"flow"}));
+
+const LOOPS=[
+ {id:"l_ref",from:"refinement",to:"refinement",self:true,label:"recurring"},
+ {id:"l_feas",from:"feasibility",to:"analysis",fs:"l",ts:"l",depth:90,label:"not feasible"},
+ {id:"l_val",from:"validation",to:"define",fs:"b",ts:"b",depth:150,label:"revise requirements"},
+ {id:"l_sec",from:"security",to:"design",fs:"b",ts:"b",depth:95,label:"remediate"},
+ {id:"l_aA",from:"alignA",to:"buildA",fs:"t",ts:"t",depth:80,label:"issues A"},
+ {id:"l_aB",from:"alignB",to:"buildB",fs:"b",ts:"b",depth:80,label:"issues B"},
+ {id:"l_sync",from:"buildB",to:"buildA",fs:"l",ts:"l",depth:80,label:"cross-team sync"},
+ {id:"l_def",from:"integration",to:"buildB",fs:"b",ts:"b",depth:120,label:"defects"}
+];
+
+// ---------- PLAY WAVES ----------
+const WAVES=[
+ {nodes:["intake","interviews","refinement"]},
+ {edges:["intake_analysis","interviews_analysis","refinement_analysis"],nodes:["analysis"]},
+ {edges:["analysis_feasibility"],nodes:["feasibility"]},
+ {edges:["feasibility_define"],nodes:["define"]},
+ {edges:["define_userStories","define_nfr","define_dataReq"],nodes:["userStories","nfr","dataReq"]},
+ {edges:["userStories_prioritise","nfr_prioritise","dataReq_prioritise"],nodes:["prioritise"]},
+ {edges:["prioritise_validation"],nodes:["validation"]},
+ {edges:["validation_design"],nodes:["design"]},
+ {edges:["design_security"],nodes:["security"]},
+ {edges:["security_buildA","security_buildB"],nodes:["buildA","buildB"]},
+ {edges:["buildA_alignA","buildB_alignB"],nodes:["alignA","alignB"]},
+ {edges:["alignA_integration","alignB_integration"],nodes:["integration"]},
+ {edges:["integration_release"],nodes:["release"]}
+];
+
+// ---------- GEOMETRY ----------
+function anchor(n,s){const x=n.cx-n.w/2,y=n.cy-n.h/2;
+  if(s==="l")return[x,n.cy]; if(s==="r")return[x+n.w,n.cy];
+  if(s==="t")return[n.cx,y]; return[n.cx,y+n.h];}
+function norm(s){return s==="l"?[-1,0]:s==="r"?[1,0]:s==="t"?[0,-1]:[0,1];}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function curve(a,na,b,nb,depth){
+  const dist=Math.hypot(b[0]-a[0],b[1]-a[1]);
+  const d=depth!=null?depth:clamp(dist*0.42,70,200);
+  const c1=[a[0]+na[0]*d,a[1]+na[1]*d], c2=[b[0]+nb[0]*d,b[1]+nb[1]*d];
+  return `M${a[0]},${a[1]} C${c1[0]},${c1[1]} ${c2[0]},${c2[1]} ${b[0]},${b[1]}`;
+}
+function edgePath(from,to,fs,ts,depth){
+  const A=NMAP[from],B=NMAP[to];
+  return curve(anchor(A,fs),norm(fs),anchor(B,ts),norm(ts),depth);
+}
+
+// ---------- BUILD SVG ----------
+const gEdges=document.getElementById("edges"),gLoops=document.getElementById("loops"),
+      gNodes=document.getElementById("nodes"),gPulse=document.getElementById("pulses");
+function el(tag,attrs){const e=document.createElementNS(NS,tag);for(const k in attrs)e.setAttribute(k,attrs[k]);return e;}
+function txt(cls,x,y,t,anchor){const e=el("text",{class:cls,x,y});if(anchor)e.setAttribute("text-anchor",anchor);e.textContent=t;return e;}
+
+const baseMap={},flowMap={};
+E.forEach(e=>{
+  const d=edgePath(e.from,e.to,e.fs,e.ts,e.depth);
+  const fast=e.kind==="fast"?" fast":"";
+  const base=el("path",{class:"edge-base"+fast,d,"marker-end":"url(#arr)"}); gEdges.appendChild(base); baseMap[e.id]=base;
+  const flow=el("path",{class:"edge-flow"+fast,d}); gEdges.appendChild(flow); flowMap[e.id]=flow;
+});
+const loopEls=[];
+LOOPS.forEach(l=>{
+  let d,mx,my;
+  if(l.self){const n=NMAP[l.from];const lx=n.cx-n.w/2;
+    d=`M${lx},${n.cy-9} C${lx-44},${n.cy-20} ${lx-44},${n.cy+24} ${lx},${n.cy+9}`; mx=lx-52; my=n.cy+34;}
+  else{d=edgePath(l.from,l.to,l.fs,l.ts,l.depth);
+    const A=anchor(NMAP[l.from],l.fs),B=anchor(NMAP[l.to],l.ts);
+    mx=(A[0]+B[0])/2; my=(A[1]+B[1])/2 + (l.ts==="b"?l.depth*0.75:l.ts==="t"?-l.depth*0.75:6);}
+  const path=el("path",{class:"loop",d,"marker-end":"url(#arrA)"});
+  const label=txt("loop-lbl",mx,my,l.label,"middle");
+  gLoops.appendChild(path); gLoops.appendChild(label);
+  loopEls.push({path,label,from:l.from,to:l.to});
+});
+
+// node labels for forward edges (a few key ones)
+[["validation_design","approved",1320,470],["feasibility_define","feasible",490,330],
+ ["security_buildA","passed",980,560],["integration_release","released",240,615]]
+ .forEach(([id,t,x,y])=>gEdges.appendChild(txt("edge-lbl",x,y,t,"middle")));
+
+NODES.forEach(n=>{
+  const g=el("g",{class:"node","data-id":n.id,id:"n-"+n.id,style:`--c:${n.c}`});
+  const x=n.cx-n.w/2,y=n.cy-n.h/2;
+  if(n.gate){
+    const pts=`${n.cx},${y} ${x+n.w},${n.cy} ${n.cx},${y+n.h} ${x},${n.cy}`;
+    const rpts=`${n.cx},${y-7} ${x+n.w+7},${n.cy} ${n.cx},${y+n.h+7} ${x-7},${n.cy}`;
+    g.appendChild(el("polygon",{class:"ring",points:rpts,fill:"none",stroke:n.c,"stroke-width":2}));
+    g.appendChild(el("polygon",{class:"shape",points:pts,fill:n.c,stroke:n.c,"stroke-width":1.5}));
+    g.appendChild(txt("gtxt",n.cx,n.cy-2,n.kick.replace(/ .*/,""),"middle"));
+    g.appendChild(txt("gtxt",n.cx,n.cy+13,n.label.replace(/ .*/,""),"middle"));
+  }else{
+    const fill = n.type==="end" ? n.c : "#121a2b";
+    const tcol = n.type==="end" ? "#0b0f17" : "var(--ink)";
+    g.appendChild(el("rect",{class:"ring",x:x-6,y:y-6,width:n.w+12,height:n.h+12,rx:15,fill:"none",stroke:n.c,"stroke-width":2}));
+    g.appendChild(el("rect",{class:"shape",x,y,width:n.w,height:n.h,rx:12,fill,stroke:n.c,"stroke-width":1.5,"stroke-opacity":.7}));
+    const k=txt("nkick",x+14,y+22,n.kick); if(n.type==="end")k.setAttribute("fill","#0b0f17"); g.appendChild(k);
+    const lb=txt("nlbl",x+14,y+44,n.label); lb.setAttribute("fill",tcol); g.appendChild(lb);
+  }
+  gNodes.appendChild(g);
+});
+
+// ---------- ANIMATION ----------
+// "New requirement on an existing project": fast-track path that reuses the
+// existing architecture (skips intake/analysis/feasibility/solution design) and
+// touches a single stream.
+const WAVES_REQ=[
+ {nodes:["refinement"]},
+ {edges:["refinement_define"],nodes:["define"]},
+ {edges:["define_userStories","define_nfr"],nodes:["userStories","nfr"]},
+ {edges:["userStories_prioritise","nfr_prioritise"],nodes:["prioritise"]},
+ {edges:["prioritise_validation"],nodes:["validation"]},
+ {edges:["validation_security"],nodes:["security"]},
+ {edges:["security_buildA"],nodes:["buildA"]},
+ {edges:["buildA_alignA"],nodes:["alignA"]},
+ {edges:["alignA_integration"],nodes:["integration"]},
+ {edges:["integration_release"],nodes:["release"]}
+];
+
+let playing=false,fired=0;
+const cTotal=document.getElementById("cTotal"),cNodes=document.getElementById("cNodes"),modeName=document.getElementById("modeName");
+cTotal.textContent=NODES.length;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function setFired(n){fired=n;cNodes.textContent=n;}
+function activate(id){const g=document.getElementById("n-"+id);if(!g.classList.contains("active")){g.classList.add("active");setFired(fired+1);}}
+
+function setDim(usedNodes,usedEdges){
+  NODES.forEach(n=>document.getElementById("n-"+n.id).classList.toggle("dim",usedNodes&&!usedNodes.has(n.id)));
+  E.forEach(e=>{const dim=usedEdges?!usedEdges.has(e.id):(e.kind==="fast");baseMap[e.id].classList.toggle("dim",dim);flowMap[e.id].classList.toggle("dim",dim);});
+  loopEls.forEach(l=>{const dim=usedNodes?!(usedNodes.has(l.from)&&usedNodes.has(l.to)):false;l.path.classList.toggle("dim",dim);l.label.classList.toggle("dim",dim);});
+}
+function resetAll(){
+  playing=false;
+  document.querySelectorAll(".node").forEach(n=>n.classList.remove("active"));
+  Object.values(flowMap).forEach(f=>f.classList.remove("hot"));
+  gPulse.innerHTML=""; setFired(0); modeName.textContent="—";
+  setDim(null);                  // un-dim everything, keep fast-track shortcuts hidden
+  cTotal.textContent=NODES.length;
+}
+function travel(edgeId){
+  return new Promise(res=>{
+    const path=baseMap[edgeId]; if(!path){res();return;}
+    flowMap[edgeId].classList.add("hot");
+    const col=NMAP[E.find(e=>e.id===edgeId).to].c;
+    const dot=el("circle",{r:5,fill:col,style:`color:${col}`}); gPulse.appendChild(dot);
+    const len=path.getTotalLength(),dur=600,t0=performance.now();
+    function step(now){let p=Math.min((now-t0)/dur,1);const pt=path.getPointAtLength(p*len);
+      dot.setAttribute("cx",pt.x);dot.setAttribute("cy",pt.y);
+      if(p<1)requestAnimationFrame(step); else {dot.remove();res();}}
+    requestAnimationFrame(step);
+  });
+}
+async function runScenario(waves,mode){
+  if(playing)return; playing=true; resetAll(); playing=true;
+  const un=new Set(),ue=new Set();
+  waves.forEach(w=>{(w.nodes||[]).forEach(n=>un.add(n));(w.edges||[]).forEach(x=>ue.add(x));});
+  setDim(un,ue); cTotal.textContent=un.size; modeName.textContent=mode; setFired(0);
+  await sleep(160);
+  for(const w of waves){ if(!playing)break;
+    if(w.edges) await Promise.all(w.edges.map(travel));
+    w.nodes.forEach(activate);
+    await sleep(180);
+  }
+  playing=false;
+}
+document.getElementById("playNew").onclick=()=>runScenario(WAVES,"New project");
+document.getElementById("playReq").onclick=()=>runScenario(WAVES_REQ,"New requirement");
+document.getElementById("reset").onclick=resetAll;
+resetAll();
+
+// ---------- ZOOM + PAN ----------
+let zoom=1; const inner=document.getElementById("inner"),stage=document.getElementById("stage");
+function applyZoom(){inner.style.transform=`scale(${zoom})`;inner.style.width=(1470)+"px";}
+document.getElementById("zin").onclick=()=>{zoom=Math.min(zoom+0.2,2.4);applyZoom();};
+document.getElementById("zout").onclick=()=>{zoom=Math.max(zoom-0.2,0.5);applyZoom();};
+// fit-to-width initial
+function fit(){const cw=stage.clientWidth-2;zoom=clamp(cw/1470,0.5,1);applyZoom();}
+window.addEventListener("load",fit);
+
+let dragging=false,sx,sy,sl,st,moved=0;
+stage.addEventListener("pointerdown",e=>{if(e.target.closest(".node"))return;dragging=true;moved=0;stage.classList.add("grabbing");sx=e.clientX;sy=e.clientY;sl=stage.scrollLeft;st=stage.scrollTop;});
+window.addEventListener("pointermove",e=>{if(!dragging)return;const dx=e.clientX-sx,dy=e.clientY-sy;moved+=Math.abs(dx)+Math.abs(dy);stage.scrollLeft=sl-dx;stage.scrollTop=st-dy;});
+window.addEventListener("pointerup",()=>{dragging=false;stage.classList.remove("grabbing");});
+
+// ---------- MODAL ----------
+const bd=document.getElementById("bd");
+function openModal(id){const n=NMAP[id],d=D[id];if(!d)return;
+  const tag=document.getElementById("mtag");tag.textContent=TAG[n.type];tag.style.color=n.c;
+  document.getElementById("mtitle").textContent=n.label+(n.kick.includes("·")?" ("+n.kick.split("·")[1].trim()+")":"");
+  document.getElementById("mrole").textContent=d.role;
+  const fill=(ul,arr)=>{ul.innerHTML="";arr.forEach(x=>{const li=document.createElement("li");li.textContent=x;ul.appendChild(li);});};
+  fill(document.getElementById("min"),d.in);fill(document.getElementById("mout"),d.out);
+  bd.classList.add("show");}
+function closeModal(){bd.classList.remove("show");}
+document.getElementById("svg").addEventListener("click",e=>{if(moved>6)return;const g=e.target.closest(".node");if(g)openModal(g.dataset.id);});
+document.getElementById("mx").onclick=closeModal;
+bd.addEventListener("click",e=>{if(e.target===bd)closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+</script>
+</body>
+</html>

@@ -3,9 +3,11 @@ import { esc } from "./utils.js";
 import { buildTreeHTML } from "./tree.js";
 
 let _openFile;
+let _onCreateFile;
 
-export function initSidebar({ openFile }) {
+export function initSidebar({ openFile, onCreateFile }) {
   _openFile = openFile;
+  _onCreateFile = onCreateFile;
 }
 
 export function updateFilterCounts() {
@@ -16,12 +18,14 @@ export function updateFilterCounts() {
 }
 
 export function renderTree() {
+  const tagCounts = new Map(state.tagData.map((f) => [f.path, f.tags.length]));
   const treeHtml = buildTreeHTML(
     state.tree,
     state.modifiedFiles,
     state.tagFiles,
     state.activeFilter,
-    state.searchQ
+    state.searchQ,
+    tagCounts
   );
   document.getElementById("tree").innerHTML =
     treeHtml || `<div style="padding:16px;color:var(--muted);font-size:12px">No files match filter.</div>`;
@@ -29,6 +33,28 @@ export function renderTree() {
   if (state.currentFile) {
     document.querySelectorAll(".t-file").forEach((el) => {
       el.classList.toggle("active", el.dataset.path === state.currentFile);
+    });
+  }
+
+  // Restore folder open states
+  const treeState = JSON.parse(localStorage.getItem("treeState") || "{}");
+  document.querySelectorAll("#tree details[data-dir-path]").forEach((det) => {
+    const p = det.dataset.dirPath;
+    if (p in treeState) det.open = treeState[p];
+    det.addEventListener("toggle", () => {
+      const s = JSON.parse(localStorage.getItem("treeState") || "{}");
+      s[det.dataset.dirPath] = det.open;
+      localStorage.setItem("treeState", JSON.stringify(s));
+    });
+  });
+
+  // Attach add-btn click handlers
+  if (_onCreateFile) {
+    document.querySelectorAll(".t-add-btn").forEach((btn) => {
+      btn.addEventListener("click", (e) => {
+        e.stopPropagation();
+        _onCreateFile(btn.dataset.dirPath);
+      });
     });
   }
 }

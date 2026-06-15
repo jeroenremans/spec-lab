@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Spec Pipeline — Live Blueprint</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+  :root{
+    --bg:#f2f2f0;--panel:#fff;--line:#e0ddd8;--ink:#0d1a1c;--muted:#6b7280;
+    --teal:#054e5a;--teal2:#0a7a8a;--gold:#e1b77e;--gold-d:#c8984a;
+    --lt:#e8f4f6;--lg:#fef3e2;
+  }
+  /* theme variants */
+  [data-theme="dark"]{--bg:#070a12;--panel:#0e131f;--line:#1d2738;--ink:#e7ecf5;--muted:#7e8aa3;--teal:#22d3ee;--teal2:#38bdf8;--gold:#fbbf24;--gold-d:#fbbf24;--lt:#0e1f2b;--lg:#1c1408;}
+  [data-theme="slate"]{--bg:#1e2330;--panel:#252d3f;--line:#323d55;--ink:#d4dbe8;--muted:#8493af;--teal:#7dd3fc;--teal2:#93c5fd;--gold:#fcd34d;--gold-d:#f59e0b;--lt:#1a2840;--lg:#2a1e08;}
+  [data-theme="sage"]{--bg:#f0f4f1;--panel:#fff;--line:#d4dfd5;--ink:#1a2e1c;--muted:#5a7060;--teal:#2d6a4f;--teal2:#40916c;--gold:#d4a017;--gold-d:#b78a00;--lt:#e0ede2;--lg:#fef9e2;}
+  [data-theme="violet"]{--bg:#f5f3ff;--panel:#fff;--line:#ddd6fe;--ink:#1e1b4b;--muted:#6d6a99;--teal:#7c3aed;--teal2:#8b5cf6;--gold:#f59e0b;--gold-d:#d97706;--lt:#ede9fe;--lg:#fef3c7;}
+  *{box-sizing:border-box;margin:0;padding:0;}
+  body{font-family:'Inter',system-ui,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;padding:0 0 48px;-webkit-font-smoothing:antialiased;overflow-x:hidden;}
+  .topbar{background:var(--teal);padding:18px 28px 20px;display:flex;align-items:flex-start;gap:14px;margin-bottom:24px;}
+  .mark{width:36px;height:36px;background:var(--gold);border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:2px;}
+  .mark svg{width:20px;height:20px;}
+  .eyebrow{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:600;letter-spacing:.22em;text-transform:uppercase;color:rgba(255,255,255,.45);margin-bottom:4px;}
+  .topbar h1{font-size:20px;font-weight:800;color:#fff;letter-spacing:-.3px;margin-bottom:4px;}
+  .topbar .sub{font-size:12.5px;color:rgba(255,255,255,.55);line-height:1.55;max-width:740px;}
+  .topbar .sub b{color:var(--gold);}
+  .wrap{max-width:1300px;margin:0 auto;padding:0 20px;}
+  .hud{display:flex;gap:9px;flex-wrap:wrap;align-items:center;margin-bottom:13px;}
+  button.ctl{font-family:'IBM Plex Mono',monospace;font-size:12px;font-weight:600;cursor:pointer;letter-spacing:.04em;border:1px solid var(--line);background:var(--panel);color:var(--ink);padding:8px 14px;border-radius:9px;display:inline-flex;align-items:center;gap:7px;transition:all .15s;}
+  button.ctl:hover{border-color:var(--teal);color:var(--teal);box-shadow:0 0 12px rgba(5,78,90,.1);}
+  button.ctl.primary{background:var(--teal);color:#fff;border-color:var(--teal);}
+  button.ctl.primary:hover{background:#033f48;box-shadow:0 4px 14px rgba(5,78,90,.3);}
+  .stat{font-family:'IBM Plex Mono',monospace;font-size:11.5px;color:var(--muted);border:1px solid var(--line);padding:7px 12px;border-radius:9px;background:var(--panel);}
+  .stat b{color:var(--ink);} .stat .v{color:var(--teal);}
+  .spacer{flex:1;}
+  .zoom{display:flex;gap:6px;} .zoom button{width:34px;height:34px;padding:0;justify-content:center;font-size:16px;}
+  .theme-sw{display:flex;gap:5px;flex-wrap:wrap;}
+  .th{font-size:11px;padding:6px 10px;}
+  .th.active{background:var(--teal);color:#fff;border-color:var(--teal);}
+  .legend{display:flex;gap:14px;flex-wrap:wrap;margin-bottom:12px;font-family:'IBM Plex Mono',monospace;font-size:10.5px;color:var(--muted);}
+  .legend span{display:inline-flex;align-items:center;gap:6px;}
+  .chip{width:10px;height:10px;border-radius:3px;flex-shrink:0;}
+  .stage:-webkit-full-screen{height:100vh;border-radius:0;border:none;}
+  .stage:fullscreen{height:100vh;border-radius:0;border:none;}
+  .stage{position:relative;border:1px solid var(--line);border-radius:14px;overflow:auto;cursor:grab;
+    background:linear-gradient(var(--line) 1px,transparent 1px) 0 0/26px 26px,
+               linear-gradient(90deg,var(--line) 1px,transparent 1px) 0 0/26px 26px,var(--panel);
+    box-shadow:0 2px 12px rgba(0,0,0,.05);height:72vh;min-height:490px;}
+  .stage.grabbing{cursor:grabbing;}
+  .inner{transform-origin:0 0;width:1280px;}
+  svg{display:block;width:1280px;height:auto;}
+  .edge-base{fill:none;stroke:var(--line);stroke-width:1.6;}
+  .edge-flow{fill:none;stroke:var(--teal);stroke-width:2.2;stroke-linecap:round;stroke-dasharray:9 13;opacity:.18;animation:flow 2.6s linear infinite;}
+  @keyframes flow{to{stroke-dashoffset:-44;}}
+  .edge-flow.hot{opacity:1;animation-duration:.85s;filter:drop-shadow(0 0 5px rgba(5,78,90,.35));}
+  .edge-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;fill:var(--teal);opacity:.65;}
+  .loop{fill:none;stroke:var(--gold-d);stroke-width:1.6;stroke-dasharray:5 6;opacity:.5;animation:march 1.1s linear infinite;}
+  @keyframes march{to{stroke-dashoffset:-22;}}
+  .loop-lbl{font-family:'IBM Plex Mono',monospace;font-size:9px;font-weight:600;fill:var(--gold-d);opacity:.8;}
+  .node.dim{opacity:.08;transition:opacity .4s;}
+  .edge-base.dim,.edge-flow.dim,.loop.dim,.loop-lbl.dim{opacity:.04!important;animation:none;}
+  .edge-lbl.dim{opacity:.06!important;}
+  .cmd-lbl{cursor:pointer;}
+  .cmd-lbl .hit{fill:transparent;rx:3;}
+  .cmd-lbl:hover .hit{fill:rgba(5,78,90,.08);}
+  .cmd-lbl:hover .edge-lbl{opacity:1;fill:var(--teal);}
+  .cmd-lbl.dim{opacity:.06!important;}
+  .node{cursor:pointer;}
+  .node .shape{transition:fill .25s,stroke .25s,filter .25s;}
+  .node text{pointer-events:none;}
+  .node .ring{opacity:0;transition:opacity .3s;}
+  .node.active .ring{opacity:.8;}
+  .node.active .shape{filter:drop-shadow(0 0 9px var(--c)) drop-shadow(0 0 20px var(--c));}
+  .node:hover .shape{stroke-width:2.5!important;}
+  .nkick{font-family:'IBM Plex Mono',monospace;font-size:8px;font-weight:600;letter-spacing:.1em;}
+  .nlbl{font-size:12px;font-weight:700;}
+  #pulses circle{filter:drop-shadow(0 0 5px currentColor);}
+  .backdrop{position:absolute;inset:0;background:rgba(13,26,28,.45);backdrop-filter:blur(6px);display:none;align-items:center;justify-content:center;padding:20px;z-index:60;opacity:0;transition:opacity .2s;overflow:auto;}
+  .backdrop.show{display:flex;opacity:1;}
+  .modal{background:var(--panel);border:1px solid var(--line);border-radius:16px;max-width:560px;width:100%;overflow:hidden;box-shadow:0 24px 80px rgba(0,0,0,.12);transform:translateY(8px) scale(.97);transition:transform .2s cubic-bezier(.2,.8,.2,1);}
+  .backdrop.show .modal{transform:none;}
+  .mhead{padding:20px 24px 14px;border-bottom:1px solid var(--line);position:relative;}
+  .mhead .tag{font-family:'IBM Plex Mono',monospace;font-size:10px;font-weight:700;letter-spacing:.16em;text-transform:uppercase;}
+  .mhead h2{font-size:20px;font-weight:800;margin:7px 0 4px;letter-spacing:-.01em;color:var(--ink);}
+  .mhead p{font-size:13px;color:var(--muted);line-height:1.5;}
+  .mhead .x{position:absolute;top:16px;right:16px;width:28px;height:28px;border:1px solid var(--line);border-radius:7px;background:transparent;color:var(--muted);font-size:16px;cursor:pointer;line-height:1;}
+  .mhead .x:hover{color:var(--ink);border-color:var(--ink);}
+  .io{display:grid;grid-template-columns:1fr 1fr;}
+  .io>div{padding:16px 22px 22px;}
+  .io>div:first-child{border-right:1px solid var(--line);}
+  .io h3{font-family:'IBM Plex Mono',monospace;font-size:10px;letter-spacing:.12em;text-transform:uppercase;margin-bottom:10px;}
+  .io .in h3{color:var(--teal);} .io .out h3{color:var(--gold-d);}
+  .io ul{list-style:none;display:flex;flex-direction:column;gap:8px;}
+  .io li{font-size:13px;line-height:1.45;padding-left:14px;position:relative;color:#374151;}
+  .io li::before{content:"";position:absolute;left:0;top:6px;width:6px;height:6px;border-radius:2px;}
+  .io .in li::before{background:var(--teal);} .io .out li::before{background:var(--gold-d);}
+  @media(max-width:520px){.io{grid-template-columns:1fr;}.io>div:first-child{border-right:none;border-bottom:1px solid var(--line);}}
+</style>
+</head>
+<body>
+<div class="topbar">
+  <div class="mark">
+    <svg viewBox="0 0 20 20" fill="none">
+      <rect x="3" y="4" width="9" height="1.5" rx=".75" fill="#054e5a"/>
+      <rect x="3" y="7.5" width="14" height="1.5" rx=".75" fill="#054e5a"/>
+      <rect x="3" y="11" width="11" height="1.5" rx=".75" fill="#054e5a"/>
+      <rect x="3" y="14.5" width="7" height="1.5" rx=".75" fill="#054e5a"/>
+    </svg>
+  </div>
+  <div>
+    <div class="eyebrow">// spec pipeline · live blueprint</div>
+    <h1>Spec Pipeline — Van Intake tot Release</h1>
+    <p class="sub">00_intake → <b>/grill-me</b> → 01_discovery → <b>/intake-to-prd</b> → PRD → <b>/prd-to-epics</b> → Epics → <b>/epics-to-stories</b> → Stories → <b>/stories-to-ac</b> → AC · <b>/nfr-pack</b> · <b>/risk-log-update</b> · <b>/decision-record</b> → <b>/release-readiness</b>.<br>
+    <b>Full pipeline</b> doorloopt alles. <b>From PRD</b> fast-tracks voor bestaande features. Klik een node voor details. Sleep of scroll om te pannen.</p>
+  </div>
+</div>
+
+<div class="wrap">
+  <div class="hud">
+    <button class="ctl primary" id="playNew">▶ Full Pipeline</button>
+    <button class="ctl" id="playFast">▶ From PRD (fast-track)</button>
+    <button class="ctl" id="reset">↺ Reset</button>
+    <span class="stat">mode <b class="v" id="modeName">—</b></span>
+    <span class="stat">nodes <b class="v" id="cNodes">0</b> / <b id="cTotal">0</b></span>
+    <span class="spacer"></span>
+    <button class="ctl" id="fullscr">⛶ Fullscreen</button>
+    <div class="theme-sw" id="themeSw">
+      <button class="ctl th active" data-theme="">Bold Agency</button>
+      <button class="ctl th" data-theme="dark">Dark</button>
+      <button class="ctl th" data-theme="slate">Slate</button>
+      <button class="ctl th" data-theme="sage">Sage</button>
+      <button class="ctl th" data-theme="violet">Violet</button>
+    </div>
+    <div class="zoom"><button class="ctl" id="zout">−</button><button class="ctl" id="zin">+</button></div>
+  </div>
+  <div class="legend">
+    <span><i class="chip" style="background:#054e5a"></i>Intake / Discovery</span>
+    <span><i class="chip" style="background:#0a7a8a"></i>Solution document</span>
+    <span><i class="chip" style="background:#9a6020"></i>Governance artifact</span>
+    <span><i class="chip" style="background:#e1b77e"></i>Release output</span>
+    <span><i class="chip" style="background:#c8984a;border-radius:50%"></i>↻ Feedback / iteratie</span>
+  </div>
+  <div class="stage" id="stage">
+    <div class="backdrop" id="bd">
+      <div class="modal" role="dialog" aria-modal="true">
+        <div class="mhead">
+          <button class="x" id="mx">×</button>
+          <span class="tag" id="mtag"></span>
+          <h2 id="mtitle"></h2>
+          <p id="mrole"></p>
+        </div>
+        <div class="io">
+          <div class="in"><h3>▸ Input</h3><ul id="min"></ul></div>
+          <div class="out"><h3>▸ Output</h3><ul id="mout"></ul></div>
+        </div>
+      </div>
+    </div>
+    <div class="inner" id="inner">
+      <svg id="svg" viewBox="0 80 1280 640" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arr"  markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L7,4 L0,8 Z" fill="#c8d8da"/></marker>
+          <marker id="arrL" markerWidth="8" markerHeight="8" refX="6.5" refY="4" orient="auto" markerUnits="userSpaceOnUse"><path d="M0,0 L7,4 L0,8 Z" fill="#c8984a"/></marker>
+        </defs>
+        <g id="loops"></g>
+        <g id="edges"></g>
+        <g id="nodes"></g>
+        <g id="pulses"></g>
+      </svg>
+    </div>
+  </div>
+</div>
+
+
+<script>
+const NS="http://www.w3.org/2000/svg";
+
+const STYLE={
+  input:{fill:"#054e5a",text:"#ffffff",kick:"rgba(255,255,255,.5)", border:"#054e5a"},
+  doc:  {fill:"#e8f4f6",text:"#054e5a",kick:"rgba(5,78,90,.45)",   border:"#0a7a8a"},
+  gov:  {fill:"#fef3e2",text:"#7a4a10",kick:"rgba(122,74,16,.45)", border:"#9a6020"},
+  end:  {fill:"#e1b77e",text:"#3d2200",kick:"rgba(61,34,0,.45)",   border:"#c8984a"}
+};
+
+const NODES=[
+  {id:"intake",    cx:130,  cy:300, type:"input", kick:"00 · INTAKE",     label:"Intake",             c:"#054e5a"},
+  {id:"discovery", cx:130,  cy:150, type:"input", kick:"01 · DISCOVERY",  label:"Discovery",           c:"#054e5a"},
+  {id:"prd",       cx:430,  cy:225, type:"doc",   kick:"02 · SOLUTION",   label:"PRD",                 c:"#0a7a8a"},
+  {id:"epics",     cx:660,  cy:225, type:"doc",   kick:"02 · SOLUTION",   label:"Epics",               c:"#0a7a8a"},
+  {id:"stories",   cx:890,  cy:225, type:"doc",   kick:"02 · SOLUTION",   label:"User Stories",        c:"#0a7a8a"},
+  {id:"ac",        cx:1130, cy:225, type:"doc",   kick:"02 · SOLUTION",   label:"Acceptatie Criteria", c:"#0a7a8a"},
+  {id:"nfrs",      cx:430,  cy:460, type:"doc",   kick:"02 · SOLUTION",   label:"NFRs",                c:"#0a7a8a"},
+  {id:"risks",     cx:700,  cy:460, type:"gov",   kick:"04 · GOVERNANCE", label:"Risk Log",            c:"#9a6020"},
+  {id:"adrs",      cx:960,  cy:460, type:"gov",   kick:"04 · GOVERNANCE", label:"Decision Records",    c:"#9a6020"},
+  {id:"release",   cx:720,  cy:640, type:"end",   kick:"03 · DELIVERY",   label:"Release Readiness",   c:"#c8984a"}
+];
+const NMAP={};
+NODES.forEach(n=>{n.w=170;n.h=66;NMAP[n.id]=n;});
+
+const D={
+  intake:{role:"Bronmateriaal — alles wat bij de start bestaat. Ruwe input vóór enige AI-transformatie.",
+    in:["Meeting minutes","Brain-storm notities","Ruwe requirements","Stakeholder input"],
+    out:["00_intake/ map gevuld","Input voor /grill-me en /intake-to-prd"]},
+  discovery:{role:"Verdiepend begrip van probleem en doelgroep, gegenereerd via /grill-me.",
+    in:["00_intake/ bestanden","/grill-me slash command"],
+    out:["Personas → 01_discovery/personas/","Problem statements → 01_discovery/problem-statements/"]},
+  prd:{role:"Centraal Product Requirements Document — de basis voor alle downstream-artifacten.",
+    in:["00_intake/ + 01_discovery/ bestanden","/intake-to-prd slash command"],
+    out:["02_solution/prds/<feature>_PRD.md","Confirmed facts + assumptions","Questions for Stakeholders"]},
+  epics:{role:"Business capability slices afgeleid van de PRD. Geen technische implementatiedetails.",
+    in:["PRD","/prd-to-epics slash command"],
+    out:["02_solution/prds/<feature>_epics.md","Epics met objective, scope, dependencies, risks"]},
+  stories:{role:"Sprint-ready user stories per epic — verticaal gesneden, geen technische taken.",
+    in:["Epics","/epics-to-stories slash command"],
+    out:["02_solution/user-stories/<feature>_stories.md","User story formaat + acceptance intent + non-goals"]},
+  ac:{role:"Given/When/Then acceptatiecriteria per story, inclusief negative en boundary cases.",
+    in:["User stories","/stories-to-ac slash command"],
+    out:["02_solution/acceptance-criteria/<feature>_ac.md","Positieve én negatieve paden, boundary conditions"]},
+  nfrs:{role:"Non-functional requirements: performance, security, privacy, reliability, observability.",
+    in:["PRD","/nfr-pack slash command"],
+    out:["02_solution/nfrs/<feature>_nfr.md","Meetbare NFR-criteria per categorie, expliciete onbekenden"]},
+  risks:{role:"Delivery-, scope-, data- en dependency-risico's met mitigatie en eigenaar.",
+    in:["PRD, epics, stories, NFRs","/risk-log-update slash command"],
+    out:["04_governance/risk-log/<feature>_risks.md","Risico's met likelihood, impact, mitigation, owner"]},
+  adrs:{role:"Architecture Decision Records — expliciete beslissingen met context en alternatieven.",
+    in:["Solution context","/decision-record slash command"],
+    out:["04_governance/decision-records/<decision>.md","Context, decision, alternatieven, rationale, gevolgen"]},
+  release:{role:"Go/no-go checklist voor release: functioneel, data, security, support, known limitations.",
+    in:["Acceptance criteria + NFRs + Risk log + ADRs","/release-readiness slash command"],
+    out:["03_delivery/release-notes/<feature>_readiness.md","Functionele & security gereedheid, known limitations"]}
+};
+const TAG={input:"ARTIFACT",doc:"DOCUMENT",gov:"GOVERNANCE",end:"DELIVERY"};
+
+const E=[
+  {id:"intake_disc",   from:"intake",   to:"discovery",fs:"t",ts:"b"},
+  {id:"intake_prd",    from:"intake",   to:"prd",      fs:"r",ts:"l"},
+  {id:"disc_prd",      from:"discovery",to:"prd",      fs:"r",ts:"t"},
+  {id:"prd_epics",     from:"prd",      to:"epics",    fs:"r",ts:"l"},
+  {id:"epics_stories", from:"epics",    to:"stories",  fs:"r",ts:"l"},
+  {id:"stories_ac",    from:"stories",  to:"ac",       fs:"r",ts:"l"},
+  {id:"prd_nfrs",      from:"prd",      to:"nfrs",     fs:"b",ts:"t"},
+  {id:"stories_risks", from:"stories",  to:"risks",    fs:"b",ts:"t"},
+  {id:"risks_adrs",    from:"risks",    to:"adrs",     fs:"r",ts:"l"},
+  {id:"nfrs_release",  from:"nfrs",     to:"release",  fs:"r",ts:"l"},
+  {id:"risks_release", from:"risks",    to:"release",  fs:"b",ts:"t"},
+  {id:"adrs_release",  from:"adrs",     to:"release",  fs:"b",ts:"r"},
+  {id:"ac_release",    from:"ac",       to:"release",  fs:"b",ts:"t"}
+];
+
+// command labels on edges [x, y, text]
+const LBLS={
+  intake_disc:   [88,  228, "/grill-me"],
+  intake_prd:    [265, 272, "/intake-to-prd"],
+  prd_epics:     [545, 210, "/prd-to-epics"],
+  epics_stories: [775, 210, "/epics-to-stories"],
+  stories_ac:    [1010,210, "/stories-to-ac"],
+  prd_nfrs:      [392, 348, "/nfr-pack"],
+  stories_risks: [848, 328, "/risk-log-update"],
+  risks_adrs:    [830, 443, "/decision-record"],
+  adrs_release:  [940, 568, "/release-readiness"]
+};
+
+const CMDS={
+  intake_disc:{label:"/grill-me",
+    role:"Interviews intake documents to surface assumptions, gaps, and open questions. Generates discovery artifacts.",
+    in:["00_intake/ files","Claude Code slash command"],
+    out:["Personas → 01_discovery/personas/","Problem statements → 01_discovery/problem-statements/"]},
+  intake_prd:{label:"/intake-to-prd",
+    role:"Transforms raw intake + discovery into a structured PRD with confirmed facts, assumptions, and stakeholder questions.",
+    in:["00_intake/ files","01_discovery/ files (optional)"],
+    out:["02_solution/prds/<feature>_PRD.md","Personas + problem statement if missing"]},
+  prd_epics:{label:"/prd-to-epics",
+    role:"Breaks the PRD into business capability slices. No technical implementation details.",
+    in:["02_solution/prds/<feature>_PRD.md"],
+    out:["02_solution/prds/<feature>_epics.md","Epics with objective, scope, dependencies, risks, acceptance boundaries"]},
+  epics_stories:{label:"/epics-to-stories",
+    role:"Generates sprint-ready user stories per epic. Vertical slices only — no technical task breakdowns.",
+    in:["02_solution/prds/<feature>_epics.md"],
+    out:["02_solution/user-stories/<feature>_stories.md","User story format + acceptance intent + non-goals"]},
+  stories_ac:{label:"/stories-to-ac",
+    role:"Generates Given/When/Then acceptance criteria per story, including negative cases and boundary conditions.",
+    in:["02_solution/user-stories/<feature>_stories.md"],
+    out:["02_solution/acceptance-criteria/<feature>_ac.md","Positive + negative paths, boundary conditions, role-based behavior"]},
+  prd_nfrs:{label:"/nfr-pack",
+    role:"Generates a non-functional requirements checklist: performance, security, privacy, reliability, observability, accessibility, compliance.",
+    in:["02_solution/prds/<feature>_PRD.md"],
+    out:["02_solution/nfrs/<feature>_nfr.md","Measurable NFR criteria per category, flagged unknowns"]},
+  stories_risks:{label:"/risk-log-update",
+    role:"Identifies delivery, scope, data and dependency risks across all solution artifacts. Conservative by default.",
+    in:["PRD, epics, stories, NFRs"],
+    out:["04_governance/risk-log/<feature>_risks.md","Risks with likelihood, impact, mitigation, owner"]},
+  risks_adrs:{label:"/decision-record",
+    role:"Creates an ADR-style record for an explicit architectural or product decision.",
+    in:["Solution context, decision to document"],
+    out:["04_governance/decision-records/<decision>.md","Context, decision, alternatives, rationale, consequences, open follow-ups"]},
+  adrs_release:{label:"/release-readiness",
+    role:"Generates a go/no-go release checklist: functional, data, security, support readiness, known limitations.",
+    in:["Acceptance criteria, NFRs, Risk log, ADRs"],
+    out:["03_delivery/release-notes/<feature>_readiness.md","Functional + security readiness, known limitations"]}
+};
+
+const LOOPS=[
+  {id:"l_ac",  from:"ac",     to:"stories",fs:"t",ts:"t",depth:72, label:"bijsturen"},
+  {id:"l_rel", from:"release",to:"intake", fs:"l",ts:"b",depth:180,label:"nieuwe cyclus"}
+];
+
+const WAVES=[
+  {nodes:["intake"]},
+  {edges:["intake_disc"],nodes:["discovery"]},
+  {edges:["intake_prd","disc_prd"],nodes:["prd"]},
+  {edges:["prd_epics","prd_nfrs"],nodes:["epics","nfrs"]},
+  {edges:["epics_stories"],nodes:["stories"]},
+  {edges:["stories_ac","stories_risks"],nodes:["ac","risks"]},
+  {edges:["risks_adrs"],nodes:["adrs"]},
+  {edges:["ac_release","nfrs_release","risks_release","adrs_release"],nodes:["release"]}
+];
+const WAVES_FAST=[
+  {nodes:["prd"]},
+  {edges:["prd_epics","prd_nfrs"],nodes:["epics","nfrs"]},
+  {edges:["epics_stories"],nodes:["stories"]},
+  {edges:["stories_ac","stories_risks"],nodes:["ac","risks"]},
+  {edges:["risks_adrs"],nodes:["adrs"]},
+  {edges:["ac_release","nfrs_release","risks_release","adrs_release"],nodes:["release"]}
+];
+
+// geometry
+function anchor(n,s){const x=n.cx-n.w/2,y=n.cy-n.h/2;
+  if(s==="l")return[x,n.cy];if(s==="r")return[x+n.w,n.cy];
+  if(s==="t")return[n.cx,y];return[n.cx,y+n.h];}
+function norm(s){return s==="l"?[-1,0]:s==="r"?[1,0]:s==="t"?[0,-1]:[0,1];}
+function clamp(v,a,b){return Math.max(a,Math.min(b,v));}
+function bezier(a,na,b,nb,depth){
+  const dist=Math.hypot(b[0]-a[0],b[1]-a[1]);
+  const d=depth!=null?depth:clamp(dist*.42,38,200);
+  return`M${a[0]},${a[1]} C${a[0]+na[0]*d},${a[1]+na[1]*d} ${b[0]+nb[0]*d},${b[1]+nb[1]*d} ${b[0]},${b[1]}`;}
+function epath(from,to,fs,ts,depth){return bezier(anchor(NMAP[from],fs),norm(fs),anchor(NMAP[to],ts),norm(ts),depth);}
+
+// build SVG
+const gE=document.getElementById("edges"),gL=document.getElementById("loops"),
+      gN=document.getElementById("nodes"),gP=document.getElementById("pulses");
+function el(t,a){const e=document.createElementNS(NS,t);for(const k in a)e.setAttribute(k,a[k]);return e;}
+function tx(cls,x,y,t,anch){const e=el("text",{class:cls,x,y});if(anch)e.setAttribute("text-anchor",anch);e.textContent=t;return e;}
+
+const baseMap={},flowMap={};
+E.forEach(e=>{
+  const d=epath(e.from,e.to,e.fs,e.ts,e.depth);
+  const b=el("path",{class:"edge-base",d,"marker-end":"url(#arr)"}); gE.appendChild(b); baseMap[e.id]=b;
+  const f=el("path",{class:"edge-flow",d}); gE.appendChild(f); flowMap[e.id]=f;
+});
+Object.entries(LBLS).forEach(([id,[x,y,t]])=>{
+  const g=el("g",{class:"cmd-lbl","data-cmd":id}); g.id="lbl-"+id;
+  const tw=t.length*5.6+12;
+  g.appendChild(el("rect",{class:"hit",x:x-tw/2,y:y-11,width:tw,height:15,rx:3}));
+  g.appendChild(tx("edge-lbl",x,y,t,"middle"));
+  gE.appendChild(g);
+});
+
+const loopEls=[];
+LOOPS.forEach(l=>{
+  const A=anchor(NMAP[l.from],l.fs),B=anchor(NMAP[l.to],l.ts);
+  const d=bezier(A,norm(l.fs),B,norm(l.ts),l.depth);
+  const mx=(A[0]+B[0])/2,my=(A[1]+B[1])/2;
+  const p=el("path",{class:"loop",d,"marker-end":"url(#arrL)"});
+  const lb=tx("loop-lbl",mx,my+4,l.label,"middle");
+  gL.appendChild(p); gL.appendChild(lb);
+  loopEls.push({path:p,label:lb,from:l.from,to:l.to});
+});
+
+NODES.forEach(n=>{
+  const s=STYLE[n.type];
+  const g=el("g",{class:"node","data-id":n.id,id:"n-"+n.id,style:`--c:${n.c}`});
+  const x=n.cx-n.w/2,y=n.cy-n.h/2;
+  g.appendChild(el("rect",{class:"ring",x:x-6,y:y-6,width:n.w+12,height:n.h+12,rx:14,fill:"none",stroke:n.c,"stroke-width":2}));
+  g.appendChild(el("rect",{class:"shape",x,y,width:n.w,height:n.h,rx:11,fill:s.fill,stroke:s.border,"stroke-width":1.5}));
+  const k=tx("nkick",x+12,y+20,n.kick); k.setAttribute("fill",s.kick); g.appendChild(k);
+  const lb=tx("nlbl",x+12,y+43,n.label); lb.setAttribute("fill",s.text); g.appendChild(lb);
+  gN.appendChild(g);
+});
+
+// animation
+let playing=false,fired=0;
+const cTotal=document.getElementById("cTotal"),cNodes=document.getElementById("cNodes"),modeName=document.getElementById("modeName");
+cTotal.textContent=NODES.length;
+const sleep=ms=>new Promise(r=>setTimeout(r,ms));
+function setFired(n){fired=n;cNodes.textContent=n;}
+function activate(id){const g=document.getElementById("n-"+id);if(!g.classList.contains("active")){g.classList.add("active");setFired(fired+1);}}
+
+function setDim(un,ue){
+  NODES.forEach(n=>document.getElementById("n-"+n.id).classList.toggle("dim",un?!un.has(n.id):false));
+  E.forEach(e=>{const d=ue?!ue.has(e.id):false;baseMap[e.id].classList.toggle("dim",d);flowMap[e.id].classList.toggle("dim",d);});
+  loopEls.forEach(l=>{const d=un?!(un.has(l.from)&&un.has(l.to)):false;l.path.classList.toggle("dim",d);l.label.classList.toggle("dim",d);});
+  Object.keys(LBLS).forEach(id=>{const lb=document.getElementById("lbl-"+id);if(lb)lb.classList.toggle("dim",ue?!ue.has(id):false);});
+}
+function resetAll(){
+  playing=false;
+  document.querySelectorAll(".node").forEach(n=>n.classList.remove("active"));
+  Object.values(flowMap).forEach(f=>f.classList.remove("hot"));
+  gP.innerHTML=""; setFired(0); modeName.textContent="—"; setDim(null,null);
+  cTotal.textContent=NODES.length;
+}
+function travel(edgeId){
+  return new Promise(res=>{
+    const path=baseMap[edgeId]; if(!path){res();return;}
+    flowMap[edgeId].classList.add("hot");
+    const edge=E.find(e=>e.id===edgeId);
+    const col=edge?NMAP[edge.to].c:"#054e5a";
+    const dot=el("circle",{r:5,fill:col,style:`color:${col}`}); gP.appendChild(dot);
+    const len=path.getTotalLength(),dur=920,t0=performance.now();
+    function step(now){const p=Math.min((now-t0)/dur,1),pt=path.getPointAtLength(p*len);
+      dot.setAttribute("cx",pt.x);dot.setAttribute("cy",pt.y);
+      if(p<1)requestAnimationFrame(step);else{dot.remove();res();}}
+    requestAnimationFrame(step);
+  });
+}
+async function runScenario(waves,mode){
+  if(playing)return; playing=true; resetAll(); playing=true;
+  const un=new Set(),ue=new Set();
+  waves.forEach(w=>{(w.nodes||[]).forEach(n=>un.add(n));(w.edges||[]).forEach(x=>ue.add(x));});
+  setDim(un,ue); cTotal.textContent=un.size; modeName.textContent=mode; setFired(0);
+  await sleep(200);
+  for(const w of waves){if(!playing)break;
+    if(w.edges)await Promise.all(w.edges.map(travel));
+    w.nodes.forEach(activate); await sleep(300);}
+  playing=false;
+}
+document.getElementById("playNew").onclick=()=>runScenario(WAVES,"Full Pipeline");
+document.getElementById("playFast").onclick=()=>runScenario(WAVES_FAST,"From PRD");
+document.getElementById("reset").onclick=resetAll;
+resetAll();
+
+// fullscreen
+const fsBtn=document.getElementById("fullscr");
+fsBtn.onclick=()=>{
+  if(!document.fullscreenElement)document.getElementById("stage").requestFullscreen();
+  else document.exitFullscreen();
+};
+document.addEventListener("fullscreenchange",()=>{
+  fsBtn.textContent=document.fullscreenElement?"✕ Exit":"⛶ Fullscreen";
+  fit();
+});
+
+// theme switcher
+const NODE_THEMES={
+  "":{
+    input:{fill:"#054e5a",text:"#ffffff",kick:"rgba(255,255,255,.5)", border:"#054e5a",c:"#054e5a"},
+    doc:  {fill:"#e8f4f6",text:"#054e5a",kick:"rgba(5,78,90,.45)",   border:"#0a7a8a",c:"#0a7a8a"},
+    gov:  {fill:"#fef3e2",text:"#7a4a10",kick:"rgba(122,74,16,.45)", border:"#9a6020",c:"#9a6020"},
+    end:  {fill:"#e1b77e",text:"#3d2200",kick:"rgba(61,34,0,.45)",   border:"#c8984a",c:"#c8984a"}
+  },
+  dark:{
+    input:{fill:"#0c1929",text:"#22d3ee",kick:"rgba(34,211,238,.4)", border:"#22d3ee",c:"#22d3ee"},
+    doc:  {fill:"#0d1a28",text:"#38bdf8",kick:"rgba(56,189,248,.4)", border:"#38bdf8",c:"#38bdf8"},
+    gov:  {fill:"#1c1200",text:"#fbbf24",kick:"rgba(251,191,36,.4)", border:"#fbbf24",c:"#fbbf24"},
+    end:  {fill:"#fbbf24",text:"#04121a",kick:"rgba(4,18,26,.5)",    border:"#fbbf24",c:"#e6a800"}
+  },
+  slate:{
+    input:{fill:"#1a2840",text:"#7dd3fc",kick:"rgba(125,211,252,.4)",border:"#7dd3fc",c:"#7dd3fc"},
+    doc:  {fill:"#1e2d45",text:"#93c5fd",kick:"rgba(147,197,253,.4)",border:"#93c5fd",c:"#93c5fd"},
+    gov:  {fill:"#2a1e08",text:"#fcd34d",kick:"rgba(252,211,77,.4)", border:"#f59e0b",c:"#f59e0b"},
+    end:  {fill:"#fcd34d",text:"#1a1000",kick:"rgba(26,16,0,.5)",    border:"#f59e0b",c:"#f59e0b"}
+  },
+  sage:{
+    input:{fill:"#2d6a4f",text:"#ffffff", kick:"rgba(255,255,255,.45)",border:"#2d6a4f",c:"#2d6a4f"},
+    doc:  {fill:"#e0ede2",text:"#1a4a2e", kick:"rgba(26,74,46,.45)",  border:"#40916c",c:"#40916c"},
+    gov:  {fill:"#fefbe2",text:"#6b4500", kick:"rgba(107,69,0,.4)",   border:"#b78a00",c:"#b78a00"},
+    end:  {fill:"#d4a017",text:"#1a0e00", kick:"rgba(26,14,0,.5)",    border:"#b78a00",c:"#c8920a"}
+  },
+  violet:{
+    input:{fill:"#7c3aed",text:"#ffffff", kick:"rgba(255,255,255,.45)",border:"#7c3aed",c:"#7c3aed"},
+    doc:  {fill:"#ede9fe",text:"#4c1d95", kick:"rgba(76,29,149,.4)",  border:"#8b5cf6",c:"#8b5cf6"},
+    gov:  {fill:"#fef3c7",text:"#78350f", kick:"rgba(120,53,15,.4)",  border:"#d97706",c:"#d97706"},
+    end:  {fill:"#f59e0b",text:"#1c0500", kick:"rgba(28,5,0,.5)",     border:"#d97706",c:"#d97706"}
+  }
+};
+function applyNodeTheme(key){
+  const styles=NODE_THEMES[key]||NODE_THEMES[""];
+  NODES.forEach(n=>{
+    const s=styles[n.type];
+    n.c=s.c;
+    const g=document.getElementById("n-"+n.id); if(!g)return;
+    g.style.setProperty("--c",s.c);
+    const ring=g.querySelector(".ring"),shape=g.querySelector(".shape"),
+          kick=g.querySelector(".nkick"),lbl=g.querySelector(".nlbl");
+    if(ring)ring.setAttribute("stroke",s.c);
+    if(shape){shape.setAttribute("fill",s.fill);shape.setAttribute("stroke",s.border);}
+    if(kick)kick.setAttribute("fill",s.kick);
+    if(lbl)lbl.setAttribute("fill",s.text);
+  });
+}
+document.querySelectorAll(".th").forEach(btn=>{
+  btn.onclick=()=>{
+    const t=btn.dataset.theme;
+    document.documentElement.dataset.theme=t;
+    document.querySelectorAll(".th").forEach(b=>b.classList.toggle("active",b===btn));
+    applyNodeTheme(t);
+  };
+});
+
+// zoom + pan
+let zoom=1;
+const inner=document.getElementById("inner"),stage=document.getElementById("stage");
+function applyZoom(){inner.style.transform=`scale(${zoom})`;}
+document.getElementById("zin").onclick=()=>{zoom=Math.min(zoom+.2,2.4);applyZoom();};
+document.getElementById("zout").onclick=()=>{zoom=Math.max(zoom-.2,.5);applyZoom();};
+function fit(){zoom=clamp((stage.clientWidth-2)/1280,.5,1);applyZoom();}
+window.addEventListener("load",fit);
+let dragging=false,sx,sy,sl,st,moved=0;
+stage.addEventListener("pointerdown",e=>{if(e.target.closest(".node"))return;dragging=true;moved=0;stage.classList.add("grabbing");sx=e.clientX;sy=e.clientY;sl=stage.scrollLeft;st=stage.scrollTop;});
+window.addEventListener("pointermove",e=>{if(!dragging)return;const dx=e.clientX-sx,dy=e.clientY-sy;moved+=Math.abs(dx)+Math.abs(dy);stage.scrollLeft=sl-dx;stage.scrollTop=st-dy;});
+window.addEventListener("pointerup",()=>{dragging=false;stage.classList.remove("grabbing");});
+
+// modal
+const bd=document.getElementById("bd");
+function openModal(id){const n=NMAP[id],d=D[id];if(!d)return;
+  const tag=document.getElementById("mtag");tag.textContent=TAG[n.type];tag.style.color=n.c;
+  document.getElementById("mtitle").textContent=n.label;
+  document.getElementById("mrole").textContent=d.role;
+  const fill=(ul,arr)=>{ul.innerHTML="";arr.forEach(x=>{const li=document.createElement("li");li.textContent=x;ul.appendChild(li);});};
+  fill(document.getElementById("min"),d.in); fill(document.getElementById("mout"),d.out);
+  bd.classList.add("show");}
+function openCmdModal(id){const c=CMDS[id];if(!c)return;
+  const tag=document.getElementById("mtag");tag.textContent="COMMAND";tag.style.color="#054e5a";
+  document.getElementById("mtitle").textContent=c.label;
+  document.getElementById("mrole").textContent=c.role;
+  const fill=(ul,arr)=>{ul.innerHTML="";arr.forEach(x=>{const li=document.createElement("li");li.textContent=x;ul.appendChild(li);});};
+  fill(document.getElementById("min"),c.in);fill(document.getElementById("mout"),c.out);
+  bd.classList.add("show");}
+function closeModal(){bd.classList.remove("show");}
+document.getElementById("svg").addEventListener("click",e=>{
+  if(moved>6)return;
+  const node=e.target.closest(".node"); if(node){openModal(node.dataset.id);return;}
+  const cmd=e.target.closest(".cmd-lbl"); if(cmd)openCmdModal(cmd.dataset.cmd);
+});
+document.getElementById("mx").onclick=closeModal;
+bd.addEventListener("click",e=>{if(e.target===bd)closeModal();});
+document.addEventListener("keydown",e=>{if(e.key==="Escape")closeModal();});
+</script>
+</body>
+</html>

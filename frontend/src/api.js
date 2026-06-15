@@ -40,6 +40,15 @@ export async function saveFile(projectPath, fileRel, content) {
   return r.json();
 }
 
+export async function createItem(projectPath, itemPath, isDir) {
+  const r = await fetch(`${BASE}/create`, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ project: projectPath, path: itemPath, is_dir: isDir }),
+  });
+  return r.json();
+}
+
 export async function getGitStatus(projectPath) {
   const r = await fetch(`${BASE}/git/status?project=${encodeURIComponent(projectPath)}`);
   return r.json();
@@ -72,4 +81,15 @@ export async function browseDir(path) {
 export async function getTags(projectPath) {
   const r = await fetch(`${BASE}/tags?project=${encodeURIComponent(projectPath)}`);
   return r.json();
+}
+
+export async function getGithubTree(repo) {
+  const r = await fetch(`${BASE}/github/tree?repo=${encodeURIComponent(repo)}`);
+  return r.json();
+}
+
+export async function getGithubFile(repo, path) {
+  const r = await fetch(`${BASE}/github/file?repo=${encodeURIComponent(repo)}&path=${encodeURIComponent(path)}`);
+  if (!r.ok) throw new Error(`${r.status}`);
+  return r.text();
 }

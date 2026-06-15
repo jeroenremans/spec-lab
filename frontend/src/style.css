@@ -455,3 +455,12 @@ body { font-family: var(--font); background: var(--content-bg); color: var(--txt
 [data-theme="warm-paper"] .theme-option { color: #2d1f0e; }
 [data-theme="warm-paper"] .theme-option:hover { background: #ede5d5; }
 [data-theme="warm-paper"] .theme-option.active { background: #f5e6c8; }
+
+/* ── Tree: folder add-button (S5.4) ── */
+.t-dir > summary .t-dir-name { flex: 1; }
+.t-add-btn { background: none; border: none; color: var(--muted); cursor: pointer; font-size: 15px; opacity: 0; padding: 0 4px; line-height: 1; border-radius: 3px; flex-shrink: 0; transition: opacity .1s, color .1s; }
+.t-dir > summary:hover .t-add-btn { opacity: 1; }
+.t-add-btn:hover { color: var(--txt); background: rgba(0,0,0,.08); }
+
+/* ── GitHub remote badge ── */
+.gh-remote-label { font-size: 10px; font-weight: 600; background: var(--link); color: #fff; border-radius: 3px; padding: 1px 5px; margin-left: 6px; vertical-align: middle; }

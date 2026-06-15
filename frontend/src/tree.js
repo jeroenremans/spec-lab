@@ -1,16 +1,16 @@
+import { esc } from "./utils.js";
+
 const FILE_ICONS = {
-  md: "📄",
-  vtt: "🎙️",
-  json: "{ }",
-  html: "🌐",
-  xlsx: "📊",
-  pptx: "📑",
-  png: "🖼️",
-  jpg: "🖼️",
+  md: "📄", vtt: "🎙️", json: "{ }", html: "🌐",
+  xlsx: "📊", pptx: "📑", png: "🖼️", jpg: "🖼️",
 };
 
-export function buildTreeHTML(nodes, modifiedSet, tagFiles, filter, searchQ) {
-  return nodes.map((n) => renderNode(n, modifiedSet, tagFiles, filter, searchQ)).join("");
+function displayName(raw) {
+  return raw.replace(/\.md$/i, "").replace(/[-_]/g, " ");
+}
+
+export function buildTreeHTML(nodes, modifiedSet, tagFiles, filter, searchQ, tagCounts) {
+  return nodes.map((n) => renderNode(n, modifiedSet, tagFiles, filter, searchQ, tagCounts)).join("");
 }
 
 function matchesFilter(node, modifiedSet, tagFiles, filter, searchQ) {
@@ -58,17 +58,20 @@ function dirHasTags(dir, tagFiles) {
   );
 }
 
-function renderNode(node, modifiedSet, tagFiles, filter, searchQ) {
+function renderNode(node, modifiedSet, tagFiles, filter, searchQ, tagCounts) {
   if (node.type === "dir") {
     if (!matchesFilter(node, modifiedSet, tagFiles, filter, searchQ)) return "";
     const hasChanges = dirHasModified(node, modifiedSet);
     const children = node.children
-      .map((c) => renderNode(c, modifiedSet, tagFiles, filter, searchQ))
+      .map((c) => renderNode(c, modifiedSet, tagFiles, filter, searchQ, tagCounts))
       .join("");
     const openAttr = filter !== "all" || searchQ ? " open" : "";
     return `
-      <details class="t-dir${hasChanges ? " has-changes" : ""}"${openAttr}>
-        <summary>${node.name}</summary>
+      <details class="t-dir${hasChanges ? " has-changes" : ""}"${openAttr} data-dir-path="${esc(node.path)}">
+        <summary>
+          <span class="t-dir-name">${esc(displayName(node.name))}</span>
+          <button class="t-add-btn" data-dir-path="${esc(node.path)}" title="Nieuw bestand">+</button>
+        </summary>
         <div class="t-children">${children}</div>
       </details>`;
   }
@@ -76,14 +79,12 @@ function renderNode(node, modifiedSet, tagFiles, filter, searchQ) {
   if (!matchesFilter(node, modifiedSet, tagFiles, filter, searchQ)) return "";
   const icon = FILE_ICONS[node.type] || "📄";
   const isModified = modifiedSet.has(node.path);
+  const tagCount = tagCounts?.get(node.path) || 0;
+  const tooltip = tagCount > 0 ? `${node.path} · ${tagCount} tag${tagCount !== 1 ? "s" : ""}` : node.path;
   return `
-    <div class="t-file${isModified ? " git-modified" : ""}" data-path="${esc(node.path)}" title="${esc(node.path)}">
+    <div class="t-file${isModified ? " git-modified" : ""}" data-path="${esc(node.path)}" title="${esc(tooltip)}">
       <span class="ico">${icon}</span>
-      <span class="fname">${esc(node.name)}</span>
+      <span class="fname">${esc(displayName(node.name))}</span>
       <span class="git-dot" title="Uncommitted changes"></span>
     </div>`;
-}
-
-function esc(s) {
-  return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 }

@@ -3,6 +3,8 @@ import mimetypes
 import os
 import re
 import subprocess
+import urllib.error
+import urllib.request
 from pathlib import Path
 
 from flask import Flask, jsonify, request, send_from_directory
@@ -306,6 +308,103 @@ def get_tags():
                 results.append({"path": rel, "tags": tags})
                 total += len(tags)
     return jsonify({"files": results, "total": total})
+
+
+# ── Create file / folder (S5.4 + S5.5) ──────────────────────────────────
+
+@app.route("/api/create", methods=["POST"])
+def create_item():
+    data = request.get_json(force=True)
+    project_path = data.get("project", "")
+    item_path = data.get("path", "").strip("/")
+    is_dir = bool(data.get("is_dir", False))
+    if not item_path:
+        return jsonify({"ok": False, "error": "path required"}), 400
+    name = item_path.split("/")[-1]
+    if not re.match(r"^[a-zA-Z0-9_\-\.]+$", name):
+        return jsonify({"ok": False, "error": "invalid filename"}), 400
+    p = resolve_file(project_path, item_path)
+    if p is None:
+        return jsonify({"ok": False, "error": "forbidden"}), 403
+    if p.exists():
+        return jsonify({"ok": False, "error": "already exists"}), 400
+    try:
+        if is_dir:
+            p.mkdir(parents=True, exist_ok=True)
+        else:
+            if p.suffix.lower() != ".md":
+                return jsonify({"ok": False, "error": "only .md files allowed"}), 400
+            p.parent.mkdir(parents=True, exist_ok=True)
+            title = p.stem.replace("-", " ").replace("_", " ").title()
+            p.write_text(f"# {title}\n\n", encoding="utf-8")
+        base = resolve_project_path(project_path)
+        if base:
+            try:
+                _git(["add", item_path], str(base))
+            except Exception:
+                pass
+        return jsonify({"ok": True, "path": item_path, "is_dir": is_dir})
+    except Exception as e:
+        return jsonify({"ok": False, "error": str(e)}), 500
+
+
+# ── GitHub proxy (EP9) ────────────────────────────────────────────────────
+
+def _gh_request(url: str, timeout: int = 10) -> bytes:
+    req = urllib.request.Request(
+        url,
+        headers={"User-Agent": "SpecWorkbench/1.0", "Accept": "application/vnd.github.v3+json"},
+    )
+    with urllib.request.urlopen(req, timeout=timeout) as resp:
+        return resp.read()
+
+
+def _valid_repo(repo: str) -> bool:
+    parts = repo.split("/")
+    return len(parts) == 2 and all(re.match(r"^[a-zA-Z0-9_.\-]+$", p) for p in parts)
+
+
+@app.route("/api/github/tree")
+def github_tree():
+    repo = request.args.get("repo", "").strip()
+    if not repo or not _valid_repo(repo):
+        return jsonify({"error": "invalid repo"}), 400
+    try:
+        repo_data = json.loads(_gh_request(f"https://api.github.com/repos/{repo}"))
+        branch = repo_data.get("default_branch", "main")
+        tree_data = json.loads(_gh_request(
+            f"https://api.github.com/repos/{repo}/git/trees/{branch}?recursive=1",
+            timeout=15,
+        ))
+        items = [
+            {"path": i["path"], "type": "dir" if i["type"] == "tree" else "file", "name": i["path"].split("/")[-1]}
+            for i in tree_data.get("tree", [])
+        ]
+        return jsonify({"repo": repo, "items": items, "truncated": tree_data.get("truncated", False)})
+    except urllib.error.HTTPError as e:
+        return jsonify({"error": f"GitHub API: {e.code}"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+
+
+@app.route("/api/github/file")
+def github_file():
+    repo = request.args.get("repo", "").strip()
+    path = request.args.get("path", "").strip("/")
+    if not repo or not path or not _valid_repo(repo):
+        return jsonify({"error": "invalid request"}), 400
+    if ".." in path:
+        return jsonify({"error": "forbidden"}), 403
+    try:
+        url = f"https://raw.githubusercontent.com/{repo}/HEAD/{path}"
+        req = urllib.request.Request(url, headers={"User-Agent": "SpecWorkbench/1.0"})
+        with urllib.request.urlopen(req, timeout=10) as resp:
+            content = resp.read().decode("utf-8", errors="replace")
+        return app.response_class(content, mimetype="text/plain")
+    except urllib.error.HTTPError as e:
+        return jsonify({"error": f"HTTP {e.code}"}), e.code
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
 
 
 # ── Directory browser ────────────────────────────────────────────────────
